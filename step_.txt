@@ -1,0 +1,194 @@
+Created At: 2026-11-15T13:49:55+05:30
+Completed At: 2026-11-15T13:49:55+05:30
+Created At: 2026-11-15T13:49:55+05:30
+Completed At: 2026-11-15T13:49:55+05:30
+Showing lines 251-439 of 439
+251:                     <Droplet className="w-3.5 h-3.5 text-sky-600" />
+252:                     <span>2. Treated-Water Quality (Avg.)</span>
+253:                   </h4>
+254:                   <table className="w-full text-[10px]">
+255:                     <thead>
+256:                       <tr className="text-slate-500 text-[9px] border-b border-slate-200 pb-0.5">
+257:                         <th className="text-left font-medium">Parameter</th>
+258:                         <th className="text-right font-medium">Result</th>
+259:                         <th className="text-right font-medium">Standard</th>
+260:                         <th className="text-center font-medium">Status</th>
+261:                       </tr>
+262:                     </thead>
+263:                     <tbody className="divide-y divide-slate-100 text-slate-600">
+264:                       <tr>
+265:                         <td className="py-0.5 font-medium text-slate-800">pH</td>
+266:                         <td className="text-right font-mono font-bold text-[#0B2545]">7.2</td>
+267:                         <td className="text-right text-slate-500 font-mono">6.5 &ndash; 8.5</td>
+268:                         <td className="text-center">
+269:                           <span className="inline-flex w-3.5 h-3.5 rounded-full bg-emerald-500 text-white items-center justify-center text-[8px] font-bold shadow-2xs">✓</span>
+270:                         </td>
+271:                       </tr>
+272:                       <tr>
+273:                         <td className="py-0.5 font-medium text-slate-800">BOD (mg/L)</td>
+274:                         <td className="text-right font-mono font-bold text-[#0B2545]">6</td>
+275:                         <td className="text-right text-slate-500 font-mono">&le; 10</td>
+276:                         <td className="text-center">
+277:                           <span className="inline-flex w-3.5 h-3.5 rounded-full bg-emerald-500 text-white items-center justify-center text-[8px] font-bold shadow-2xs">✓</span>
+278:                         </td>
+279:                       </tr>
+280:                       <tr>
+281:                         <td className="py-0.5 font-medium text-slate-800">COD (mg/L)</td>
+282:                         <td className="text-right font-mono font-bold text-[#0B2545]">28</td>
+283:                         <td className="text-right text-slate-500 font-mono">&le; 50</td>
+284:                         <td className="text-center">
+285:                           <span className="inline-flex w-3.5 h-3.5 rounded-full bg-emerald-500 text-white items-center justify-center text-[8px] font-bold shadow-2xs">✓</span>
+286:                         </td>
+287:                       </tr>
+288:                       <tr>
+289:                         <td className="py-0.5 font-medium text-slate-800">TSS (mg/L)</td>
+290:                         <td className="text-right font-mono font-bold text-[#0B2545]">8</td>
+291:                         <td className="text-right text-slate-500 font-mono">&le; 10</td>
+292:                         <td className="text-center">
+293:                           <span className="inline-flex w-3.5 h-3.5 rounded-full bg-emerald-500 text-white items-center justify-center text-[8px] font-bold shadow-2xs">✓</span>
+294:                         </td>
+295:                       </tr>
+296:                     </tbody>
+297:                   </table>
+298:                 </div>
+299: 
+300:                 {/* 3. Equipment Performance */}
+301:                 <div className="border border-slate-200/90 rounded-xl p-2.5 sm:p-3 bg-gradient-to-b from-[#FAFDFE] to-white hover:border-sky-300 transition-all shadow-2xs">
+302:                   <h4 className="font-bold text-[#0B2545] mb-1.5 flex items-center gap-1.5 text-[10px] tracking-tight">
+303:                     <Settings className="w-3.5 h-3.5 text-sky-600" />
+304:                     <span>3. Equipment Performance</span>
+305:                   </h4>
+306:                   <div className="space-y-0.5 text-[10px] text-slate-600">
+307:                     <div className="flex justify-between py-0.5 border-b border-slate-100">
+308:                       <span>Feed Pumps</span>
+309:                       <span className="font-mono font-bold text-sky-700">99.6%</span>
+310:                     </div>
+311:                     <div className="flex justify-between py-0.5 border-b border-slate-100">
+312:                       <span>Aeration Blowers</span>
+313:                       <span className="font-mono font-bold text-sky-700">99.2%</span>
+314:                     </div>
+315:                     <div className="flex justify-between py-0.5 border-b border-slate-100">
+316:                       <span>RAS / WAS Pumps</span>
+317:                       <span className="font-mono font-bold text-sky-700">99.5%</span>
+318:                     </div>
+319:                     <div className="flex justify-between pt-0.5 font-bold text-[#0B2545]">
+320:                       <span>Overall Availability</span>
+321:                       <span className="font-mono text-sky-700">99.4%</span>
+322:                     </div>
+323:                   </div>
+324:                 </div>
+325: 
+326:                 {/* 4. Maintenance Records */}
+327:                 <div className="border border-slate-200/90 rounded-xl p-2.5 sm:p-3 bg-gradient-to-b from-[#FAFDFE] to-white hover:border-sky-300 transition-all shadow-2xs">
+328:                   <h4 className="font-bold text-[#0B2545] mb-1.5 text-[10px] tracking-tight flex items-center gap-1.5">
+329:                     <Check className="w-3.5 h-3.5 text-sky-600 stroke-[2.5]" />
+330:                     <span>4. Maintenance Records</span>
+331:                   </h4>
+332:                   <div className="space-y-0.5 text-[10px] text-slate-600">
+333:                     <div className="flex items-center gap-1.5">
+334:                       <Check className="w-3 h-3 text-emerald-600 shrink-0 stroke-[2.5]" />
+335:                       <span>Daily checks &ndash; Completed (100%)</span>
+336:                     </div>
+337:                     <div className="flex items-center gap-1.5">
+338:                       <Check className="w-3 h-3 text-emerald-600 shrink-0 stroke-[2.5]" />
+339:                       <span>Weekly activities &ndash; Completed (100%)</span>
+340:                     </div>
+341:                     <div className="flex items-center gap-1.5">
+342:                       <Check className="w-3 h-3 text-emerald-600 shrink-0 stroke-[2.5]" />
+343:                       <span>Preventive maintenance &ndash; Completed as scheduled</span>
+344:                     </div>
+345:                     <div className="flex items-center gap-1.5">
+346:                       <Check className="w-3 h-3 text-emerald-600 shrink-0 stroke-[2.5]" />
+347:                       <span className="font-bold text-[#0B2545]">Corrective maintenance &ndash; Nil (Unplanned: 0%)</span>
+348:                     </div>
+349:                   </div>
+350:                 </div>
+351: 
+352:                 {/* 5. Manpower Coverage */}
+353:                 <div className="border border-slate-200/90 rounded-xl p-2.5 sm:p-3 bg-gradient-to-b from-[#FAFDFE] to-white hover:border-sky-300 transition-all shadow-2xs">
+354:                   <h4 className="font-bold text-[#0B2545] mb-1.5 flex items-center gap-1.5 text-[10px] tracking-tight">
+355:                     <Users className="w-3.5 h-3.5 text-sky-600" />
+356:                     <span>5. Manpower Coverage</span>
+357:                   </h4>
+358:                   <table className="w-full text-[10px]">
+359:                     <thead>
+360:                       <tr className="text-slate-500 text-[9px] border-b border-slate-200">
+361:                         <th className="text-left font-medium pb-0.5">Shift</th>
+362:                         <th className="text-right font-medium pb-0.5">Coverage</th>
+363:                       </tr>
+364:                     </thead>
+365:                     <tbody className="divide-y divide-slate-100 text-slate-600">
+366:                       <tr>
+367:                         <td className="py-0.5">Shift A (06:00 &ndash; 14:00)</td>
+368:                         <td className="text-right font-mono font-bold text-[#0B2545]">100%</td>
+369:                       </tr>
+370:                       <tr>
+371:                         <td className="py-0.5">Shift B (14:00 &ndash; 22:00)</td>
+372:                         <td className="text-right font-mono font-bold text-[#0B2545]">100%</td>
+373:                       </tr>
+374:                       <tr>
+375:                         <td className="py-0.5">Shift C (22:00 &ndash; 06:00)</td>
+376:                         <td className="text-right font-mono font-bold text-[#0B2545]">100%</td>
+377:                       </tr>
+378:                       <tr>
+379:                         <td className="py-0.5 font-bold text-[#0B2545]">Overall Coverage</td>
+380:                         <td className="text-right font-mono font-bold text-sky-700">&ge;99%</td>
+381:                       </tr>
+382:                     </tbody>
+383:                   </table>
+384:                 </div>
+385: 
+386:                 {/* 6. WhatsApp Communication Evidence */}
+387:                 <div className="border border-slate-200/90 rounded-xl p-2.5 sm:p-3 bg-gradient-to-b from-[#FAFDFE] to-white hover:border-sky-300 transition-all shadow-2xs">
+388:                   <h4 className="font-bold text-[#0B2545] mb-1.5 flex items-center gap-1.5 text-[10px] tracking-tight">
+389:                     <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
+390:                     <span>6. WhatsApp Communication Evidence</span>
+391:                   </h4>
+392:                   <div className="grid grid-cols-3 gap-1.5">
+393:                     {[
+394:                       { time: "0:42", thumb: "/images/crops/solution_op.jpg" },
+395:                       { time: "0:18", thumb: "/images/crops/solution_water.jpg" },
+396:                       { time: "0:35", thumb: "/images/crops/solution_digital.jpg" },
+397:                     ].map((m, idx) => (
+398:                       <div
+399:                         key={idx}
+400:                         onClick={onOpenReportModal}
+401:                         className="relative h-11 sm:h-12 rounded-lg overflow-hidden border border-slate-200/80 bg-slate-100 flex items-center justify-center cursor-pointer group shadow-2xs hover:border-sky-400 transition-all"
+402:                       >
+403:                         <Image
+404:                           src={m.thumb}
+405:                           alt="Evidence"
+406:                           fill
+407:                           sizes="70px"
+408:                           className="object-cover opacity-90 group-hover:scale-110 transition-transform duration-300"
+409:                         />
+410:                         <div className="w-4 h-4 rounded-full bg-sky-600 text-white flex items-center justify-center shadow-md z-10 group-hover:scale-110 transition-transform">
+411:                           <Play className="w-2 h-2 fill-current ml-0.5" />
+412:                         </div>
+413:                         <div className="absolute bottom-0.5 right-0.5 px-1 rounded bg-black/75 text-[7px] font-mono text-white">
+414:                           {m.time}
+415:                         </div>
+416:                       </div>
+417:                     ))}
+418:                   </div>
+419:                 </div>
+420:               </div>
+421: 
+422:               {/* Action Button: View Sample Performance Report -> */}
+423:               <div className="pt-0.5">
+424:                 <button
+425:                   type="button"
+426:                   onClick={onOpenReportModal}
+427:                   className="w-full py-2.5 rounded-full bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-black text-xs flex items-center justify-center gap-2 transition-all duration-200 shadow-md shadow-sky-600/20 hover:shadow-sky-600/35 hover:-translate-y-0.5 active:translate-y-0 group"
+428:                 >
+429:                   <span>View Sample Performance Report</span>
+430:                   <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" />
+431:                 </button>
+432:               </div>
+433:             </div>
+434:           </div>
+435:         </motion.div>
+436:       </div>
+437:     </section>
+438:   )
+439: }

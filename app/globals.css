@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@source "../components/**/*.{js,ts,jsx,tsx}";
+@source "../app/**/*.{js,ts,jsx,tsx}";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Light Blue & Pure White Architecture */
+  --canvas-main: #FFFFFF;
+  --canvas-ice: #F0F9FF;
+  --surface-card: #FFFFFF;
+  --surface-elevated: #F8FAFC;
+  --hairline-sky: rgba(14, 165, 233, 0.2);
+  --hairline-border: rgba(226, 232, 240, 0.9);
+  
+  --sky-primary: #0284C7;
+  --sky-vibrant: #0EA5E9;
+  --sky-soft: #38BDF8;
+  --sky-tint: #E0F2FE;
+  --sky-ice: #F0F9FF;
+  
+  --emerald-compliance: #059669;
+  --emerald-glow: rgba(5, 150, 105, 0.15);
+  
+  --text-navy: #0B2545;
+  --text-slate: #1E293B;
+  --text-muted: #475569;
+  --text-dim: #64748B;
+  
+  --font-display: 'Space Grotesk', -apple-system, sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-body);
+  background-color: var(--canvas-main);
+  color: var(--text-navy);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: var(--canvas-main);
+  color: var(--text-navy);
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* Subtle Sky Grid Layer */
+.blueprint-grid {
+  background-image: 
+    linear-gradient(to right, rgba(14, 165, 233, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(14, 165, 233, 0.08) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* Pristine Sky/White Cards */
+.blueprint-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(14, 165, 233, 0.18);
+  box-shadow: 0 4px 20px -2px rgba(14, 165, 233, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.blueprint-card:hover {
+  border-color: rgba(14, 165, 233, 0.4);
+  box-shadow: 0 12px 30px -5px rgba(14, 165, 233, 0.12), 0 4px 10px -2px rgba(0, 0, 0, 0.04);
+  transform: translateY(-2px);
+}
+
+/* Display typography helper */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono-data {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum" 1, "zero" 1;
+}
+
+/* Custom scrollbar in crisp light blue */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F8FAFC;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(14, 165, 233, 0.35);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(14, 165, 233, 0.65);
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
