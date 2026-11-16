@@ -12,7 +12,7 @@ export function SolutionSection() {
       description:
         "Trained operators across three shifts, supported by defined SOPs, supervision, and preventive maintenance.",
       icon: HardHat,
-      image: "/images/crops/solution_op.jpg",
+      image: "/images/crops/solution_op_indian.jpg",
       alt: "24x7 Plant Operations Operator",
       step: "01",
       badge: "3-Shift Coverage",
@@ -32,7 +32,7 @@ export function SolutionSection() {
       description:
         "Track water quantity, quality, tank levels, equipment health, and scheduled activities with documented evidence.",
       icon: Laptop,
-      image: "/images/crops/solution_digital.jpg",
+      image: "/images/crops/solution_digital_indian.jpg",
       alt: "Digital Monitoring and Accountability SCADA Screen",
       step: "03",
       badge: "Verified Logs",

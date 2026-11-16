@@ -69,7 +69,7 @@ export function HeroSection({ onOpenReportModal }: HeroSectionProps) {
   return (
     <section
       id="why-nanneer"
-      className="min-h-[calc(100vh-72px)] flex flex-col justify-center gap-4 lg:gap-5 py-6 sm:py-8 lg:py-6 px-3 sm:px-8 max-w-[1400px] mx-auto w-full blueprint-grid relative overflow-hidden bg-gradient-to-b from-white via-sky-50/40 to-white"
+      className="min-h-[calc(100vh-68px)] lg:h-[calc(100vh-68px)] flex flex-col justify-between py-3.5 sm:py-4 lg:py-5 px-3 sm:px-8 max-w-[1440px] mx-auto w-full blueprint-grid relative overflow-hidden bg-gradient-to-b from-white via-sky-50/40 to-white"
     >
       {/* Decorative ambient soft wave background curve matching reference */}
       <div className="absolute -bottom-12 -left-12 w-80 h-80 bg-sky-200/60 rounded-full blur-3xl pointer-events-none transform-gpu will-change-transform" />
@@ -83,7 +83,7 @@ export function HeroSection({ onOpenReportModal }: HeroSectionProps) {
         animate="visible"
       >
         {/* Left Column */}
-        <div className="lg:col-span-6 xl:col-span-5 space-y-3 sm:space-y-3.5">
+        <div className="lg:col-span-6 xl:col-span-5 space-y-3.5 sm:space-y-4 lg:space-y-4.5 xl:space-y-5">
           {/* Overline badge */}
           <motion.div variants={itemVariants} className="flex items-center">
             <span className="text-[9.5px] sm:text-[11px] font-mono font-bold uppercase tracking-wider text-sky-700 bg-sky-50/90 border border-sky-200/80 px-2.5 py-0.5 rounded-full shadow-2xs">
@@ -94,7 +94,7 @@ export function HeroSection({ onOpenReportModal }: HeroSectionProps) {
           {/* Main Headline */}
           <motion.h1
             variants={itemVariants}
-            className="font-display text-[22px] sm:text-3xl lg:text-[2.35rem] xl:text-[2.75rem] font-black text-[#0B2545] tracking-tight leading-[1.12]"
+            className="font-display text-[22px] sm:text-3xl lg:text-[2.55rem] xl:text-[2.95rem] font-black text-[#0B2545] tracking-tight leading-[1.1]"
           >
             Your STP Is Running.
             <br />
@@ -106,7 +106,7 @@ export function HeroSection({ onOpenReportModal }: HeroSectionProps) {
           {/* Subtitle */}
           <motion.p
             variants={itemVariants}
-            className="text-xs sm:text-sm lg:text-[14px] text-slate-600 leading-relaxed max-w-xl font-normal"
+            className="text-xs sm:text-sm lg:text-[14px] xl:text-[15px] text-slate-600 leading-relaxed max-w-xl font-normal"
           >
             We manage your STP 24×7 to maximize sewage treatment, recover reusable water,
             prevent operational failures, and keep every activity documented.
@@ -124,7 +124,7 @@ export function HeroSection({ onOpenReportModal }: HeroSectionProps) {
           </motion.div>
 
           {/* Desktop Action Buttons (Inside Left Column) */}
-          <motion.div variants={itemVariants} className="hidden lg:flex items-center gap-3 pt-1">
+          <motion.div variants={itemVariants} className="hidden lg:flex items-center gap-3 pt-1.5 lg:pt-2.5">
             <a
               href="#contact"
               className="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-black text-xs sm:text-sm tracking-wide transition-all duration-200 shadow-md shadow-sky-600/25 hover:shadow-sky-600/40 hover:-translate-y-0.5 active:translate-y-0 group"
@@ -172,15 +172,15 @@ export function HeroSection({ onOpenReportModal }: HeroSectionProps) {
 
       {/* 2. Lower Row: Managing an STP Shouldn't Be a Daily Headache */}
       <motion.div
-        className="pt-3 border-t border-sky-100 relative z-10 shrink-0"
+        className="pt-4 sm:pt-5 lg:pt-6 border-t border-sky-100/90 relative z-10 shrink-0 pb-1 sm:pb-2.5"
         initial={{ opacity: 0, y: 15 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="text-center max-w-3xl mx-auto mb-2.5">
+        <div className="text-center max-w-3xl mx-auto mb-3 sm:mb-3.5">
           <div className="w-8 h-[2px] bg-sky-500 mx-auto rounded-full mb-1.5 shadow-[0_0_8px_rgba(14,165,233,0.5)]" />
-          <h2 className="font-display text-lg sm:text-xl lg:text-[1.35rem] font-black text-[#0B2545] tracking-tight">
+          <h2 className="font-display text-base sm:text-lg lg:text-[1.32rem] font-black text-[#0B2545] tracking-tight">
             Managing an STP Shouldn&apos;t Be a Daily Headache.
           </h2>
           <p className="mt-0.5 text-[11px] sm:text-xs text-slate-600 leading-normal max-w-xl mx-auto font-normal">
@@ -191,22 +191,22 @@ export function HeroSection({ onOpenReportModal }: HeroSectionProps) {
         </div>
 
         {/* 4 Crisp Modern Diagnostic Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5">
           {problems.map((item, idx) => {
             const Icon = item.icon
             return (
               <motion.div
                 key={idx}
                 whileHover={{ y: -2, transition: { duration: 0.2 } }}
-                className="blueprint-card flex items-center gap-3 p-2.5 sm:p-3 rounded-xl bg-white border border-slate-200/90 shadow-2xs hover:border-sky-300 hover:shadow-xs transition-all group"
+                className="blueprint-card flex items-center gap-3.5 p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200/90 shadow-2xs hover:border-sky-300 hover:shadow-xs transition-all group"
               >
                 <div
-                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shrink-0 border ${item.accent} transition-transform duration-300 group-hover:scale-105`}
+                  className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shrink-0 border ${item.accent} transition-transform duration-300 group-hover:scale-105 shadow-2xs`}
                 >
                   <Icon className="w-4 h-4 sm:w-5 sm:h-5 stroke-[1.8]" />
                 </div>
                 <div>
-                  <h3 className="text-xs font-bold text-[#0B2545] group-hover:text-sky-700 transition-colors">
+                  <h3 className="text-xs sm:text-[12.5px] font-bold text-[#0B2545] group-hover:text-sky-700 transition-colors">
                     {item.title}
                   </h3>
                   <p className="text-[11px] text-slate-600 leading-tight mt-0.5 font-normal">

@@ -119,8 +119,8 @@ export function Navbar() {
       <header
         className={`sticky top-0 z-40 transition-all duration-300 ${
           scrolled
-            ? "bg-white/95 backdrop-blur-md shadow-sm shadow-sky-900/5 border-b border-sky-100 py-2 sm:py-3"
-            : "bg-white/90 backdrop-blur-xs border-b border-slate-100 py-2.5 sm:py-4"
+            ? "bg-white/95 backdrop-blur-md shadow-sm shadow-sky-900/5 border-b border-sky-100 py-1.5 sm:py-2"
+            : "bg-white/90 backdrop-blur-xs border-b border-slate-100 py-1.5 sm:py-2.5"
         }`}
       >
         <div className="max-w-[1400px] mx-auto px-3 sm:px-8 flex items-center justify-between">

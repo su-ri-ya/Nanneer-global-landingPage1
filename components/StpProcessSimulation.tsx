@@ -27,7 +27,7 @@ export function StpProcessSimulation() {
       </div>
 
       {/* 2. Main Animated Canvas (Full Height, Pure Simulation) */}
-      <div className="relative w-full h-[235px] sm:h-[265px] md:h-[285px] lg:h-[305px] xl:h-[320px] bg-gradient-to-b from-white via-sky-50/25 to-white overflow-hidden">
+      <div className="relative w-full h-[260px] sm:h-[300px] md:h-[340px] lg:h-[385px] xl:h-[415px] bg-gradient-to-b from-white via-sky-50/25 to-white overflow-hidden">
         {/* Delicate Blueprint Dot Grid */}
         <div
           className="absolute inset-0 pointer-events-none opacity-40"
