@@ -745,12 +745,34 @@ export function ScadaSchematicSimulation() {
             )}
           </g>
 
-          {/* 16. TREATED WATER TANK OUT THROUGH M12, TO FLUSH & INTO SOFTENER */}
+          {/* 16. TREATED WATER TANK OUT THROUGH M12, TO FLUSH, TO GARDENING & INTO SOFTENER */}
           <g id="treated-to-softener-line">
             <path d="M 460 645 L 495 645 M 535 645 L 675 645" stroke="#0284C7" strokeWidth="4.5" fill="none" />
-            <path d="M 565 645 L 565 590" stroke="#0284C7" strokeWidth="3.5" fill="none" />
-            <polygon points="561,595 565,585 569,595" fill="#0284C7" />
+            
+            {/* Feeder Pipe 1: TO FLUSH */}
+            <path d="M 550 645 L 550 590" stroke="#0284C7" strokeWidth="3.5" fill="none" />
+            <polygon points="546,595 550,585 554,595" fill="#0284C7" />
+
+            {/* Feeder Pipe 2: TO GARDENING */}
+            <path d="M 595 645 L 595 590" stroke="#16A34A" strokeWidth="3.5" fill="none" />
+            <polygon points="591,595 595,585 599,595" fill="#16A34A" />
+
             <polygon points="660,641 670,645 660,649" fill="#0284C7" />
+
+            {/* Animated flow when M12 is running */}
+            {isPlaying && pumps.M12.status === "RUNNING" && (
+              <>
+                <path d="M 535 645 L 600 645" stroke="#BAE6FD" strokeWidth="2" strokeDasharray="3 5" fill="none">
+                  <animate attributeName="stroke-dashoffset" from="16" to="0" dur={`${0.6 / simSpeed}s`} repeatCount="indefinite" />
+                </path>
+                <path d="M 550 645 L 550 590" stroke="#BAE6FD" strokeWidth="2" strokeDasharray="3 5" fill="none">
+                  <animate attributeName="stroke-dashoffset" from="16" to="0" dur={`${0.6 / simSpeed}s`} repeatCount="indefinite" />
+                </path>
+                <path d="M 595 645 L 595 590" stroke="#BBF7D0" strokeWidth="2" strokeDasharray="3 5" fill="none">
+                  <animate attributeName="stroke-dashoffset" from="16" to="0" dur={`${0.6 / simSpeed}s`} repeatCount="indefinite" />
+                </path>
+              </>
+            )}
           </g>
 
           {/* 17. SOFTENER OUT INTO SOFT WATER TANK */}
@@ -1185,7 +1207,37 @@ export function ScadaSchematicSimulation() {
           {/* M12: FLUSHING PUMP */}
           {renderPump("M12", 515, 645, "right", "FLUSHING PUMP", undefined, "bottom")}
 
-          <text x="565" y="575" textAnchor="middle" fill="#0284C7" fontSize="8" fontWeight="bold" fontFamily="monospace">TO FLUSH</text>
+          <text
+            x="550"
+            y="575"
+            textAnchor="middle"
+            fill="#0284C7"
+            stroke="#FFFFFF"
+            strokeWidth="2"
+            paintOrder="stroke"
+            strokeLinejoin="round"
+            fontSize="6.5"
+            fontWeight="bold"
+            fontFamily="monospace"
+          >
+            TO FLUSH
+          </text>
+
+          <text
+            x="595"
+            y="575"
+            textAnchor="middle"
+            fill="#15803D"
+            stroke="#FFFFFF"
+            strokeWidth="2"
+            paintOrder="stroke"
+            strokeLinejoin="round"
+            fontSize="6.5"
+            fontWeight="bold"
+            fontFamily="monospace"
+          >
+            TO GARDENING
+          </text>
 
           {/* WATER SOLENOID VALVE */}
           <g id="valve-water-solenoid" transform="translate(615, 645)" className="cursor-pointer" onClick={() => setWaterSolenoidOpen(!waterSolenoidOpen)}>
