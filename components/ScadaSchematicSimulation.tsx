@@ -28,8 +28,6 @@ export function ScadaSchematicSimulation() {
 
   // Live sensor readings with micro-jitter
   const [do1, setDo1] = useState<number>(0.88)
-  const [do2, setDo2] = useState<number>(0.0)
-  const [sbrTss, setSbrTss] = useState<number>(0.0)
   const [clarifierTss, setClarifierTss] = useState<number>(0.0)
   const [inletPressure, setInletPressure] = useState<number>(0.35)
   const [outletPressure, setOutletPressure] = useState<number>(0.15)
@@ -37,7 +35,6 @@ export function ScadaSchematicSimulation() {
 
   // Tank levels
   const [collectionLevel, setCollectionLevel] = useState<number>(33)
-  const [sbrLevel, setSbrLevel] = useState<number>(0)
   const [filterFeedLevel, setFilterFeedLevel] = useState<number>(50)
   const [sludgeLevel, setSludgeLevel] = useState<number>(0)
   const [treatedLevel, setTreatedLevel] = useState<number>(100)
@@ -48,21 +45,15 @@ export function ScadaSchematicSimulation() {
   const [acfSeconds, setAcfSeconds] = useState<number>(3 * 3600 + 20 * 60 + 25)
 
   // Valves state
-  const [airSolenoidOpen, setAirSolenoidOpen] = useState<boolean>(true)
   const [clarifierValveOpen, setClarifierValveOpen] = useState<boolean>(true)
   const [waterSolenoidOpen, setWaterSolenoidOpen] = useState<boolean>(false)
 
-  // Equipment Pumps State (Matching exact tags from reference)
+  // Equipment Pumps State (MBBR & Tertiary Polishing Train)
   const [pumps, setPumps] = useState<Record<string, PumpState>>({
-    M01: { id: "M01", name: "SBR RCP 1", code: "M01", status: "STANDBY", powerKw: 2.2, flowRate: 0 },
-    M02: { id: "M02", name: "SBR RCP 2", code: "M02", status: "STANDBY", powerKw: 2.2, flowRate: 0 },
-    M07: { id: "M07", name: "SBR RSTP 1", code: "M07", status: "RUNNING", powerKw: 3.7, flowRate: 15.2 },
-    M08: { id: "M08", name: "SBR RSTP 2", code: "M08", status: "STANDBY", powerKw: 3.7, flowRate: 0 },
     M1: { id: "M1", name: "MBBR RSTP 1", code: "M1", status: "RUNNING", powerKw: 4.0, flowRate: 18.5 },
     M2: { id: "M2", name: "MBBR RSTP 2", code: "M2", status: "STOPPED", powerKw: 4.0, flowRate: 0 },
     M3: { id: "M3", name: "MBBR RCP 1", code: "M3", status: "STOPPED", powerKw: 1.5, flowRate: 0 },
     M4: { id: "M4", name: "MBBR RCP 2", code: "M4", status: "RUNNING", powerKw: 1.5, flowRate: 6.8 },
-    M9: { id: "M9", name: "SBR DCTF", code: "M9", status: "STANDBY", powerKw: 2.2, flowRate: 0 },
     M10: { id: "M10", name: "FF PUMP 1", code: "M10", status: "STOPPED", powerKw: 3.0, flowRate: 0 },
     M11: { id: "M11", name: "FF PUMP 2", code: "M11", status: "STOPPED", powerKw: 3.0, flowRate: 0 },
     M12: { id: "M12", name: "FLUSHING PUMP", code: "M12", status: "STANDBY", powerKw: 5.5, flowRate: 0 },
@@ -301,7 +292,7 @@ export function ScadaSchematicSimulation() {
                 </span>
               </div>
               <span className="text-[11px] text-slate-500 font-mono">
-                System Tag: STP-NANNEER-PLANT-01 · Dual Biological Train &amp; Tertiary Polishing
+                System Tag: STP-NANNEER-PLANT-01 · MBBR Aeration &amp; Tertiary Media Polishing
               </span>
             </div>
           </div>
@@ -383,14 +374,7 @@ export function ScadaSchematicSimulation() {
               <stop offset="100%" stopColor="#5D4037" stopOpacity="0.96" />
             </linearGradient>
 
-            {/* 2. SBR Tank Mixed Liquor (Active Biological Digestion - Deep Brown MLSS) */}
-            <linearGradient id="sbrWaterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#8D7B68" stopOpacity="0.88" />
-              <stop offset="50%" stopColor="#6D5D4E" stopOpacity="0.92" />
-              <stop offset="100%" stopColor="#4E3E32" stopOpacity="0.96" />
-            </linearGradient>
-
-            {/* 3. MBBR Aeration Tank (Aerated Mixed Liquor with Bio-Carriers - Brownish-Olive) */}
+            {/* 2. MBBR Aeration Tank (Aerated Mixed Liquor with Bio-Carriers - Brownish-Olive) */}
             <linearGradient id="mbbrWaterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#9E8D72" stopOpacity="0.85" />
               <stop offset="45%" stopColor="#6B7852" stopOpacity="0.90" />
@@ -431,6 +415,61 @@ export function ScadaSchematicSimulation() {
               <stop offset="0%" stopColor="#F0F9FF" stopOpacity="0.98" />
               <stop offset="45%" stopColor="#38BDF8" stopOpacity="0.95" />
               <stop offset="100%" stopColor="#0369A1" stopOpacity="0.98" />
+            </linearGradient>
+
+            {/* 9. Polished Stainless Steel 316 Pipe Gradients (Horizontal & Vertical) */}
+            <linearGradient id="ssPipeH" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#64748B" />
+              <stop offset="25%" stopColor="#FFFFFF" />
+              <stop offset="55%" stopColor="#CBD5E1" />
+              <stop offset="85%" stopColor="#94A3B8" />
+              <stop offset="100%" stopColor="#475569" />
+            </linearGradient>
+
+            <linearGradient id="ssPipeV" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#64748B" />
+              <stop offset="25%" stopColor="#FFFFFF" />
+              <stop offset="55%" stopColor="#CBD5E1" />
+              <stop offset="85%" stopColor="#94A3B8" />
+              <stop offset="100%" stopColor="#475569" />
+            </linearGradient>
+
+            {/* 10. 2.5D Cylindrical Glass Vessel Walls (Specular Highlight & Fresnel Backlight) */}
+            <linearGradient id="glassCylinderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.5" />
+              <stop offset="8%" stopColor="#FFFFFF" stopOpacity="0.85" />
+              <stop offset="22%" stopColor="#F8FAFC" stopOpacity="0.3" />
+              <stop offset="70%" stopColor="#E0F2FE" stopOpacity="0.2" />
+              <stop offset="92%" stopColor="#38BDF8" stopOpacity="0.35" />
+              <stop offset="100%" stopColor="#0284C7" stopOpacity="0.5" />
+            </linearGradient>
+
+            {/* 11. Top Glass Vessel Flange / Lip Gradient */}
+            <linearGradient id="glassRimGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#94A3B8" stopOpacity="0.8" />
+              <stop offset="25%" stopColor="#FFFFFF" stopOpacity="0.95" />
+              <stop offset="70%" stopColor="#E2E8F0" stopOpacity="0.7" />
+              <stop offset="100%" stopColor="#64748B" stopOpacity="0.9" />
+            </linearGradient>
+
+            {/* 12. Sand & Media Layers for PSF / ACF */}
+            <linearGradient id="sandMediaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#FDE68A" stopOpacity="0.95" />
+              <stop offset="45%" stopColor="#D97706" stopOpacity="0.95" />
+              <stop offset="75%" stopColor="#78350F" stopOpacity="0.98" />
+              <stop offset="100%" stopColor="#451A03" stopOpacity="0.98" />
+            </linearGradient>
+
+            <linearGradient id="carbonMediaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#475569" stopOpacity="0.95" />
+              <stop offset="50%" stopColor="#1E293B" stopOpacity="0.98" />
+              <stop offset="100%" stopColor="#0F172A" stopOpacity="0.99" />
+            </linearGradient>
+
+            <linearGradient id="resinMediaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.95" />
+              <stop offset="60%" stopColor="#D97706" stopOpacity="0.98" />
+              <stop offset="100%" stopColor="#92400E" stopOpacity="0.99" />
             </linearGradient>
 
             <linearGradient id="metalRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -520,23 +559,14 @@ export function ScadaSchematicSimulation() {
             )}
           </g>
 
-          {/* 3. COLLECTION TANK TO SBR TANK (4 CONTINUOUS VERTICAL PIPES) */}
-          <g id="collection-to-sbr-lines">
-            <path d="M 160 135 L 160 240" stroke="#0284C7" strokeWidth="3.5" fill="none" />
-            <path d="M 195 135 L 195 240" stroke="#0284C7" strokeWidth="3.5" fill="none" />
-            <path d="M 235 135 L 235 240" stroke="#0284C7" strokeWidth="3.5" fill="none" />
-            <path d="M 270 135 L 270 240" stroke="#0284C7" strokeWidth="3.5" fill="none" />
-            {isPlaying && pumps.M07.status === "RUNNING" && (
-              <path d="M 235 135 L 235 240" stroke="#D7CCC8" strokeWidth="2" strokeDasharray="4 6" fill="none">
-                <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
-              </path>
-            )}
-          </g>
-
-          {/* 4. COLLECTION TANK TO MBBR AERATION TANK (VIA M1 / M2) */}
+          {/* 3. COLLECTION TANK TO MBBR AERATION TANK (VIA M1 / M2) */}
           <g id="collection-to-mbbr-lines">
-            <path d="M 310 92 L 340 92 L 340 75 L 420 75 L 420 92 L 440 92" stroke="#0284C7" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
-            <path d="M 340 92 L 340 115 L 420 115 L 420 92" stroke="#0284C7" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
+            {/* Stainless Steel Outer Casing */}
+            <path d="M 310 92 L 340 92 L 340 75 L 420 75 L 420 92 L 440 92" stroke="url(#ssPipeH)" strokeWidth="6.5" fill="none" strokeLinejoin="round" />
+            <path d="M 340 92 L 340 115 L 420 115 L 420 92" stroke="url(#ssPipeH)" strokeWidth="6.5" fill="none" strokeLinejoin="round" />
+            {/* Inner Fluid Core */}
+            <path d="M 310 92 L 340 92 L 340 75 L 420 75 L 420 92 L 440 92" stroke="#0284C7" strokeWidth="4" fill="none" strokeLinejoin="round" />
+            <path d="M 340 92 L 340 115 L 420 115 L 420 92" stroke="#0284C7" strokeWidth="4" fill="none" strokeLinejoin="round" />
             <polygon points="430,88 440,92 430,96" fill="#0284C7" />
             {isPlaying && pumps.M1.status === "RUNNING" && (
               <path d="M 310 92 L 340 92 L 340 75 L 420 75 L 420 92 L 440 92" stroke="#D7CCC8" strokeWidth="2.5" strokeDasharray="5 7" fill="none" strokeLinejoin="round">
@@ -545,9 +575,10 @@ export function ScadaSchematicSimulation() {
             )}
           </g>
 
-          {/* 5. MBBR AERATION OVERFLOW TO CLARIFIER TANK (RUNS ACROSS THE TOP AT Y=65, WELL ABOVE M3) */}
+          {/* 4. MBBR AERATION OVERFLOW TO CLARIFIER TANK (RUNS ACROSS THE TOP AT Y=65, WELL ABOVE M3) */}
           <g id="mbbr-to-clarifier-line">
-            <path d="M 570 65 L 740 65" stroke="#0284C7" strokeWidth="4.5" fill="none" />
+            <path d="M 570 65 L 740 65" stroke="url(#ssPipeH)" strokeWidth="6.5" fill="none" />
+            <path d="M 570 65 L 740 65" stroke="#0284C7" strokeWidth="4" fill="none" />
             <polygon points="728,61 738,65 728,69" fill="#0284C7" />
             {isPlaying && (
               <path d="M 570 65 L 740 65" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="5 7" fill="none">
@@ -556,18 +587,19 @@ export function ScadaSchematicSimulation() {
             )}
           </g>
 
-          {/* 6. CLARIFIER THROUGH CLARIFIER VALVE STRAIGHT DOWN INTO FILTER FEED TANK */}
+          {/* 5. CLARIFIER THROUGH CLARIFIER VALVE STRAIGHT DOWN INTO FILTER FEED TANK */}
           <g id="clarifier-to-filter-feed-line">
-            <path d="M 810 135 L 810 240" stroke="#0284C7" strokeWidth="4.5" fill="none" />
-            <polygon points="806,230 810,240 814,230" fill="#0284C7" />
+            <path d="M 810 135 L 810 238" stroke="url(#ssPipeV)" strokeWidth="6.5" fill="none" />
+            <path d="M 810 135 L 810 238" stroke="#0284C7" strokeWidth="4" fill="none" />
+            <polygon points="806,228 810,238 814,228" fill="#0284C7" />
             {isPlaying && clarifierValveOpen && (
-              <path d="M 810 135 L 810 240" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="5 7" fill="none">
+              <path d="M 810 135 L 810 238" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="5 7" fill="none">
                 <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
               </path>
             )}
           </g>
 
-          {/* 7. CLARIFIER SLUDGE UNDERFLOW -> M3/M4 -> MBBR AERATION TANK & SLUDGE HOLDING TANK */}
+          {/* 6. CLARIFIER SLUDGE UNDERFLOW -> M3/M4 -> MBBR AERATION TANK & SLUDGE HOLDING TANK */}
           <g id="clarifier-to-sludge-lines">
             {/* Feeds from Clarifier bottom/left into M3 & M4 suction */}
             <path d="M 740 128 L 705 128 L 705 95 L 675 95" stroke="#D97706" strokeWidth="3.5" fill="none" strokeLinejoin="round" />
@@ -609,20 +641,9 @@ export function ScadaSchematicSimulation() {
             )}
           </g>
 
-          {/* 8. SBR TANK TO FILTER FEED TANK (VIA PUMP M9 SBR DCTF AT Y=310 - COMPLETELY CLEAR OF SLUDGE TANK) */}
-          <g id="sbr-to-filter-feed-line">
-            <path d="M 295 310 L 740 310" stroke="#0284C7" strokeWidth="4.5" fill="none" />
-            <polygon points="728,306 738,310 728,314" fill="#0284C7" />
-            {isPlaying && pumps.M9.status === "RUNNING" && (
-              <path d="M 295 310 L 740 310" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="5 7" fill="none">
-                <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${0.9 / simSpeed}s`} repeatCount="indefinite" />
-              </path>
-            )}
-          </g>
-
-          {/* 9. BLOWERS & COMPRESSED AIR PIPING NETWORK (YELLOW AIR DISTRIBUTED TO MBBR, COLLECTION TANK & SBR) */}
+          {/* 7. BLOWERS & COMPRESSED AIR PIPING NETWORK (YELLOW AIR DISTRIBUTED TO MBBR & COLLECTION TANK) */}
           <g id="yellow-air-network">
-            {/* Main Blower output headers */}
+            {/* Main Blower output headers connecting BL1 (y=180) and BL2 (y=240) */}
             <path d="M 495 180 L 460 180 L 460 240 L 495 240" stroke="#D97706" strokeWidth="4" fill="none" strokeLinejoin="round" />
             
             {/* Branch 1: UP into MBBR Aeration Tank */}
@@ -633,17 +654,8 @@ export function ScadaSchematicSimulation() {
             <path d="M 460 195 L 295 195 L 295 135" stroke="#D97706" strokeWidth="4" fill="none" strokeLinejoin="round" />
             <polygon points="291,143 295,135 299,143" fill="#D97706" />
 
-            {/* Branch 3: DOWN into SBR Tank via Air Solenoid */}
-            <path d="M 460 240 L 460 275 L 390 275" stroke="#D97706" strokeWidth="4" fill="none" strokeLinejoin="round" />
-            <path d="M 365 275 L 295 275" stroke="#D97706" strokeWidth="4" fill="none" />
-            <polygon points="305,271 295,275 305,279" fill="#D97706" />
-
-            {airSolenoidOpen && isPlaying && (
+            {isPlaying && (pumps.BL1.status === "RUNNING" || pumps.BL2.status === "RUNNING") && (
               <>
-                {/* Air to SBR */}
-                <path d="M 495 240 L 460 240 L 460 275 L 295 275" stroke="#FDE047" strokeWidth="2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
-                  <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
-                </path>
                 {/* Air to MBBR */}
                 <path d="M 460 240 L 460 135" stroke="#FDE047" strokeWidth="2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
                   <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
@@ -782,100 +794,86 @@ export function ScadaSchematicSimulation() {
           </g>
 
           {/* ====================================================================== */}
-          {/* TANKS & VESSELS                                                        */}
+          {/* TANKS & VESSELS (2.5D ISOMETRIC / GLASSMORPHIC HIGH-FIDELITY MODELS)   */}
           {/* ====================================================================== */}
 
-          {/* TANK 1: COLLECTION TANK (RAW SEWAGE - MURKY BROWN WATER WITH AIR AGITATION) */}
-          <g id="tank-collection" transform="translate(135, 50)" filter="url(#softShadow)">
-            <rect x="0" y="0" width="175" height="85" rx="8" fill="url(#vesselGlassGrad)" stroke="#94A3B8" strokeWidth="1.5" />
+          {/* TANK 1: COLLECTION TANK (2.5D GLASS CYLINDER WITH RAW SEWAGE & 3D FLUID MENISCUS) */}
+          <g id="tank-collection" transform="translate(135, 48)" filter="url(#softShadow)">
+            {/* Ground Contact Shadow */}
+            <ellipse cx="87.5" cy="88" rx="84" ry="7" fill="#0B2545" opacity="0.12" />
+
+            {/* 2.5D Glass Cylinder Body & Dish Bottom */}
             <path
-              d={`M 3 ${85 - (85 * collectionLevel) / 100} Q 45 ${85 - (85 * collectionLevel) / 100 - 2} 88 ${85 - (85 * collectionLevel) / 100} T 172 ${85 - (85 * collectionLevel) / 100} L 172 82 L 3 82 Z`}
-              fill="url(#rawSewageGrad)"
+              d="M 0 76 Q 87.5 94 175 76 L 175 14 Q 87.5 30 0 14 Z"
+              fill="url(#glassCylinderGrad)"
+              stroke="#94A3B8"
+              strokeWidth="1.5"
             />
-            {/* Glass Highlight Sheen */}
-            <rect x="4" y="24" width="20" height="55" rx="3" fill="url(#specularSheen)" />
+
+            {/* Raw Sewage Fluid Body (Volume below Meniscus) */}
+            {(() => {
+              const rawY = Math.round(76 - (62 * collectionLevel) / 100)
+              return (
+                <g>
+                  <path
+                    d={`M 2 ${rawY} Q 87.5 ${rawY + 12} 173 ${rawY} L 173 76 Q 87.5 93 2 76 Z`}
+                    fill="url(#rawSewageGrad)"
+                  />
+                  {/* 3D Liquid Meniscus (Top Surface Ellipse) */}
+                  <ellipse cx="87.5" cy={rawY} rx="85.5" ry="6.5" fill="#8D6E63" stroke="#D7CCC8" strokeWidth="0.8" opacity="0.95" />
+                  <ellipse cx="87.5" cy={rawY} rx="80" ry="4.5" fill="#A1887F" opacity="0.4" />
+                </g>
+              )
+            })()}
+
+            {/* Submerged Coarse Bar Screen Cutaway (Raw Inlet Baffle) */}
+            <g transform="translate(8, 25)">
+              <rect x="0" y="0" width="22" height="48" rx="2" fill="#334155" opacity="0.25" stroke="#64748B" strokeWidth="1" />
+              {[4, 8, 12, 16, 20].map((x) => (
+                <line key={x} x1={x} y1="2" x2={x} y2="46" stroke="#94A3B8" strokeWidth="0.8" />
+              ))}
+            </g>
+
+            {/* Submerged Bottom Air Diffuser Pipe & Bubbles */}
+            <line x1="30" y1="74" x2="160" y2="74" stroke="#D97706" strokeWidth="2" strokeLinecap="round" />
             {isPlaying && (
               <g>
                 {[
-                  { cx: 35, cy: 75, r: 2.0, dur: "1.4s", delay: "0.1s" },
-                  { cx: 80, cy: 78, r: 2.8, dur: "1.1s", delay: "0.3s" },
-                  { cx: 125, cy: 75, r: 2.2, dur: "1.3s", delay: "0s" },
-                  { cx: 155, cy: 78, r: 2.4, dur: "1.2s", delay: "0.2s" },
+                  { cx: 45, cy: 72, r: 2.0, dur: "1.4s", delay: "0.1s" },
+                  { cx: 80, cy: 74, r: 2.8, dur: "1.1s", delay: "0.3s" },
+                  { cx: 115, cy: 72, r: 2.2, dur: "1.3s", delay: "0s" },
+                  { cx: 145, cy: 74, r: 2.4, dur: "1.2s", delay: "0.2s" },
                 ].map((b, i) => (
-                  <circle key={i} cx={b.cx} cy={b.cy} r={b.r} fill="#D7CCC8" opacity="0.65">
-                    <animate attributeName="cy" values={`${b.cy};58`} dur={`${parseFloat(b.dur) / simSpeed}s`} begin={b.delay} repeatCount="indefinite" />
-                    <animate attributeName="opacity" values="0.2;0.75;0" dur={`${parseFloat(b.dur) / simSpeed}s`} begin={b.delay} repeatCount="indefinite" />
+                  <circle key={i} cx={b.cx} cy={b.cy} r={b.r} fill="#D7CCC8" opacity="0.7">
+                    <animate attributeName="cy" values={`${b.cy};${76 - (62 * collectionLevel) / 100 + 4}`} dur={`${parseFloat(b.dur) / simSpeed}s`} begin={b.delay} repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.2;0.8;0" dur={`${parseFloat(b.dur) / simSpeed}s`} begin={b.delay} repeatCount="indefinite" />
                   </circle>
                 ))}
               </g>
             )}
-            <rect x="0" y="0" width="175" height="20" rx="8" fill="#F0F9FF" />
-            <text x="87" y="14" textAnchor="middle" fill="#0369A1" fontSize="9" fontWeight="bold" fontFamily="monospace">
+
+            {/* Cylindrical Specular Light Glare (Left Bright Streak & Right Rim Light) */}
+            <rect x="6" y="16" width="16" height="58" rx="3" fill="url(#specularSheen)" />
+            <line x1="168" y1="16" x2="168" y2="76" stroke="#FFFFFF" strokeWidth="1.2" opacity="0.4" />
+
+            {/* 3D Top Glass Vessel Flange & Rim Opening */}
+            <ellipse cx="87.5" cy="14" rx="87.5" ry="8" fill="url(#glassRimGrad)" stroke="#94A3B8" strokeWidth="1.5" />
+            <ellipse cx="87.5" cy="14" rx="82" ry="5.5" fill="none" stroke="#CBD5E1" strokeWidth="1" strokeDasharray="3 3" />
+
+            {/* 3D Frosted Header Tag Plate */}
+            <rect x="35" y="0" width="105" height="17" rx="4" fill="#F0F9FF" stroke="#0284C7" strokeWidth="1.2" filter="url(#softShadow)" />
+            <text x="87.5" y="11.5" textAnchor="middle" fill="#0369A1" fontSize="8.5" fontWeight="bold" fontFamily="monospace">
               COLLECTION TANK
             </text>
-            <text x="87" y="52" textAnchor="middle" fill="#0F172A" fontSize="18" fontWeight="900" fontFamily="monospace">
+
+            {/* Digital Readout & Level Badge */}
+            <text x="87.5" y="44" textAnchor="middle" fill="#0F172A" fontSize="18" fontWeight="900" fontFamily="monospace">
               {collectionLevel}%
             </text>
-            <rect x="105" y="24" width="62" height="13" rx="2" fill="#5D4037" opacity="0.9" />
-            <text x="136" y="33.5" textAnchor="middle" fill="#FFFFFF" fontSize="6" fontWeight="bold" fontFamily="monospace">
+            <rect x="56" y="50" width="63" height="13" rx="2" fill="#5D4037" opacity="0.92" />
+            <text x="87.5" y="59.5" textAnchor="middle" fill="#FFFFFF" fontSize="6.5" fontWeight="bold" fontFamily="monospace">
               RAW SEWAGE
             </text>
-          </g>
-
-          {/* DOTTED BOUNDING BOX FOR SBR RCP / RSTP PUMPS */}
-          <rect x="142" y="152" width="146" height="74" rx="4" fill="none" stroke="#93C5FD" strokeWidth="1" strokeDasharray="3 3" />
-
-          {/* 4 PUMPS BELOW COLLECTION TANK: M01, M02, M07, M08 */}
-          {renderPump("M01", 160, 187, "down", "SBR", "RCP 1", "bottom")}
-          {renderPump("M02", 195, 187, "down", "SBR", "RCP 2", "bottom")}
-          {renderPump("M07", 235, 187, "down", "SBR", "RSTP 1", "top")}
-          {renderPump("M08", 270, 187, "down", "SBR", "RSTP 2", "top")}
-
-          {/* TANK 2: SBR TANK (ACTIVE BIOLOGICAL DIGESTION - MLSS) */}
-          <g id="tank-sbr" transform="translate(135, 240)" filter="url(#softShadow)">
-            <rect x="0" y="0" width="165" height="90" rx="8" fill="url(#vesselGlassGrad)" stroke="#94A3B8" strokeWidth="1.5" />
-            <rect x="3" y="22" width="159" height="65" rx="6" fill="url(#sbrWaterGrad)" opacity="0.35" />
-            <rect x="4" y="24" width="18" height="60" rx="3" fill="url(#specularSheen)" />
-
-            {/* Fine-Bubble Diffusers when Air Solenoid is Open */}
-            {airSolenoidOpen && isPlaying && (
-              <g>
-                {[
-                  { cx: 30, cy: 82, r: 2.0, dur: "1.1s", delay: "0s" },
-                  { cx: 60, cy: 85, r: 2.5, dur: "0.9s", delay: "0.2s" },
-                  { cx: 90, cy: 82, r: 2.0, dur: "1.2s", delay: "0.4s" },
-                  { cx: 120, cy: 85, r: 2.8, dur: "1.0s", delay: "0.1s" },
-                  { cx: 145, cy: 82, r: 2.2, dur: "0.8s", delay: "0.3s" },
-                ].map((b, i) => (
-                  <circle key={i} cx={b.cx} cy={b.cy} r={b.r} fill="#FDE047" opacity="0.8">
-                    <animate attributeName="cy" values={`${b.cy};30`} dur={`${parseFloat(b.dur) / simSpeed}s`} begin={b.delay} repeatCount="indefinite" />
-                    <animate attributeName="opacity" values="0.3;0.9;0" dur={`${parseFloat(b.dur) / simSpeed}s`} begin={b.delay} repeatCount="indefinite" />
-                  </circle>
-                ))}
-              </g>
-            )}
-
-            <rect x="0" y="0" width="165" height="20" rx="8" fill="#F0F9FF" />
-            <text x="82" y="14" textAnchor="middle" fill="#0369A1" fontSize="9" fontWeight="bold" fontFamily="monospace">
-              SBR TANK
-            </text>
-            <text x="82" y="46" textAnchor="middle" fill="#334155" fontSize="18" fontWeight="900" fontFamily="monospace">
-              {sbrLevel}%
-            </text>
-
-            <g transform="translate(12, 60)">
-              <rect x="0" y="0" width="65" height="15" rx="3" fill="#F0F9FF" stroke="#0284C7" strokeWidth="1" />
-              <text x="32" y="11" textAnchor="middle" fill="#0369A1" fontSize="7" fontWeight="bold">
-                {do2.toFixed(2)} mg/l DO2
-              </text>
-            </g>
-
-            <g transform="translate(84, 60)">
-              <rect x="0" y="0" width="70" height="15" rx="3" fill="#FAF5FF" stroke="#A855F7" strokeWidth="1" />
-              <text x="35" y="11" textAnchor="middle" fill="#7E22CE" fontSize="6.5" fontWeight="bold">
-                {sbrTss.toFixed(2)} mg/l TSS
-              </text>
-            </g>
           </g>
 
           {/* DOTTED BOUNDING BOX FOR MBBR RSTP PUMPS */}
@@ -885,45 +883,69 @@ export function ScadaSchematicSimulation() {
           {renderPump("M1", 385, 75, "right", "MBBR RSTP 1", undefined, "top")}
           {renderPump("M2", 385, 115, "right", "MBBR RSTP 2", undefined, "bottom")}
 
-          {/* TANK 3: MBBR AERATION TANK (AERATED MIXED LIQUOR - BROWNISH-OLIVE BROTH WITH MOVING-BED MEDIA) */}
-          <g id="tank-mbbr" transform="translate(430, 50)" filter="url(#softShadow)">
-            <rect x="0" y="0" width="140" height="85" rx="8" fill="url(#vesselGlassGrad)" stroke="#0284C7" strokeWidth="2" />
-            <rect x="3" y="22" width="134" height="60" rx="6" fill="url(#mbbrWaterGrad)" />
-            <rect x="4" y="24" width="16" height="55" rx="3" fill="url(#specularSheen)" />
+          {/* TANK 3: MBBR AERATION TANK (2.5D GLASS CYLINDER WITH K1 BIO-MEDIA & 3D FLUID MENISCUS) */}
+          <g id="tank-mbbr" transform="translate(430, 48)" filter="url(#softShadow)">
+            {/* Ground Contact Shadow */}
+            <ellipse cx="70" cy="88" rx="66" ry="7" fill="#0B2545" opacity="0.14" />
 
-            {/* Moving Bed Biofilm Carrier Media Chips (Bobbing/Swirling with Microbe Carriers) */}
+            {/* 2.5D Glass Cylinder Body & Dish Bottom */}
+            <path
+              d="M 0 76 Q 70 94 140 76 L 140 14 Q 70 30 0 14 Z"
+              fill="url(#glassCylinderGrad)"
+              stroke="#0284C7"
+              strokeWidth="2"
+            />
+
+            {/* Aerated Mixed Liquor Fluid Volume */}
+            <path d="M 2 24 Q 70 38 138 24 L 138 76 Q 70 93 2 76 Z" fill="url(#mbbrWaterGrad)" />
+            {/* 3D Liquid Meniscus */}
+            <ellipse cx="70" cy="24" rx="68" ry="6.5" fill="#6B7852" stroke="#A3E635" strokeWidth="0.8" opacity="0.92" />
+            <ellipse cx="70" cy="24" rx="62" ry="4.5" fill="#9E8D72" opacity="0.4" />
+
+            {/* Internal Retention Sieve Screen on Effluent Weir (Right Edge) */}
+            <g transform="translate(126, 26)">
+              <rect x="0" y="0" width="10" height="48" rx="1.5" fill="#1E293B" opacity="0.3" stroke="#0284C7" strokeWidth="1" />
+              {[8, 16, 24, 32, 40].map((y) => (
+                <line key={y} x1="1" y1={y} x2="9" y2={y} stroke="#38BDF8" strokeWidth="0.8" strokeDasharray="1 1" />
+              ))}
+            </g>
+
+            {/* 3D Kaldnes K1 Biofilm Carrier Media (Layered Foreground & Background Sizes) */}
             {[
-              { cx: 25, cy: 45, r: 3.2, dur: "3.2s" },
-              { cx: 55, cy: 68, r: 3.8, dur: "2.8s" },
-              { cx: 85, cy: 52, r: 3.0, dur: "3.5s" },
-              { cx: 110, cy: 72, r: 3.5, dur: "2.5s" },
-              { cx: 122, cy: 46, r: 2.8, dur: "3.0s" },
+              { cx: 22, cy: 44, r: 3.4, dur: "3.2s" },
+              { cx: 50, cy: 66, r: 4.0, dur: "2.8s" },
+              { cx: 80, cy: 50, r: 3.2, dur: "3.5s" },
+              { cx: 104, cy: 68, r: 3.6, dur: "2.5s" },
+              { cx: 114, cy: 44, r: 2.8, dur: "3.0s" },
+              { cx: 38, cy: 58, r: 2.4, dur: "3.4s" },
+              { cx: 68, cy: 38, r: 2.6, dur: "2.9s" },
             ].map((m, i) => (
               <g key={`carrier-${i}`}>
                 {isPlaying && (
                   <animateTransform
                     attributeName="transform"
                     type="translate"
-                    values="0,0; 2,-4; -2,-8; 0,0"
+                    values="0,0; 2,-4; -2,-7; 0,0"
                     dur={m.dur}
                     repeatCount="indefinite"
                   />
                 )}
-                <circle cx={m.cx} cy={m.cy} r={m.r} fill="#E2E8F0" stroke="#0284C7" strokeWidth="0.8" opacity="0.85" />
-                <line x1={m.cx - 1.5} y1={m.cy} x2={m.cx + 1.5} y2={m.cy} stroke="#0284C7" strokeWidth="0.6" />
-                <line x1={m.cx} y1={m.cy - 1.5} x2={m.cx} y2={m.cy + 1.5} stroke="#0284C7" strokeWidth="0.6" />
+                <circle cx={m.cx} cy={m.cy} r={m.r} fill="#F8FAFC" stroke="#0284C7" strokeWidth="0.8" opacity="0.88" />
+                <line x1={m.cx - m.r + 1} y1={m.cy} x2={m.cx + m.r - 1} y2={m.cy} stroke="#0284C7" strokeWidth="0.6" />
+                <line x1={m.cx} y1={m.cy - m.r + 1} x2={m.cx} y2={m.cy + m.r - 1} stroke="#0284C7" strokeWidth="0.6" />
               </g>
             ))}
 
-            {/* Multi-speed Fine-Bubble Aeration Diffusers */}
+            {/* Bottom Fine-Bubble EPDM Aeration Diffuser Grid */}
+            <line x1="18" y1="74" x2="122" y2="74" stroke="#D97706" strokeWidth="2.5" strokeLinecap="round" />
             {isPlaying && (
               <g>
                 {[
-                  { cx: 20, cy: 76, r: 2.2, dur: "1.1s", delay: "0s" },
-                  { cx: 45, cy: 79, r: 3.2, dur: "0.9s", delay: "0.2s" },
-                  { cx: 70, cy: 76, r: 2.0, dur: "1.3s", delay: "0.4s" },
-                  { cx: 95, cy: 79, r: 2.8, dur: "1.0s", delay: "0.1s" },
-                  { cx: 115, cy: 76, r: 2.4, dur: "0.8s", delay: "0.3s" },
+                  { cx: 22, cy: 74, r: 2.2, dur: "1.1s", delay: "0s" },
+                  { cx: 46, cy: 75, r: 3.0, dur: "0.9s", delay: "0.2s" },
+                  { cx: 70, cy: 74, r: 2.0, dur: "1.3s", delay: "0.4s" },
+                  { cx: 94, cy: 75, r: 2.8, dur: "1.0s", delay: "0.1s" },
+                  { cx: 112, cy: 74, r: 2.4, dur: "0.8s", delay: "0.3s" },
                 ].map((b, i) => (
                   <circle key={i} cx={b.cx} cy={b.cy} r={b.r} fill="#FFFFFF" opacity="0.85">
                     <animate attributeName="cy" values={`${b.cy};26`} dur={`${parseFloat(b.dur) / simSpeed}s`} begin={b.delay} repeatCount="indefinite" />
@@ -932,12 +954,24 @@ export function ScadaSchematicSimulation() {
                 ))}
               </g>
             )}
-            <rect x="0" y="0" width="140" height="20" rx="8" fill="#F0F9FF" />
-            <text x="70" y="14" textAnchor="middle" fill="#0369A1" fontSize="8.5" fontWeight="bold" fontFamily="monospace">
+
+            {/* Cylindrical Specular Glare */}
+            <rect x="5" y="16" width="14" height="58" rx="3" fill="url(#specularSheen)" />
+            <line x1="134" y1="16" x2="134" y2="76" stroke="#FFFFFF" strokeWidth="1.2" opacity="0.4" />
+
+            {/* 3D Top Glass Vessel Flange & Rim */}
+            <ellipse cx="70" cy="14" rx="70" ry="7.5" fill="url(#glassRimGrad)" stroke="#0284C7" strokeWidth="1.5" />
+            <ellipse cx="70" cy="14" rx="65" ry="5.0" fill="none" stroke="#93C5FD" strokeWidth="1" strokeDasharray="2 2" />
+
+            {/* 3D Frosted Header Tag Plate */}
+            <rect x="18" y="0" width="104" height="17" rx="4" fill="#F0F9FF" stroke="#0284C7" strokeWidth="1.2" filter="url(#softShadow)" />
+            <text x="70" y="11.5" textAnchor="middle" fill="#0369A1" fontSize="8" fontWeight="bold" fontFamily="monospace">
               MBBR AERATION TANK
             </text>
+
+            {/* Live DO1 Sensor Telemetry Inset */}
             <g transform="translate(28, 42)">
-              <rect x="0" y="0" width="84" height="18" rx="4" fill="#FFFFFF" stroke="#0284C7" strokeWidth="1.5" />
+              <rect x="0" y="0" width="84" height="18" rx="4" fill="#FFFFFF" stroke="#0284C7" strokeWidth="1.5" filter="url(#softShadow)" />
               <text x="42" y="13" textAnchor="middle" fill="#0284C7" fontSize="9.5" fontWeight="bold">
                 {do1.toFixed(2)} mg/l DO1
               </text>
@@ -951,16 +985,32 @@ export function ScadaSchematicSimulation() {
           {renderPump("M3", 655, 95, "left", "MBBR RCP 1", undefined, "top")}
           {renderPump("M4", 655, 128, "left", "MBBR RCP 2", undefined, "bottom")}
 
-          {/* TANK 4: CLARIFIER TANK WITH ARM (PHASE SEPARATION - CLARIFIED WATER TOP, SETTLING SLUDGE BOTTOM) */}
-          <g id="tank-clarifier" transform="translate(740, 50)" filter="url(#softShadow)">
-            <rect x="0" y="0" width="140" height="85" rx="8" fill="url(#vesselGlassGrad)" stroke="#0284C7" strokeWidth="2" />
-            <rect x="3" y="22" width="134" height="60" rx="6" fill="url(#clarifierWaterGrad)" />
-            <rect x="4" y="24" width="16" height="55" rx="3" fill="url(#specularSheen)" />
-            <rect x="0" y="0" width="140" height="20" rx="8" fill="#F0F9FF" />
-            <text x="70" y="14" textAnchor="middle" fill="#0369A1" fontSize="8.5" fontWeight="bold" fontFamily="monospace">
-              CLARIFIER TANK WITH ARM
-            </text>
+          {/* TANK 4: CLARIFIER TANK WITH CONICAL HOPPER & ROTATING SCRAPER ARM (2.5D CUTAWAY) */}
+          <g id="tank-clarifier" transform="translate(740, 48)" filter="url(#softShadow)">
+            {/* Ground Contact Shadow under Conical Tip */}
+            <ellipse cx="70" cy="94" rx="45" ry="6" fill="#0B2545" opacity="0.16" />
 
+            {/* 2.5D Conical Hopper Tank Hull (Cylindrical Upper + 60° Conical Funnel Bottom) */}
+            <path
+              d="M 0 14 L 0 54 L 54 88 Q 70 93 86 88 L 140 54 L 140 14 Z"
+              fill="url(#glassCylinderGrad)"
+              stroke="#0284C7"
+              strokeWidth="2"
+            />
+
+            {/* Supernatant Clarified Water Zone (Upper Section) */}
+            <path d="M 2 22 L 2 54 L 138 54 L 138 22 Z" fill="url(#clarifierWaterGrad)" opacity="0.88" />
+            {/* 3D Liquid Meniscus (Top Surface Ellipse) */}
+            <ellipse cx="70" cy="22" rx="68" ry="6.5" fill="#BAE6FD" stroke="#38BDF8" strokeWidth="0.8" opacity="0.92" />
+            <ellipse cx="70" cy="22" rx="62" ry="4.5" fill="#E0F2FE" opacity="0.5" />
+
+            {/* Settled Biological Sludge Blanket in Conical Hopper Apex */}
+            <path d="M 2 54 L 54 88 Q 70 93 86 88 L 138 54 Z" fill="url(#sludgeWaterGrad)" />
+
+            {/* Peripheral V-Notch Overflow Weir Trough */}
+            <path d="M 4 20 L 136 20" stroke="#38BDF8" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.75" />
+
+            {/* Submerged Rotating Clarifier Bridge & Scraper Rake Arm */}
             <g transform="translate(70, 52)" className="cursor-pointer" onClick={() => handleTogglePump("ARM")}>
               <circle cx="0" cy="0" r="16" fill="url(#metalRingGrad)" stroke="#16A34A" strokeWidth="1.5" filter="url(#softShadow)" />
               <circle cx="0" cy="0" r="12" fill="#DCFCE7" stroke="#16A34A" strokeWidth="1.2" />
@@ -968,28 +1018,64 @@ export function ScadaSchematicSimulation() {
                 {isPlaying && pumps.ARM.status === "RUNNING" && (
                   <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur={`${2.5 / simSpeed}s`} repeatCount="indefinite" />
                 )}
-                <line x1="-11" y1="0" x2="11" y2="0" stroke="#15803D" strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="0" y1="-11" x2="0" y2="11" stroke="#15803D" strokeWidth="2.5" strokeLinecap="round" />
-                {/* rake teeth */}
-                <line x1="-8" y1="-2" x2="-8" y2="2" stroke="#15803D" strokeWidth="1.2" />
-                <line x1="8" y1="-2" x2="8" y2="2" stroke="#15803D" strokeWidth="1.2" />
-                <line x1="-2" y1="-8" x2="2" y2="-8" stroke="#15803D" strokeWidth="1.2" />
-                <line x1="-2" y1="8" x2="2" y2="8" stroke="#15803D" strokeWidth="1.2" />
+                <line x1="-12" y1="0" x2="12" y2="0" stroke="#15803D" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="0" y1="-12" x2="0" y2="12" stroke="#15803D" strokeWidth="2.5" strokeLinecap="round" />
+                {/* Rake Teeth Sweepers */}
+                <line x1="-8" y1="-3" x2="-8" y2="3" stroke="#15803D" strokeWidth="1.2" />
+                <line x1="8" y1="-3" x2="8" y2="3" stroke="#15803D" strokeWidth="1.2" />
+                <line x1="-3" y1="-8" x2="3" y2="-8" stroke="#15803D" strokeWidth="1.2" />
+                <line x1="-3" y1="8" x2="3" y2="8" stroke="#15803D" strokeWidth="1.2" />
               </g>
               <circle cx="0" cy="0" r="3.5" fill="#15803D" />
               <text x="24" y="4" fill="#15803D" fontSize="8" fontWeight="bold">ARM</text>
             </g>
+
+            {/* Specular Glare */}
+            <rect x="5" y="16" width="14" height="42" rx="3" fill="url(#specularSheen)" />
+
+            {/* 3D Top Glass Vessel Flange & Rim Opening */}
+            <ellipse cx="70" cy="14" rx="70" ry="7.5" fill="url(#glassRimGrad)" stroke="#0284C7" strokeWidth="1.5" />
+            <ellipse cx="70" cy="14" rx="65" ry="5.0" fill="none" stroke="#93C5FD" strokeWidth="1" strokeDasharray="2 2" />
+
+            {/* 3D Frosted Header Tag Plate */}
+            <rect x="10" y="0" width="120" height="17" rx="4" fill="#F0F9FF" stroke="#0284C7" strokeWidth="1.2" filter="url(#softShadow)" />
+            <text x="70" y="11.5" textAnchor="middle" fill="#0369A1" fontSize="7.5" fontWeight="bold" fontFamily="monospace">
+              CLARIFIER TANK WITH ARM
+            </text>
           </g>
 
-          {/* TANK 5: SLUDGE HOLDING TANK (THICK DENSE WASTE ACTIVATED SLUDGE) */}
+          {/* TANK 5: SLUDGE HOLDING TANK (2.5D CONICAL VESSEL WITH DENSE ACTIVATED SLUDGE) */}
           <g id="tank-sludge" transform="translate(595, 165)" filter="url(#softShadow)">
-            <rect x="0" y="0" width="115" height="65" rx="8" fill="url(#vesselGlassGrad)" stroke="#94A3B8" strokeWidth="1.5" />
-            <rect x="3" y="38" width="109" height="24" rx="4" fill="url(#sludgeWaterGrad)" />
-            <rect x="0" y="0" width="115" height="18" rx="8" fill="#F0F9FF" />
-            <text x="57" y="13" textAnchor="middle" fill="#0369A1" fontSize="7.5" fontWeight="bold" fontFamily="monospace">
+            {/* Ground Contact Shadow */}
+            <ellipse cx="57.5" cy="72" rx="45" ry="5" fill="#0B2545" opacity="0.14" />
+
+            {/* Conical Hopper Vessel Hull */}
+            <path
+              d="M 0 12 L 0 46 L 42 68 Q 57.5 73 73 68 L 115 46 L 115 12 Z"
+              fill="url(#glassCylinderGrad)"
+              stroke="#94A3B8"
+              strokeWidth="1.5"
+            />
+
+            {/* Thickened Sludge Body */}
+            <path d="M 2 34 L 2 46 L 42 68 Q 57.5 73 73 68 L 113 46 L 113 34 Z" fill="url(#sludgeWaterGrad)" />
+            {/* 3D Sludge Meniscus */}
+            <ellipse cx="57.5" cy="34" rx="55.5" ry="5.5" fill="#5D4037" stroke="#8D6E63" strokeWidth="0.8" opacity="0.95" />
+
+            {/* Specular Highlight Glare */}
+            <rect x="4" y="14" width="12" height="32" rx="2" fill="url(#specularSheen)" />
+
+            {/* 3D Top Glass Vessel Flange & Rim */}
+            <ellipse cx="57.5" cy="12" rx="57.5" ry="6.5" fill="url(#glassRimGrad)" stroke="#94A3B8" strokeWidth="1.5" />
+
+            {/* Header Tag Plate */}
+            <rect x="12" y="0" width="91" height="15" rx="3" fill="#F0F9FF" stroke="#0284C7" strokeWidth="1" filter="url(#softShadow)" />
+            <text x="57.5" y="10.5" textAnchor="middle" fill="#0369A1" fontSize="7" fontWeight="bold" fontFamily="monospace">
               SLUDGE HOLDING TANK
             </text>
-            <text x="57" y="42" textAnchor="middle" fill="#FFFFFF" fontSize="15" fontWeight="900" fontFamily="monospace">
+
+            {/* Sludge Level Digital Readout */}
+            <text x="57.5" y="44" textAnchor="middle" fill="#FFFFFF" fontSize="15" fontWeight="900" fontFamily="monospace">
               {sludgeLevel}%
             </text>
           </g>
@@ -1010,18 +1096,57 @@ export function ScadaSchematicSimulation() {
             <text x="0" y="21" textAnchor="middle" fill="#15803D" fontSize="6.5" fontFamily="monospace">CLARIFIER VALVE</text>
           </g>
 
-          {/* TANK 6: FILTER FEED TANK (SETTLED SECONDARY EFFLUENT - TRANSLUCENT CYAN) */}
-          <g id="tank-filter-feed" transform="translate(740, 240)" filter="url(#softShadow)">
-            <rect x="0" y="0" width="140" height="85" rx="8" fill="url(#vesselGlassGrad)" stroke="#0284C7" strokeWidth="2" />
+          {/* TANK 6: FILTER FEED TANK (2.5D CYLINDRICAL GLASS VESSEL WITH CALIBRATED SIGHT-SCALE) */}
+          <g id="tank-filter-feed" transform="translate(740, 238)" filter="url(#softShadow)">
+            {/* Ground Contact Shadow */}
+            <ellipse cx="70" cy="88" rx="66" ry="7" fill="#0B2545" opacity="0.14" />
+
+            {/* 2.5D Glass Cylinder Body & Dish Bottom */}
             <path
-              d={`M 3 ${85 - (85 * filterFeedLevel) / 100} Q 35 ${85 - (85 * filterFeedLevel) / 100 - 2} 70 ${85 - (85 * filterFeedLevel) / 100} T 137 ${85 - (85 * filterFeedLevel) / 100} L 137 82 L 3 82 Z`}
-              fill="url(#filterFeedGrad)"
+              d="M 0 76 Q 70 94 140 76 L 140 14 Q 70 30 0 14 Z"
+              fill="url(#glassCylinderGrad)"
+              stroke="#0284C7"
+              strokeWidth="2"
             />
-            <rect x="4" y="24" width="16" height="55" rx="3" fill="url(#specularSheen)" />
-            <rect x="0" y="0" width="140" height="20" rx="8" fill="#F0F9FF" />
-            <text x="70" y="14" textAnchor="middle" fill="#0369A1" fontSize="8.5" fontWeight="bold" fontFamily="monospace">
+
+            {/* Secondary Settled Effluent Fluid Body */}
+            {(() => {
+              const ffY = Math.round(76 - (62 * filterFeedLevel) / 100)
+              return (
+                <g>
+                  <path
+                    d={`M 2 ${ffY} Q 70 ${ffY + 12} 138 ${ffY} L 138 76 Q 70 93 2 76 Z`}
+                    fill="url(#filterFeedGrad)"
+                  />
+                  {/* 3D Liquid Meniscus */}
+                  <ellipse cx="70" cy={ffY} rx="68" ry="6.5" fill="#7DD3FC" stroke="#0284C7" strokeWidth="0.8" opacity="0.9" />
+                  <ellipse cx="70" cy={ffY} rx="62" ry="4.5" fill="#E0F2FE" opacity="0.5" />
+                </g>
+              )
+            })()}
+
+            {/* Calibrated Level Scale Markings on Glass Wall */}
+            <g transform="translate(10, 22)" opacity="0.6">
+              {[0, 15, 30, 45].map((y, i) => (
+                <line key={i} x1="0" y1={y} x2={i % 2 === 0 ? "8" : "5"} y2={y} stroke="#0369A1" strokeWidth="1" />
+              ))}
+            </g>
+
+            {/* Cylindrical Glare Streak */}
+            <rect x="5" y="16" width="14" height="58" rx="3" fill="url(#specularSheen)" />
+            <line x1="134" y1="16" x2="134" y2="76" stroke="#FFFFFF" strokeWidth="1.2" opacity="0.4" />
+
+            {/* 3D Top Glass Vessel Flange & Rim Opening */}
+            <ellipse cx="70" cy="14" rx="70" ry="7.5" fill="url(#glassRimGrad)" stroke="#0284C7" strokeWidth="1.5" />
+            <ellipse cx="70" cy="14" rx="65" ry="5.0" fill="none" stroke="#93C5FD" strokeWidth="1" strokeDasharray="2 2" />
+
+            {/* 3D Frosted Header Tag Plate */}
+            <rect x="18" y="0" width="104" height="17" rx="4" fill="#F0F9FF" stroke="#0284C7" strokeWidth="1.2" filter="url(#softShadow)" />
+            <text x="70" y="11.5" textAnchor="middle" fill="#0369A1" fontSize="8" fontWeight="bold" fontFamily="monospace">
               FILTER FEED TANK
             </text>
+
+            {/* Digital Readout */}
             <text x="70" y="52" textAnchor="middle" fill="#0F172A" fontSize="18" fontWeight="900" fontFamily="monospace">
               {filterFeedLevel}%
             </text>
@@ -1052,18 +1177,6 @@ export function ScadaSchematicSimulation() {
             </circle>
             <text x="0" y="23" textAnchor="middle" fill="#15803D" fontSize="7" fontFamily="monospace" fontWeight="bold">BLOWER 2</text>
           </g>
-
-          {/* AIR SOLENOID VALVE */}
-          <g id="valve-air-solenoid" transform="translate(390, 275)" className="cursor-pointer" onClick={() => setAirSolenoidOpen(!airSolenoidOpen)}>
-            <circle cx="0" cy="0" r="13" fill="url(#metalRingGrad)" stroke="#D97706" strokeWidth="1" filter="url(#softShadow)" />
-            <circle cx="0" cy="0" r="10.5" fill="#FEF3C7" stroke="#D97706" strokeWidth="1.8" />
-            <text x="0" y="3.5" textAnchor="middle" fill="#92400E" fontSize="8" fontWeight="bold">V</text>
-            <circle cx="7" cy="-7" r="2.2" fill={airSolenoidOpen ? "#16A34A" : "#DC2626"} stroke="#FFFFFF" strokeWidth="0.6" />
-            <text x="0" y="21" textAnchor="middle" fill="#92400E" fontSize="6.5" fontFamily="monospace">AIR SOLENOID</text>
-          </g>
-
-          {/* SBR DCTF PUMP M9 (AT Y=310 ON SBR-TO-FFT LINE - 70PX BELOW BLOWER 2, ZERO OVERLAP) */}
-          {renderPump("M9", 510, 310, "right", "SBR DCTF", undefined, "bottom")}
 
           {/* FILTER FEED PUMPS: M10 & M11 */}
           {renderPump("M10", 780, 365, "down", "FF PUMP 1", undefined, "top")}
@@ -1102,24 +1215,57 @@ export function ScadaSchematicSimulation() {
             <text x="30" y="52" textAnchor="middle" fill="#0284C7" fontSize="5" fontFamily="monospace">OUTLET</text>
           </g>
 
-          {/* PSF VESSEL (970, 430) */}
-          <g id="vessel-psf" transform="translate(970, 430)" filter="url(#softShadow)">
-            {/* 3D Pressure Vessel Body with Torispherical Heads */}
-            <path d="M 0 15 Q 40 -8 80 15 L 80 115 Q 40 135 0 115 Z" fill="url(#filterVesselGrad)" stroke="#0284C7" strokeWidth="2" />
-            {/* Specular Highlight Sheen */}
-            <path d="M 12 18 Q 40 5 68 18 L 68 112 Q 40 128 12 112 Z" fill="url(#specularSheen)" opacity="0.6" />
-            {/* Girth Weld Seams */}
-            <line x1="0" y1="38" x2="80" y2="38" stroke="#38BDF8" strokeWidth="1" strokeDasharray="3 3" opacity="0.6" />
-            <line x1="0" y1="95" x2="80" y2="95" stroke="#38BDF8" strokeWidth="1" strokeDasharray="3 3" opacity="0.6" />
+          {/* PSF VESSEL (970, 425) - 2.5D HIGH-PRESSURE VESSEL WITH MULTI-GRADE SAND CUTAWAY */}
+          <g id="vessel-psf" transform="translate(970, 425)" filter="url(#softShadow)">
+            {/* Ground Contact Shadow */}
+            <ellipse cx="41" cy="120" rx="36" ry="6" fill="#0B2545" opacity="0.18" />
+
+            {/* Torispherical Upper Head Dome */}
+            <path d="M 1 22 C 1 4, 81 4, 81 22 Z" fill="url(#filterVesselGrad)" stroke="#0284C7" strokeWidth="2" />
             
-            <text x="40" y="55" textAnchor="middle" fill="#FFFFFF" fontSize="16" fontWeight="900" fontFamily="sans-serif">PSF</text>
-            <text x="40" y="68" textAnchor="middle" fill="#E0F2FE" fontSize="7" fontWeight="bold">FILTER SERVICE</text>
-            <g transform="translate(8, 76)">
-              <rect x="0" y="0" width="64" height="16" rx="3" fill="#F0FDF4" stroke="#16A34A" strokeWidth="1" />
-              <text x="32" y="11" textAnchor="middle" fill="#15803D" fontSize="7" fontWeight="bold" fontFamily="monospace">
+            {/* Cylindrical Shell Body */}
+            <rect x="1" y="22" width="80" height="78" fill="url(#filterVesselGrad)" stroke="#0284C7" strokeWidth="2" />
+            
+            {/* Torispherical Lower Dish Bottom Head */}
+            <path d="M 1 100 C 1 118, 81 118, 81 100 Z" fill="url(#filterVesselGrad)" stroke="#0284C7" strokeWidth="2" />
+
+            {/* Circumferential Girth Weld Seams */}
+            <line x1="1" y1="34" x2="81" y2="34" stroke="#38BDF8" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.8" />
+            <line x1="1" y1="90" x2="81" y2="90" stroke="#38BDF8" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.8" />
+
+            {/* 3D Cutaway Inspection Sight-Glass Window (Layered Media Bed) */}
+            <g transform="translate(9, 38)">
+              {/* Sight-Glass Bevel Frame */}
+              <rect x="0" y="0" width="64" height="50" rx="4" fill="#0F172A" stroke="#7DD3FC" strokeWidth="1.2" />
+              
+              {/* Media Bed Layer 1: Fine Quartz Silica Sand (Golden-Beige) */}
+              <rect x="2" y="2" width="60" height="18" fill="url(#sandMediaGrad)" opacity="0.9" />
+              {/* Media Bed Layer 2: Medium Garnet Filtration Media (Amber-Brown) */}
+              <rect x="2" y="20" width="60" height="15" fill="#B45309" opacity="0.95" />
+              {/* Media Bed Layer 3: Coarse Support Gravel Bed (Deep Pebble Brown) */}
+              <rect x="2" y="35" width="60" height="13" rx="2" fill="#451A03" opacity="0.95" />
+              
+              {/* Bottom Internal Lateral Hub Collector Arms */}
+              <line x1="12" y1="44" x2="52" y2="44" stroke="#CBD5E1" strokeWidth="2" strokeLinecap="round" />
+              {[18, 26, 34, 42, 48].map((x) => (
+                <line key={x} x1={x} y1="41" x2={x} y2="47" stroke="#94A3B8" strokeWidth="1" />
+              ))}
+
+              {/* Glass Glare Sheen over Cutaway */}
+              <rect x="2" y="2" width="20" height="46" rx="2" fill="url(#specularSheen)" opacity="0.4" />
+            </g>
+
+            {/* Specular Glare Strip down left flank */}
+            <rect x="5" y="10" width="10" height="96" rx="2" fill="url(#specularSheen)" opacity="0.55" />
+
+            {/* Vessel Nomenclature & Service Timer Plate */}
+            <text x="41" y="20" textAnchor="middle" fill="#FFFFFF" fontSize="13" fontWeight="900" fontFamily="sans-serif">PSF</text>
+            <text x="41" y="32" textAnchor="middle" fill="#E0F2FE" fontSize="6.5" fontWeight="bold">FILTER SERVICE</text>
+            <g transform="translate(9, 94)">
+              <rect x="0" y="0" width="64" height="15" rx="3" fill="#F0FDF4" stroke="#16A34A" strokeWidth="1" filter="url(#softShadow)" />
+              <text x="32" y="10.5" textAnchor="middle" fill="#15803D" fontSize="7" fontWeight="bold" fontFamily="monospace">
                 {formatTime(psfSeconds)}
               </text>
-              <text x="32" y="24" textAnchor="middle" fill="#64748B" fontSize="5.5" fontFamily="monospace">HH:MM:SS</text>
             </g>
           </g>
 
@@ -1135,24 +1281,55 @@ export function ScadaSchematicSimulation() {
             <text x="30" y="52" textAnchor="middle" fill="#166534" fontSize="5" fontFamily="monospace">INLET</text>
           </g>
 
-          {/* ACF VESSEL (195, 430) */}
-          <g id="vessel-acf" transform="translate(195, 430)" filter="url(#softShadow)">
-            {/* 3D Pressure Vessel Body with Torispherical Heads */}
-            <path d="M 0 15 Q 40 -8 80 15 L 80 115 Q 40 135 0 115 Z" fill="url(#filterVesselGrad)" stroke="#0284C7" strokeWidth="2" />
-            {/* Specular Highlight Sheen */}
-            <path d="M 12 18 Q 40 5 68 18 L 68 112 Q 40 128 12 112 Z" fill="url(#specularSheen)" opacity="0.6" />
-            {/* Girth Weld Seams */}
-            <line x1="0" y1="38" x2="80" y2="38" stroke="#38BDF8" strokeWidth="1" strokeDasharray="3 3" opacity="0.6" />
-            <line x1="0" y1="95" x2="80" y2="95" stroke="#38BDF8" strokeWidth="1" strokeDasharray="3 3" opacity="0.6" />
+          {/* ACF VESSEL (195, 425) - 2.5D HIGH-PRESSURE VESSEL WITH ACTIVATED CARBON BED CUTAWAY */}
+          <g id="vessel-acf" transform="translate(195, 425)" filter="url(#softShadow)">
+            {/* Ground Contact Shadow */}
+            <ellipse cx="41" cy="120" rx="36" ry="6" fill="#0B2545" opacity="0.18" />
 
-            <text x="40" y="55" textAnchor="middle" fill="#FFFFFF" fontSize="16" fontWeight="900" fontFamily="sans-serif">ACF</text>
-            <text x="40" y="68" textAnchor="middle" fill="#E0F2FE" fontSize="7" fontWeight="bold">FILTER SERVICE</text>
-            <g transform="translate(8, 76)">
-              <rect x="0" y="0" width="64" height="16" rx="3" fill="#F0FDF4" stroke="#16A34A" strokeWidth="1" />
-              <text x="32" y="11" textAnchor="middle" fill="#15803D" fontSize="7" fontWeight="bold" fontFamily="monospace">
+            {/* Torispherical Upper Head Dome */}
+            <path d="M 1 22 C 1 4, 81 4, 81 22 Z" fill="url(#filterVesselGrad)" stroke="#0284C7" strokeWidth="2" />
+            
+            {/* Cylindrical Shell Body */}
+            <rect x="1" y="22" width="80" height="78" fill="url(#filterVesselGrad)" stroke="#0284C7" strokeWidth="2" />
+            
+            {/* Torispherical Lower Dish Bottom Head */}
+            <path d="M 1 100 C 1 118, 81 118, 81 100 Z" fill="url(#filterVesselGrad)" stroke="#0284C7" strokeWidth="2" />
+
+            {/* Circumferential Girth Weld Seams */}
+            <line x1="1" y1="34" x2="81" y2="34" stroke="#38BDF8" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.8" />
+            <line x1="1" y1="90" x2="81" y2="90" stroke="#38BDF8" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.8" />
+
+            {/* 3D Cutaway Inspection Sight-Glass Window (Activated Carbon Bed) */}
+            <g transform="translate(9, 38)">
+              {/* Sight-Glass Bevel Frame */}
+              <rect x="0" y="0" width="64" height="50" rx="4" fill="#0F172A" stroke="#7DD3FC" strokeWidth="1.2" />
+              
+              {/* Granular Activated Carbon (GAC) Adsorption Bed */}
+              <rect x="2" y="2" width="60" height="34" fill="url(#carbonMediaGrad)" opacity="0.95" />
+              {/* Coarse Support Gravel under Carbon */}
+              <rect x="2" y="36" width="60" height="12" rx="2" fill="#1E293B" opacity="0.95" />
+              
+              {/* Bottom Internal Lateral Hub Collector Arms */}
+              <line x1="12" y1="44" x2="52" y2="44" stroke="#CBD5E1" strokeWidth="2" strokeLinecap="round" />
+              {[18, 26, 34, 42, 48].map((x) => (
+                <line key={x} x1={x} y1="41" x2={x} y2="47" stroke="#94A3B8" strokeWidth="1" />
+              ))}
+
+              {/* Glass Glare Sheen over Cutaway */}
+              <rect x="2" y="2" width="20" height="46" rx="2" fill="url(#specularSheen)" opacity="0.4" />
+            </g>
+
+            {/* Specular Glare Strip */}
+            <rect x="5" y="10" width="10" height="96" rx="2" fill="url(#specularSheen)" opacity="0.55" />
+
+            {/* Vessel Nomenclature & Service Timer Plate */}
+            <text x="41" y="20" textAnchor="middle" fill="#FFFFFF" fontSize="13" fontWeight="900" fontFamily="sans-serif">ACF</text>
+            <text x="41" y="32" textAnchor="middle" fill="#E0F2FE" fontSize="6.5" fontWeight="bold">FILTER SERVICE</text>
+            <g transform="translate(9, 94)">
+              <rect x="0" y="0" width="64" height="15" rx="3" fill="#F0FDF4" stroke="#16A34A" strokeWidth="1" filter="url(#softShadow)" />
+              <text x="32" y="10.5" textAnchor="middle" fill="#15803D" fontSize="7" fontWeight="bold" fontFamily="monospace">
                 {formatTime(acfSeconds)}
               </text>
-              <text x="32" y="24" textAnchor="middle" fill="#64748B" fontSize="5.5" fontFamily="monospace">HH:MM:SS</text>
             </g>
           </g>
 
@@ -1187,19 +1364,54 @@ export function ScadaSchematicSimulation() {
             <text x="32.5" y="48" textAnchor="middle" fill="#7E22CE" fontSize="7.5" fontWeight="bold" fontFamily="monospace">UV LIGHT</text>
           </g>
 
-          {/* TREATED WATER TANK */}
-          <g id="tank-treated" transform="translate(320, 605)" filter="url(#softShadow)">
-            <rect x="0" y="0" width="140" height="80" rx="8" fill="url(#vesselGlassGrad)" stroke="#0284C7" strokeWidth="2" />
+          {/* TANK 7: TREATED WATER TANK (2.5D PURE WATER CYLINDER WITH 3D CRYSTAL MENISCUS) */}
+          <g id="tank-treated" transform="translate(320, 603)" filter="url(#softShadow)">
+            {/* Ground Contact Shadow */}
+            <ellipse cx="70" cy="85" rx="66" ry="6" fill="#0B2545" opacity="0.14" />
+
+            {/* 2.5D Glass Cylinder Body & Dish Bottom */}
             <path
-              d={`M 3 ${80 - (80 * treatedLevel) / 100} Q 35 ${80 - (80 * treatedLevel) / 100 - 2} 70 ${80 - (80 * treatedLevel) / 100} T 137 ${80 - (80 * treatedLevel) / 100} L 137 77 L 3 77 Z`}
-              fill="url(#treatedWaterGrad)"
+              d="M 0 74 Q 70 90 140 74 L 140 14 Q 70 28 0 14 Z"
+              fill="url(#glassCylinderGrad)"
+              stroke="#0284C7"
+              strokeWidth="2"
             />
-            <rect x="4" y="22" width="16" height="52" rx="3" fill="url(#specularSheen)" />
-            <rect x="0" y="0" width="140" height="18" rx="8" fill="#F0F9FF" />
-            <text x="70" y="13" textAnchor="middle" fill="#0369A1" fontSize="8" fontWeight="bold" fontFamily="monospace">
+
+            {/* Treated Pure Water Volume Body */}
+            {(() => {
+              const trY = Math.round(74 - (60 * treatedLevel) / 100)
+              return (
+                <g>
+                  <path
+                    d={`M 2 ${trY} Q 70 ${trY + 11} 138 ${trY} L 138 74 Q 70 89 2 74 Z`}
+                    fill="url(#treatedWaterGrad)"
+                  />
+                  {/* 3D Liquid Meniscus */}
+                  <ellipse cx="70" cy={trY} rx="68" ry="6.0" fill="#E0F2FE" stroke="#38BDF8" strokeWidth="0.8" opacity="0.95" />
+                  <ellipse cx="70" cy={trY} rx="62" ry="4.0" fill="#FFFFFF" opacity="0.5" />
+                </g>
+              )
+            })()}
+
+            {/* Internal UV Submerged Dip-Pipe (Left Inlet) */}
+            <line x1="12" y1="14" x2="12" y2="60" stroke="#0284C7" strokeWidth="2.5" />
+            <polygon points="9,58 12,65 15,58" fill="#0284C7" />
+
+            {/* Cylindrical Glare Streak */}
+            <rect x="5" y="16" width="14" height="54" rx="3" fill="url(#specularSheen)" />
+            <line x1="134" y1="16" x2="134" y2="72" stroke="#FFFFFF" strokeWidth="1.2" opacity="0.4" />
+
+            {/* 3D Top Glass Vessel Flange & Rim */}
+            <ellipse cx="70" cy="14" rx="70" ry="7.0" fill="url(#glassRimGrad)" stroke="#0284C7" strokeWidth="1.5" />
+
+            {/* 3D Frosted Header Tag Plate */}
+            <rect x="18" y="0" width="104" height="17" rx="4" fill="#F0F9FF" stroke="#0284C7" strokeWidth="1.2" filter="url(#softShadow)" />
+            <text x="70" y="11.5" textAnchor="middle" fill="#0369A1" fontSize="8" fontWeight="bold" fontFamily="monospace">
               TREATED WATER TANK
             </text>
-            <text x="70" y="52" textAnchor="middle" fill="#0F172A" fontSize="18" fontWeight="900" fontFamily="monospace">
+
+            {/* Digital Readout */}
+            <text x="70" y="50" textAnchor="middle" fill="#0F172A" fontSize="18" fontWeight="900" fontFamily="monospace">
               {treatedLevel}%
             </text>
           </g>
@@ -1248,15 +1460,43 @@ export function ScadaSchematicSimulation() {
             <text x="0" y="23" textAnchor="middle" fill="#991B1B" fontSize="6.5" fontFamily="monospace">WATER SOLENOID</text>
           </g>
 
-          {/* SOFTENER VESSEL */}
+          {/* SOFTENER VESSEL (675, 595) - 2.5D ION-EXCHANGE COLUMN WITH CATION RESIN BED */}
           <g id="vessel-softener" transform="translate(675, 595)" filter="url(#softShadow)">
-            {/* 3D Cylindrical Vessel Body */}
-            <path d="M 0 15 Q 40 -8 80 15 L 80 95 Q 40 115 0 95 Z" fill="url(#filterVesselGrad)" stroke="#0284C7" strokeWidth="2" />
-            <path d="M 12 18 Q 40 5 68 18 L 68 92 Q 40 108 12 92 Z" fill="url(#specularSheen)" opacity="0.6" />
-            <line x1="0" y1="36" x2="80" y2="36" stroke="#38BDF8" strokeWidth="1" strokeDasharray="3 3" opacity="0.6" />
-            <line x1="0" y1="75" x2="80" y2="75" stroke="#38BDF8" strokeWidth="1" strokeDasharray="3 3" opacity="0.6" />
-            <text x="40" y="58" textAnchor="middle" fill="#FFFFFF" fontSize="11" fontWeight="900" fontFamily="monospace">SOFTENER</text>
+            {/* Ground Contact Shadow */}
+            <ellipse cx="40" cy="100" rx="36" ry="5" fill="#0B2545" opacity="0.16" />
 
+            {/* Torispherical Upper Head Dome */}
+            <path d="M 1 18 C 1 3, 79 3, 79 18 Z" fill="url(#filterVesselGrad)" stroke="#0284C7" strokeWidth="2" />
+
+            {/* Cylindrical Shell Body */}
+            <rect x="1" y="18" width="78" height="68" fill="url(#filterVesselGrad)" stroke="#0284C7" strokeWidth="2" />
+
+            {/* Torispherical Lower Dish Head */}
+            <path d="M 1 86 C 1 100, 79 100, 79 86 Z" fill="url(#filterVesselGrad)" stroke="#0284C7" strokeWidth="2" />
+
+            {/* Circumferential Weld Seams */}
+            <line x1="1" y1="28" x2="79" y2="28" stroke="#38BDF8" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.8" />
+            <line x1="1" y1="76" x2="79" y2="76" stroke="#38BDF8" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.8" />
+
+            {/* 3D Cutaway Inspection Sight-Glass Window (Cation Resin Bed) */}
+            <g transform="translate(10, 32)">
+              <rect x="0" y="0" width="58" height="40" rx="3" fill="#0F172A" stroke="#7DD3FC" strokeWidth="1.2" />
+              {/* Golden Cation Ion-Exchange Resin Bed */}
+              <rect x="2" y="2" width="54" height="28" fill="url(#resinMediaGrad)" opacity="0.95" />
+              <rect x="2" y="30" width="54" height="8" rx="2" fill="#78350F" opacity="0.95" />
+              {/* Bottom Resin Retention Strainer */}
+              <line x1="8" y1="34" x2="50" y2="34" stroke="#CBD5E1" strokeWidth="1.8" />
+              {/* Sight Glass Glare */}
+              <rect x="2" y="2" width="18" height="36" rx="2" fill="url(#specularSheen)" opacity="0.4" />
+            </g>
+
+            {/* Specular Glare Strip */}
+            <rect x="4" y="8" width="9" height="80" rx="2" fill="url(#specularSheen)" opacity="0.55" />
+
+            {/* Title */}
+            <text x="40" y="16" textAnchor="middle" fill="#FFFFFF" fontSize="10.5" fontWeight="900" fontFamily="monospace">SOFTENER</text>
+
+            {/* Softwater Hardness Sensor Telemetry Card */}
             <g transform="translate(68, -18)" filter="url(#softShadow)">
               <rect x="0" y="0" width="84" height="26" rx="3" fill="#FAF5FF" stroke="#A855F7" strokeWidth="1" />
               <text x="42" y="11" textAnchor="middle" fill="#7E22CE" fontSize="7" fontWeight="bold">
@@ -1266,23 +1506,61 @@ export function ScadaSchematicSimulation() {
             </g>
           </g>
 
-          {/* SOFT WATER TANK (PRISTINE POLISHED CRYSTAL SOFT WATER) */}
-          <g id="tank-soft-water" transform="translate(840, 605)" filter="url(#softShadow)">
-            <rect x="0" y="0" width="140" height="80" rx="8" fill="url(#vesselGlassGrad)" stroke="#0284C7" strokeWidth="2" />
+          {/* TANK 8: SOFT WATER TANK (840, 603) - 2.5D PRISTINE POLISHED WATER CYLINDER */}
+          <g id="tank-soft-water" transform="translate(840, 603)" filter="url(#softShadow)">
+            {/* Ground Contact Shadow */}
+            <ellipse cx="70" cy="85" rx="66" ry="6" fill="#0B2545" opacity="0.14" />
+
+            {/* 2.5D Glass Cylinder Body & Dish Bottom */}
             <path
-              d={`M 3 ${80 - (80 * softWaterLevel) / 100} Q 35 ${80 - (80 * softWaterLevel) / 100 - 2} 70 ${80 - (80 * softWaterLevel) / 100} T 137 ${80 - (80 * softWaterLevel) / 100} L 137 77 L 3 77 Z`}
-              fill="url(#softWaterGrad)"
+              d="M 0 74 Q 70 90 140 74 L 140 14 Q 70 28 0 14 Z"
+              fill="url(#glassCylinderGrad)"
+              stroke="#0284C7"
+              strokeWidth="2"
             />
-            <rect x="4" y="22" width="16" height="52" rx="3" fill="url(#specularSheen)" />
-            <rect x="0" y="0" width="140" height="18" rx="8" fill="#F0F9FF" />
-            <text x="70" y="13" textAnchor="middle" fill="#0369A1" fontSize="8" fontWeight="bold" fontFamily="monospace">
+
+            {/* Polished Soft Water Volume Body */}
+            {(() => {
+              const swY = Math.round(74 - (60 * softWaterLevel) / 100)
+              return (
+                <g>
+                  <path
+                    d={`M 2 ${swY} Q 70 ${swY + 11} 138 ${swY} L 138 74 Q 70 89 2 74 Z`}
+                    fill="url(#softWaterGrad)"
+                  />
+                  {/* 3D Liquid Meniscus */}
+                  <ellipse cx="70" cy={swY} rx="68" ry="6.0" fill="#F0F9FF" stroke="#38BDF8" strokeWidth="0.8" opacity="0.98" />
+                  <ellipse cx="70" cy={swY} rx="62" ry="4.0" fill="#FFFFFF" opacity="0.6" />
+                </g>
+              )
+            })()}
+
+            {/* Level Scale Tick Marks on Glass Wall */}
+            <g transform="translate(10, 20)" opacity="0.5">
+              {[0, 14, 28, 42].map((y, i) => (
+                <line key={i} x1="0" y1={y} x2={i % 2 === 0 ? "8" : "5"} y2={y} stroke="#0369A1" strokeWidth="1" />
+              ))}
+            </g>
+
+            {/* Cylindrical Glare Streak */}
+            <rect x="5" y="16" width="14" height="54" rx="3" fill="url(#specularSheen)" />
+            <line x1="134" y1="16" x2="134" y2="72" stroke="#FFFFFF" strokeWidth="1.2" opacity="0.4" />
+
+            {/* 3D Top Glass Vessel Flange & Rim */}
+            <ellipse cx="70" cy="14" rx="70" ry="7.0" fill="url(#glassRimGrad)" stroke="#0284C7" strokeWidth="1.5" />
+
+            {/* 3D Frosted Header Tag Plate */}
+            <rect x="18" y="0" width="104" height="17" rx="4" fill="#F0F9FF" stroke="#0284C7" strokeWidth="1.2" filter="url(#softShadow)" />
+            <text x="70" y="11.5" textAnchor="middle" fill="#0369A1" fontSize="8" fontWeight="bold" fontFamily="monospace">
               SOFT WATER TANK
             </text>
-            <text x="70" y="52" textAnchor="middle" fill="#0F172A" fontSize="18" fontWeight="900" fontFamily="monospace">
+
+            {/* Digital Readout */}
+            <text x="70" y="50" textAnchor="middle" fill="#0F172A" fontSize="18" fontWeight="900" fontFamily="monospace">
               {softWaterLevel}%
             </text>
-            <rect x="8" y="62" width="65" height="12" rx="2" fill="#0284C7" opacity="0.9" />
-            <text x="40" y="71" textAnchor="middle" fill="#FFFFFF" fontSize="5.5" fontWeight="bold" fontFamily="monospace">
+            <rect x="8" y="58" width="65" height="12" rx="2" fill="#0284C7" opacity="0.9" />
+            <text x="40" y="67" textAnchor="middle" fill="#FFFFFF" fontSize="5.5" fontWeight="bold" fontFamily="monospace">
               POLISHED WATER
             </text>
           </g>
@@ -1324,17 +1602,11 @@ export function ScadaSchematicSimulation() {
       </div>
 
       {/* 3. SCADA Bottom Telemetry Bar */}
-      <div className="px-4 py-2.5 bg-sky-50/50 border-t border-sky-100 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 text-xs">
+      <div className="px-4 py-2.5 bg-sky-50/50 border-t border-sky-100 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 text-xs">
         <div className="p-2 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
           <span className="text-[10px] text-slate-500 uppercase font-mono">Aeration DO1</span>
           <span className="text-sm font-bold text-sky-700 font-mono">{do1.toFixed(2)} mg/L</span>
           <span className="text-[9px] text-emerald-600 font-medium">Normal (0.5–2.0)</span>
-        </div>
-
-        <div className="p-2 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
-          <span className="text-[10px] text-slate-500 uppercase font-mono">SBR TSS</span>
-          <span className="text-sm font-bold text-purple-700 font-mono">{sbrTss.toFixed(2)} mg/L</span>
-          <span className="text-[9px] text-slate-500">Idle Cycle</span>
         </div>
 
         <div className="p-2 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
