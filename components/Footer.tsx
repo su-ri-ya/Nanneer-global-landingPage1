@@ -13,11 +13,11 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12 pb-10 border-b border-slate-200/80 items-start">
           {/* Column 1: Brand & Credibility (lg:col-span-6) */}
           <div className="lg:col-span-6 space-y-3.5">
-            <Link href="/" className="inline-block" aria-label="Nanneer Global Home">
+            <Link href="/" className="inline-block" aria-label="Nanneer Consultancy Home">
               <div className="relative h-10 w-40 sm:h-11 sm:w-44">
                 <Image
                   src="/logo.png"
-                  alt="Nanneer Global"
+                  alt="Nanneer Consultancy"
                   fill
                   className="object-contain object-left"
                 />
@@ -91,7 +91,7 @@ export function Footer() {
         {/* Bottom Bar: Clean Copyright Notice */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
           <div>
-            &copy; {new Date().getFullYear()} Nanneer Global. All rights reserved. Professional STP Operations &amp; Maintenance.
+            &copy; {new Date().getFullYear()} Nanneer Consultancy. All rights reserved. Professional STP Operations &amp; Maintenance.
           </div>
         </div>
       </div>

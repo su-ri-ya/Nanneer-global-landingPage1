@@ -133,7 +133,7 @@ export function Navbar() {
               >
                 <Image
                   src="/logo.png"
-                  alt="Nanneer Global Logo"
+                  alt="Nanneer Consultancy Logo"
                   fill
                   priority
                   sizes="(max-width: 640px) 112px, (max-width: 768px) 160px, 192px"
@@ -210,7 +210,7 @@ export function Navbar() {
           <div className="relative h-8 w-28 sm:h-9 sm:w-32">
             <Image
               src="/logo.png"
-              alt="Nanneer Global Logo"
+              alt="Nanneer Consultancy Logo"
               fill
               className="object-contain object-left"
             />
