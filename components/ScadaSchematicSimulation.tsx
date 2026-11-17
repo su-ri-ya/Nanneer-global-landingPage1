@@ -184,11 +184,23 @@ export function ScadaSchematicSimulation() {
     if (arrowDir === "left") arrow = <polygon points="-14,-3 -20,0 -14,3" fill={color} />
     if (arrowDir === "right") arrow = <polygon points="14,-3 20,0 14,3" fill={color} />
 
+    // Dynamically calculate tag clearance so text NEVER collides with pump casing (r=14) or arrow (length=20)
+    let tagY = 0
+    if (tagPos === "bottom") {
+      tagY = arrowDir === "down" ? 25 : 20
+    } else {
+      if (arrowDir === "up") {
+        tagY = tagLine2 ? -28 : -22
+      } else {
+        tagY = tagLine2 ? -24 : -18
+      }
+    }
+
     return (
       <g
         id={`pump-${id}`}
         transform={`translate(${cx}, ${cy})`}
-        className="cursor-pointer transition-transform duration-150 hover:scale-105"
+        className="cursor-pointer"
         onClick={() => handleTogglePump(id)}
       >
         {/* Outer Metallic Bevel Ring */}
@@ -222,7 +234,7 @@ export function ScadaSchematicSimulation() {
         </circle>
 
         {/* Pump ID Pill */}
-        <rect x="-11" y="-4.5" width="22" height="9" rx="2" fill="#FFFFFF" opacity="0.92" />
+        <rect x="-11" y="-4.5" width="22" height="9" rx="2" fill="#FFFFFF" opacity="0.95" stroke="#E2E8F0" strokeWidth="0.5" />
         <text x="0" y="2.5" textAnchor="middle" fill="#0F172A" fontSize="7" fontWeight="bold">
           {p.code || id}
         </text>
@@ -230,30 +242,41 @@ export function ScadaSchematicSimulation() {
         {/* Flow Arrow */}
         {arrow}
 
-        {/* Pump Text Label */}
-        {tagPos === "bottom" ? (
-          <g transform="translate(0, 20)">
-            <text x="0" y="0" textAnchor="middle" fill={color} fontSize="6" fontWeight="bold" fontFamily="monospace">
-              {tagLine1}
+        {/* Pump Text Label with Protective White Halo (Zero collision with pipes or borders) */}
+        <g transform={`translate(0, ${tagY})`}>
+          <text
+            x="0"
+            y="0"
+            textAnchor="middle"
+            fill={color}
+            stroke="#FFFFFF"
+            strokeWidth="2.5"
+            paintOrder="stroke"
+            strokeLinejoin="round"
+            fontSize="6"
+            fontWeight="bold"
+            fontFamily="monospace"
+          >
+            {tagLine1}
+          </text>
+          {tagLine2 && (
+            <text
+              x="0"
+              y="7"
+              textAnchor="middle"
+              fill={color}
+              stroke="#FFFFFF"
+              strokeWidth="2.5"
+              paintOrder="stroke"
+              strokeLinejoin="round"
+              fontSize="6"
+              fontWeight="bold"
+              fontFamily="monospace"
+            >
+              {tagLine2}
             </text>
-            {tagLine2 && (
-              <text x="0" y="7" textAnchor="middle" fill={color} fontSize="6" fontWeight="bold" fontFamily="monospace">
-                {tagLine2}
-              </text>
-            )}
-          </g>
-        ) : (
-          <g transform={`translate(0, ${tagLine2 ? -18 : -11})`}>
-            <text x="0" y="0" textAnchor="middle" fill={color} fontSize="6" fontWeight="bold" fontFamily="monospace">
-              {tagLine1}
-            </text>
-            {tagLine2 && (
-              <text x="0" y="7" textAnchor="middle" fill={color} fontSize="6" fontWeight="bold" fontFamily="monospace">
-                {tagLine2}
-              </text>
-            )}
-          </g>
-        )}
+          )}
+        </g>
       </g>
     )
   }
@@ -661,12 +684,12 @@ export function ScadaSchematicSimulation() {
             {/* VIN: From right edge of PSF valve (930, 465) into left edge of PSF vessel (970, 465) */}
             <path d="M 930 465 L 970 465" stroke="#0284C7" strokeWidth="4" fill="none" />
             <polygon points="962,462 970,465 962,468" fill="#0284C7" />
-            <text x="950" y="458" textAnchor="middle" fill="#0369A1" fontSize="7" fontWeight="bold" fontFamily="monospace">VIN</text>
+            <text x="950" y="458" textAnchor="middle" fill="#0369A1" stroke="#FFFFFF" strokeWidth="2.5" paintOrder="stroke" strokeLinejoin="round" fontSize="7" fontWeight="bold" fontFamily="monospace">VIN</text>
 
             {/* VOUT: From left edge of PSF vessel (970, 495) into right edge of valve (930, 495) */}
             <path d="M 970 495 L 930 495" stroke="#0284C7" strokeWidth="4" fill="none" />
             <polygon points="938,492 930,495 938,498" fill="#0284C7" />
-            <text x="950" y="508" textAnchor="middle" fill="#0369A1" fontSize="7" fontWeight="bold" fontFamily="monospace">VOUT</text>
+            <text x="950" y="508" textAnchor="middle" fill="#0369A1" stroke="#FFFFFF" strokeWidth="2.5" paintOrder="stroke" strokeLinejoin="round" fontSize="7" fontWeight="bold" fontFamily="monospace">VOUT</text>
           </g>
 
           {/* 12. PSF VALVE OUTLET THROUGH 0.15 Bar OUTLET PRESSURE, ACROSS TO ACF VALVE INLET */}
@@ -688,12 +711,12 @@ export function ScadaSchematicSimulation() {
             {/* VIN: From left edge of valve (330, 465) into right edge of ACF vessel (275, 465) */}
             <path d="M 330 465 L 275 465" stroke="#0284C7" strokeWidth="4" fill="none" />
             <polygon points="283,462 275,465 283,468" fill="#0284C7" />
-            <text x="302" y="458" textAnchor="middle" fill="#0369A1" fontSize="7" fontWeight="bold" fontFamily="monospace">VIN</text>
+            <text x="302" y="458" textAnchor="middle" fill="#0369A1" stroke="#FFFFFF" strokeWidth="2.5" paintOrder="stroke" strokeLinejoin="round" fontSize="7" fontWeight="bold" fontFamily="monospace">VIN</text>
 
             {/* VOUT: From right edge of ACF vessel (275, 495) into left edge of valve (330, 495) */}
             <path d="M 275 495 L 330 495" stroke="#0284C7" strokeWidth="4" fill="none" />
             <polygon points="322,492 330,495 322,498" fill="#0284C7" />
-            <text x="302" y="508" textAnchor="middle" fill="#0369A1" fontSize="7" fontWeight="bold" fontFamily="monospace">VOUT</text>
+            <text x="302" y="508" textAnchor="middle" fill="#0369A1" stroke="#FFFFFF" strokeWidth="2.5" paintOrder="stroke" strokeLinejoin="round" fontSize="7" fontWeight="bold" fontFamily="monospace">VOUT</text>
           </g>
 
           {/* 14. ACF VALVE OUTLET UP, LEFT ACROSS TOP OF ACF, DOWN INTO UV LIGHT */}
@@ -900,7 +923,7 @@ export function ScadaSchematicSimulation() {
           </g>
 
           {/* DOTTED BOUNDING BOX FOR SLUDGE RECIRCULATION PUMPS M3 & M4 */}
-          <rect x="615" y="78" width="85" height="72" rx="4" fill="none" stroke="#93C5FD" strokeWidth="1" strokeDasharray="3 3" />
+          <rect x="615" y="70" width="85" height="84" rx="4" fill="none" stroke="#93C5FD" strokeWidth="1" strokeDasharray="3 3" />
 
           {/* SLUDGE PUMPS M3 & M4 (POINTING LEFT, RECIRCULATING TO MBBR & WASTING TO SLUDGE TANK) */}
           {renderPump("M3", 655, 95, "left", "MBBR RCP 1", undefined, "top")}
@@ -1032,28 +1055,28 @@ export function ScadaSchematicSimulation() {
           <rect x="110" y="415" width="285" height="185" rx="6" fill="none" stroke="#CBD5E1" strokeWidth="1.5" strokeDasharray="4 4" />
 
           {/* INLET PRESSURE (0.35 Bar) */}
-          <g transform="translate(740, 411)">
-            <rect x="0" y="0" width="85" height="18" rx="4" fill="#F0F9FF" stroke="#0284C7" strokeWidth="1" />
-            <text x="42" y="12" textAnchor="middle" fill="#0369A1" fontSize="8" fontWeight="bold">{inletPressure.toFixed(2)} Bar</text>
-            <text x="42" y="28" textAnchor="middle" fill="#475569" fontSize="6" fontFamily="monospace">INLET PRESSURE</text>
+          <g transform="translate(740, 405)" filter="url(#softShadow)">
+            <rect x="0" y="0" width="86" height="28" rx="4" fill="#F0F9FF" stroke="#0284C7" strokeWidth="1" />
+            <text x="43" y="13" textAnchor="middle" fill="#0369A1" fontSize="8" fontWeight="bold">{inletPressure.toFixed(2)} Bar</text>
+            <text x="43" y="23" textAnchor="middle" fill="#475569" fontSize="6" fontFamily="monospace">INLET PRESSURE</text>
           </g>
 
           {/* OUTLET PRESSURE (0.15 Bar) */}
-          <g transform="translate(680, 526)">
-            <rect x="0" y="0" width="85" height="18" rx="4" fill="#F0F9FF" stroke="#0284C7" strokeWidth="1" />
-            <text x="42" y="12" textAnchor="middle" fill="#0369A1" fontSize="8" fontWeight="bold">{outletPressure.toFixed(2)} Bar</text>
-            <text x="42" y="28" textAnchor="middle" fill="#475569" fontSize="6" fontFamily="monospace">OUTLET PRESSURE</text>
+          <g transform="translate(680, 520)" filter="url(#softShadow)">
+            <rect x="0" y="0" width="86" height="28" rx="4" fill="#F0F9FF" stroke="#0284C7" strokeWidth="1" />
+            <text x="43" y="13" textAnchor="middle" fill="#0369A1" fontSize="8" fontWeight="bold">{outletPressure.toFixed(2)} Bar</text>
+            <text x="43" y="23" textAnchor="middle" fill="#475569" fontSize="6" fontFamily="monospace">OUTLET PRESSURE</text>
           </g>
 
           {/* PSF VALVE MULTIPORT BLOCK */}
           <g id="psf-valve-block" transform="translate(870, 445)">
             <rect x="0" y="0" width="60" height="55" rx="4" fill="#DCFCE7" stroke="#16A34A" strokeWidth="1.5" />
             <circle cx="30" cy="30" r="4" fill="#16A34A" />
-            <text x="36" y="11" textAnchor="middle" fill="#15803D" fontSize="6.5" fontWeight="bold">PSF VALVE</text>
-            <text x="20" y="20" textAnchor="middle" fill="#166534" fontSize="5.5" fontFamily="monospace" fontWeight="bold">INLET</text>
-            <text x="46" y="22" fill="#166534" fontSize="5" fontFamily="monospace">VIN</text>
-            <text x="8" y="48" fill="#DC2626" fontSize="5" fontFamily="monospace">DRAIN</text>
-            <text x="44" y="48" fill="#166534" fontSize="5" fontFamily="monospace">VOUT</text>
+            <text x="30" y="10" textAnchor="middle" fill="#15803D" fontSize="6.5" fontWeight="bold">PSF VALVE</text>
+            <text x="18" y="19" textAnchor="middle" fill="#166534" fontSize="5.5" fontFamily="monospace" fontWeight="bold">INLET</text>
+            <text x="54" y="21" textAnchor="end" fill="#166534" fontSize="5" fontFamily="monospace">VIN</text>
+            <text x="6" y="47" textAnchor="start" fill="#DC2626" fontSize="5" fontFamily="monospace">DRAIN</text>
+            <text x="54" y="47" textAnchor="end" fill="#166534" fontSize="5" fontFamily="monospace">VOUT</text>
             <text x="30" y="52" textAnchor="middle" fill="#0284C7" fontSize="5" fontFamily="monospace">OUTLET</text>
           </g>
 
@@ -1082,11 +1105,11 @@ export function ScadaSchematicSimulation() {
           <g id="acf-valve-block" transform="translate(330, 450)">
             <rect x="0" y="0" width="60" height="55" rx="4" fill="#DCFCE7" stroke="#16A34A" strokeWidth="1.5" />
             <circle cx="30" cy="27" r="4" fill="#16A34A" />
-            <text x="30" y="11" textAnchor="middle" fill="#15803D" fontSize="7" fontWeight="bold">ACF VALVE</text>
-            <text x="30" y="19" textAnchor="middle" fill="#0284C7" fontSize="5" fontFamily="monospace">OUTLET</text>
-            <text x="8" y="22" fill="#166534" fontSize="5" fontFamily="monospace">VIN</text>
-            <text x="42" y="35" fill="#DC2626" fontSize="5" fontFamily="monospace">DRAIN</text>
-            <text x="8" y="48" fill="#166534" fontSize="5" fontFamily="monospace">VOUT</text>
+            <text x="30" y="10" textAnchor="middle" fill="#15803D" fontSize="7" fontWeight="bold">ACF VALVE</text>
+            <text x="30" y="18" textAnchor="middle" fill="#0284C7" fontSize="5" fontFamily="monospace">OUTLET</text>
+            <text x="6" y="21" textAnchor="start" fill="#166534" fontSize="5" fontFamily="monospace">VIN</text>
+            <text x="54" y="35" textAnchor="end" fill="#DC2626" fontSize="5" fontFamily="monospace">DRAIN</text>
+            <text x="6" y="47" textAnchor="start" fill="#166534" fontSize="5" fontFamily="monospace">VOUT</text>
             <text x="30" y="52" textAnchor="middle" fill="#166534" fontSize="5" fontFamily="monospace">INLET</text>
           </g>
 
@@ -1182,12 +1205,12 @@ export function ScadaSchematicSimulation() {
             <line x1="0" y1="75" x2="80" y2="75" stroke="#38BDF8" strokeWidth="1" strokeDasharray="3 3" opacity="0.6" />
             <text x="40" y="58" textAnchor="middle" fill="#FFFFFF" fontSize="11" fontWeight="900" fontFamily="monospace">SOFTENER</text>
 
-            <g transform="translate(85, -15)">
-              <rect x="0" y="0" width="85" height="15" rx="3" fill="#FAF5FF" stroke="#A855F7" strokeWidth="1" />
+            <g transform="translate(68, -18)" filter="url(#softShadow)">
+              <rect x="0" y="0" width="84" height="26" rx="3" fill="#FAF5FF" stroke="#A855F7" strokeWidth="1" />
               <text x="42" y="11" textAnchor="middle" fill="#7E22CE" fontSize="7" fontWeight="bold">
                 {softwaterHardness.toFixed(2)} mg/l
               </text>
-              <text x="42" y="24" textAnchor="middle" fill="#475569" fontSize="5.5" fontFamily="monospace">SOFTWATER TOTAL HARDNESS</text>
+              <text x="42" y="21" textAnchor="middle" fill="#475569" fontSize="5.5" fontFamily="monospace">SOFTWATER HARDNESS</text>
             </g>
           </g>
 
