@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
+  <defs>
+    <linearGradient id="metalRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="40%" stop-color="#E2E8F0" />
+      <stop offset="80%" stop-color="#CBD5E1" />
+      <stop offset="100%" stop-color="#94A3B8" />
+    </linearGradient>
+  </defs>
+  <g transform="translate(20, 20)">
+    <!-- 1. Outer CNC Flange Volute Ring -->
+    <circle cx="0" cy="0" r="14" fill="url(#metalRingGrad)" stroke="#16A34A" stroke-width="1" />
+    
+    <!-- 2. Inner Blower Chamber -->
+    <circle cx="0" cy="0" r="11" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.8" />
+    
+    <!-- 3. 8-Blade Blower Rotor -->
+    <g>
+      <path d="M -6 0 L 6 0 M 0 -6 L 0 6 M -4 -4 L 4 4 M -4 4 L 4 -4" stroke="#15803D" stroke-width="1.8" stroke-linecap="round" />
+    </g>
+  </g>
+</svg>

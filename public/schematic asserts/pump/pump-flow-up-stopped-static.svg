@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="metalRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="40%" stop-color="#E2E8F0" />
+      <stop offset="80%" stop-color="#CBD5E1" />
+      <stop offset="100%" stop-color="#94A3B8" />
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(24, 24)">
+    <!-- 1. Outer CNC Flange Volute Ring -->
+    <circle cx="0" cy="0" r="14" fill="url(#metalRingGrad)" stroke="#64748B" stroke-width="1" />
+
+    <!-- Peripheral Flange Bolt Studs -->
+      <circle cx="12.5" cy="0.0" r="0.75" fill="#1E293B" stroke="#94A3B8" stroke-width="0.3" />
+      <circle cx="6.25" cy="10.83" r="0.75" fill="#1E293B" stroke="#94A3B8" stroke-width="0.3" />
+      <circle cx="-6.25" cy="10.83" r="0.75" fill="#1E293B" stroke="#94A3B8" stroke-width="0.3" />
+      <circle cx="-12.5" cy="0.0" r="0.75" fill="#1E293B" stroke="#94A3B8" stroke-width="0.3" />
+      <circle cx="-6.25" cy="-10.83" r="0.75" fill="#1E293B" stroke="#94A3B8" stroke-width="0.3" />
+      <circle cx="6.25" cy="-10.83" r="0.75" fill="#1E293B" stroke="#94A3B8" stroke-width="0.3" />
+
+    <!-- 2. Optical Polycarbonate Sight-Glass Chamber -->
+    <circle cx="0" cy="0" r="11" fill="#450A0A" stroke="#EF4444" stroke-width="1.4" />
+
+    <!-- 3. Centrifugal Fluid Vortex Impeller Dynamics -->
+    <g>
+      <!-- Hydrodynamic Swirl Vanes -->
+      <path d="M 0 0 C 3 3, 6 1, 9 7" stroke="#FCA5A5" stroke-width="1" fill="none" opacity="0.9" />
+      <path d="M 0 0 C -3 -3, -6 -1, -9 -7" stroke="#FCA5A5" stroke-width="1" fill="none" opacity="0.9" />
+      <path d="M 0 0 C 3 -3, 1 -6, 7 -9" stroke="#F87171" stroke-width="0.9" fill="none" opacity="0.8" />
+      <path d="M 0 0 C -3 3, -1 6, -7 9" stroke="#F87171" stroke-width="0.9" fill="none" opacity="0.8" />
+
+      <!-- Center Drive Shaft Impeller Hub -->
+      <circle cx="0" cy="0" r="2.4" fill="#DC2626" stroke="#FFFFFF" stroke-width="0.6" />
+    </g>
+
+    <!-- 4. Optical Specular Reflection Glare Arch across Upper Dome -->
+    <path d="M -8.5 -5 A 9.5 9.5 0 0 1 8.5 -5" stroke="#FFFFFF" stroke-width="1.2" fill="none" opacity="0.65" stroke-linecap="round" />
+
+    <!-- Flow Direction Arrow (Up) -->
+    <polygon points="-3,-14 0,-20 3,-14" fill="#DC2626" />
+  </g>
+</svg>

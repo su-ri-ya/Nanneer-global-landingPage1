@@ -3,7 +3,6 @@
 import React from "react"
 import Link from "next/link"
 import { ScadaSchematicSimulation } from "@/components/ScadaSchematicSimulation"
-import { PumpConceptShowcase } from "@/components/PumpConceptShowcase"
 import { ArrowLeft } from "lucide-react"
 
 export default function SchematicPage() {
@@ -21,7 +20,6 @@ export default function SchematicPage() {
 
       <main className="max-w-[1300px] mx-auto w-full flex-1 flex flex-col">
         <ScadaSchematicSimulation />
-        <PumpConceptShowcase />
       </main>
     </div>
   )

@@ -22,7 +22,7 @@ interface PumpState {
   flowRate: number
 }
 
-export type MultiportValveMode = "SERVICE" | "BRINE" | "BACKWASH" | "RINSE" | "REFILL"
+export type MultiportValveMode = "SERVICE" | "BACKWASH" | "RINSE" | "DRAIN"
 
 export function ScadaSchematicSimulation() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true)
@@ -30,8 +30,7 @@ export function ScadaSchematicSimulation() {
   const [controlMode, setControlMode] = useState<"AUTO" | "MANUAL">("AUTO")
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null)
   const [showTelemetryBadges, setShowTelemetryBadges] = useState<boolean>(true)
-  const [telemetryMode, setTelemetryMode] = useState<"EMBEDDED" | "BADGES">("EMBEDDED")
-  const [filterVesselOption, setFilterVesselOption] = useState<1 | 2 | 3 | 4>(3)
+  const filterVesselOption: 1 | 2 | 3 | 4 = 3
 
   // Live sensor readings with micro-jitter
   const [do1, setDo1] = useState<number>(0.88)
@@ -42,6 +41,8 @@ export function ScadaSchematicSimulation() {
 
   // Tank levels (Uniform 50% Water Level matching Filter Feed Tank)
   const [collectionLevel, setCollectionLevel] = useState<number>(50)
+  const [mbbrLevel, setMbbrLevel] = useState<number>(50)
+  const [clarifierLevel, setClarifierLevel] = useState<number>(50)
   const [filterFeedLevel, setFilterFeedLevel] = useState<number>(50)
   const [sludgeLevel, setSludgeLevel] = useState<number>(50)
   const [treatedLevel, setTreatedLevel] = useState<number>(50)
@@ -243,14 +244,7 @@ export function ScadaSchematicSimulation() {
         {/* 4. Optical Specular Reflection Glare Arch across Upper Dome */}
         <path d="M -8.5 -5 A 9.5 9.5 0 0 1 8.5 -5" stroke="#FFFFFF" strokeWidth="1.2" fill="none" opacity="0.65" strokeLinecap="round" />
 
-        {/* 5. Glowing Status LED Indicator */}
-        <circle cx="9" cy="-9" r="2.8" fill={color} stroke="#FFFFFF" strokeWidth="0.8">
-          {isPlaying && isRunning && (
-            <animate attributeName="opacity" values="0.7;1;0.7" dur="1s" repeatCount="indefinite" />
-          )}
-        </circle>
-
-        {/* 7. Flow Direction Arrow */}
+        {/* 5. Flow Direction Arrow */}
         {arrow}
       </g>
     )
@@ -482,31 +476,28 @@ export function ScadaSchematicSimulation() {
     )
   }
 
-  // Industrial UKL 5-Port Multiport Valve (MPV) Component
+  // Industrial UKL 4-Port Multiport Valve (MPV) Component
   const renderMultiportValve = (
     name: string,
     mode: MultiportValveMode,
     onToggle: () => void
   ) => {
-    // Mode to angle mapping for 5 operational cycles:
+    // Mode to angle mapping for 4 operational cycles:
     // 1. SERVICE: 0 deg (Top / 12 o'clock - Port 1 Inlet to Port 2 Outlet)
-    // 2. BRINE: 45 deg (Diagonal 45° - Port 5 Brine Eductor Draw)
-    // 3. REFILL: 115 deg (Lower Right - Port 5 Brine Tank Fresh Refill)
-    // 4. BACKWASH: 180 deg (Bottom / 6 o'clock - Reverse Flow to Port 4 Drain)
-    // 5. RINSE: -50 deg (Upper Left / 10 o'clock - Downward Fast Rinse to Port 4 Drain)
+    // 2. DRAIN / WASTE: 90 deg (Right / 3 o'clock - Direct Bypass to Port 4 Drain)
+    // 3. BACKWASH: 180 deg (Bottom / 6 o'clock - Reverse Flow to Port 4 Drain)
+    // 4. RINSE: 270 deg (Left / 9 o'clock - Downward Fast Rinse to Port 4 Drain)
     const angleMap: Record<MultiportValveMode, number> = {
       SERVICE: 0,
-      BRINE: 45,
-      REFILL: 115,
+      DRAIN: 90,
       BACKWASH: 180,
-      RINSE: -50,
+      RINSE: 270,
     }
     const nextModeMap: Record<MultiportValveMode, MultiportValveMode> = {
-      SERVICE: "BRINE",
-      BRINE: "BACKWASH",
+      SERVICE: "BACKWASH",
       BACKWASH: "RINSE",
-      RINSE: "REFILL",
-      REFILL: "SERVICE",
+      RINSE: "DRAIN",
+      DRAIN: "SERVICE",
     }
     const angle = angleMap[mode] ?? 0
     const nextMode = nextModeMap[mode] ?? "SERVICE"
@@ -516,9 +507,9 @@ export function ScadaSchematicSimulation() {
         className="cursor-pointer group transition-transform duration-200 hover:scale-[1.03]"
         onClick={onToggle}
       >
-        <title>{`${name} 5-Port Multiport Valve: Mode ${mode} (Click to switch to ${nextMode})`}</title>
+        <title>{`${name} 4-Port Multiport Valve: Mode ${mode} (Click to switch to ${nextMode})`}</title>
 
-        {/* 5 Threaded Pipe Union Nozzles (Option A Configuration) */}
+        {/* 4 Threaded Pipe Union Nozzles (Clean Orthogonal 4-Way Configuration) */}
 
         {/* Port 1: Top Nozzle (12 o'clock - Raw Water Inlet) */}
         <g id={`${name}-p1-top`}>
@@ -532,7 +523,7 @@ export function ScadaSchematicSimulation() {
           <line x1="36" y1="8" x2="36" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
         </g>
 
-        {/* Port 2: Bottom Nozzle (6 o'clock - Treated/Softened Water Outlet) */}
+        {/* Port 2: Bottom Nozzle (6 o'clock - Filtered Outlet) */}
         <g id={`${name}-p2-bottom`} transform="rotate(180 30 30)">
           <rect x="23" y="0" width="14" height="10" rx="1" fill="#18181B" stroke="#09090B" strokeWidth="0.8" />
           <line x1="24" y1="2.5" x2="36" y2="2.5" stroke="#3F3F46" strokeWidth="0.8" />
@@ -544,7 +535,7 @@ export function ScadaSchematicSimulation() {
           <line x1="36" y1="8" x2="36" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
         </g>
 
-        {/* Port 3: Left Nozzle (9 o'clock - Top Vessel Distributor) */}
+        {/* Port 3: Left Nozzle (9 o'clock - Vessel Manifold Connection / Drain) */}
         <g id={`${name}-p3-left`} transform="rotate(270 30 30)">
           <rect x="23" y="0" width="14" height="10" rx="1" fill="#18181B" stroke="#09090B" strokeWidth="0.8" />
           <line x1="24" y1="2.5" x2="36" y2="2.5" stroke="#3F3F46" strokeWidth="0.8" />
@@ -556,7 +547,7 @@ export function ScadaSchematicSimulation() {
           <line x1="36" y1="8" x2="36" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
         </g>
 
-        {/* Port 4: Right Nozzle (3 o'clock - Drain / Backwash Return) */}
+        {/* Port 4: Right Nozzle (3 o'clock - Drain / Vessel Manifold Connection) */}
         <g id={`${name}-p4-right`} transform="rotate(90 30 30)">
           <rect x="23" y="0" width="14" height="10" rx="1" fill="#18181B" stroke="#09090B" strokeWidth="0.8" />
           <line x1="24" y1="2.5" x2="36" y2="2.5" stroke="#3F3F46" strokeWidth="0.8" />
@@ -566,19 +557,6 @@ export function ScadaSchematicSimulation() {
           <line x1="24" y1="8" x2="24" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
           <line x1="30" y1="8" x2="30" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
           <line x1="36" y1="8" x2="36" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
-        </g>
-
-        {/* Port 5: Diagonal Nozzle (45° Upper-Right - Brine / Auxiliary Eductor Port) */}
-        <g id={`${name}-p5-diagonal`} transform="rotate(45 30 30)">
-          <rect x="24" y="1" width="12" height="9" rx="1" fill="#18181B" stroke="#09090B" strokeWidth="0.8" />
-          <line x1="25" y1="3" x2="35" y2="3" stroke="#F59E0B" strokeWidth="0.8" />
-          <line x1="25" y1="5.5" x2="35" y2="5.5" stroke="#F59E0B" strokeWidth="0.8" />
-          <line x1="25" y1="8" x2="35" y2="8" stroke="#F59E0B" strokeWidth="0.8" />
-          {/* Heavy Union Nut with Amber Accent */}
-          <rect x="21.5" y="8" width="17" height="4.5" rx="1.2" fill="#27272A" stroke="#B45309" strokeWidth="0.8" />
-          <line x1="25" y1="8" x2="25" y2="12.5" stroke="#D97706" strokeWidth="0.6" />
-          <line x1="30" y1="8" x2="30" y2="12.5" stroke="#D97706" strokeWidth="0.6" />
-          <line x1="35" y1="8" x2="35" y2="12.5" stroke="#D97706" strokeWidth="0.6" />
         </g>
 
         {/* Main Outer Casing Flange Body (Centered at cx=30, cy=30) */}
@@ -639,15 +617,8 @@ export function ScadaSchematicSimulation() {
               </g>
             )}
 
-            {/* Mode: BRINE / REFILL - Fluid draw through 45° Port 5 */}
-            {(mode === "BRINE" || mode === "REFILL") && (
-              <path d="M 43 17 L 34 26" stroke="#FDE68A" strokeWidth="2" strokeLinecap="round" strokeDasharray="3 3">
-                <animate attributeName="stroke-dashoffset" from="12" to="0" dur={`${0.7 / simSpeed}s`} repeatCount="indefinite" />
-              </path>
-            )}
-
-            {/* Mode: BACKWASH / RINSE - Flush discharge stream to Port 4 Drain */}
-            {(mode === "BACKWASH" || mode === "RINSE") && (
+            {/* Mode: BACKWASH / RINSE / DRAIN - Flush discharge stream to Port 4 Drain */}
+            {(mode === "BACKWASH" || mode === "RINSE" || mode === "DRAIN") && (
               <path d="M 30 30 L 50 30" stroke="#FCA5A5" strokeWidth="2" strokeLinecap="round" strokeDasharray="3 3">
                 <animate attributeName="stroke-dashoffset" from="12" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
               </path>
@@ -655,42 +626,25 @@ export function ScadaSchematicSimulation() {
           </g>
         )}
 
-        {/* 5 Dial Cycle Step Markings */}
+        {/* 4 Dial Cycle Step Markings */}
         {/* 1. Top (0°): SERVICE */}
         <g transform="rotate(0 30 30)">
           <polygon points="30,16.5 28,18.8 32,18.8" fill="#FACC15" />
-          <text x="30" y="21.5" fill="#FEF08A" fontSize="2.4" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">SERVICE</text>
         </g>
 
-        {/* 2. Upper-Right (45°): BRINE REGEN */}
-        <g transform="rotate(45 30 30)">
-          <polygon points="30,16.5 28,18.8 32,18.8" fill="#F59E0B" />
-          <text x="30" y="21.5" fill="#FEF08A" fontSize="2.2" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">BRINE</text>
-        </g>
-
-        {/* 3. Lower-Right (115°): REFILL */}
-        <g transform="rotate(115 30 30)">
+        {/* 2. Right (90°): DRAIN */}
+        <g transform="rotate(90 30 30)">
           <polygon points="30,16.5 28,18.8 32,18.8" fill="#FACC15" />
-          <text x="30" y="21.5" fill="#FEF08A" fontSize="2.0" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">REFILL</text>
         </g>
 
-        {/* 4. Bottom (180°): BACKWASH */}
+        {/* 3. Bottom (180°): BACKWASH */}
         <g transform="rotate(180 30 30)">
           <polygon points="30,16.5 28,18.8 32,18.8" fill="#FACC15" />
-          <text x="30" y="21.5" fill="#FEF08A" fontSize="2.1" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">BACKWASH</text>
         </g>
 
-        {/* 5. Upper-Left (-50°): RINSE */}
-        <g transform="rotate(-50 30 30)">
+        {/* 4. Left (270°): RINSE */}
+        <g transform="rotate(270 30 30)">
           <polygon points="30,16.5 28,18.8 32,18.8" fill="#FACC15" />
-          <text x="30" y="21.5" fill="#FEF08A" fontSize="2.2" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">RINSE</text>
-        </g>
-
-        {/* Miniature UKL Brand Badge (Lower-Left 225°) */}
-        <g transform="translate(17, 32)">
-          <rect x="0" y="0" width="4.8" height="3.5" rx="0.5" fill="#FFFFFF" stroke="#16A34A" strokeWidth="0.3" />
-          <text x="2.4" y="2.2" fill="#15803D" fontSize="1.6" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">UKL</text>
-          <circle cx="2.4" cy="2.8" r="0.35" fill="#0284C7" />
         </g>
 
         {/* Central Rotor Boss */}
@@ -732,8 +686,12 @@ export function ScadaSchematicSimulation() {
     const borderColor = isOk ? "#86EFAC" : isStandby ? "#FDE68A" : "#FECACA"
 
     return (
-      <g transform={`translate(${x}, ${y})`} className="pointer-events-none select-none">
-        {/* Compact pill container with crisp frosted white background */}
+      <g
+        transform={`translate(${x}, ${y})`}
+        className="pointer-events-none select-none"
+        style={{ filter: "drop-shadow(0px 1.5px 2px rgba(15, 23, 42, 0.16))" }}
+      >
+        {/* Compact pill container with crisp solid white background */}
         <rect
           x="0"
           y="0"
@@ -741,84 +699,16 @@ export function ScadaSchematicSimulation() {
           height={height}
           rx="3.5"
           fill="#FFFFFF"
-          fillOpacity="0.96"
           stroke={borderColor}
-          strokeWidth="1"
+          strokeWidth="1.2"
         />
 
         {/* Parameter Label & Value */}
-        <text x="6" y="10.5" fill="#475569" fontSize="6" fontFamily="monospace" fontWeight="500">
+        <text x="6" y="10.8" fill="#334155" fontSize="6.5" fontFamily="monospace" fontWeight="600">
           {paramLabel}:
         </text>
-        <text x={width - 5} y="10.5" textAnchor="end" fill="#0F172A" fontSize="6.5" fontWeight="bold" fontFamily="monospace">
-          {paramValue}{unit ? <tspan fill="#64748B" fontSize="5.5"> {unit}</tspan> : ""}
-        </text>
-      </g>
-    )
-  }
-
-  // Option 1: Embedded In-Element Readouts (ISA-101 High Performance SCADA)
-  const renderEmbeddedTankPill = (
-    cx: number,
-    cy: number,
-    tag: string,
-    lvlText: string,
-    qualityText?: string,
-    borderCol = "#38BDF8"
-  ) => (
-    <g transform={`translate(${cx}, ${cy})`} className="pointer-events-none select-none">
-      <rect
-        x="-62"
-        y="-8.5"
-        width="124"
-        height="17"
-        rx="8.5"
-        fill="#0F172A"
-        fillOpacity="0.82"
-        stroke={borderCol}
-        strokeWidth="0.9"
-      />
-      <circle cx="-52" cy="0" r="2.2" fill={borderCol} />
-      <text x="-45" y="3" fill="#F8FAFC" fontSize="6.5" fontFamily="monospace" fontWeight="bold">
-        {tag}
-      </text>
-      <text x="-14" y="3" fill="#38BDF8" fontSize="6.5" fontFamily="monospace" fontWeight="bold">
-        {lvlText}
-      </text>
-      {qualityText && (
-        <text x="54" y="3" textAnchor="end" fill="#94A3B8" fontSize="5.5" fontFamily="monospace">
-          {qualityText}
-        </text>
-      )}
-    </g>
-  )
-
-  const renderEmbeddedPumpFlow = (
-    cx: number,
-    cy: number,
-    _code: string,
-    flowRate: number,
-    status: PumpStatus
-  ) => {
-    const isRunning = status === "RUNNING"
-    const strokeColor = isRunning ? "#22C55E" : "#EF4444"
-    return (
-      <g transform={`translate(${cx}, ${cy})`} className="pointer-events-none select-none">
-        <rect
-          x="-24"
-          y="-7"
-          width="48"
-          height="14"
-          rx="4"
-          fill="#0F172A"
-          fillOpacity="0.88"
-          stroke={strokeColor}
-          strokeWidth="0.8"
-        />
-        <circle cx="-17" cy="0" r="2" fill={strokeColor} />
-        <text x="-11" y="3" fill="#F8FAFC" fontSize="5.8" fontFamily="monospace" fontWeight="bold">
-          {flowRate.toFixed(1)}
-          <tspan fill="#94A3B8" fontSize="4.6"> m³/h</tspan>
+        <text x={width - 5} y="10.8" textAnchor="end" fill="#0F172A" fontSize="7" fontWeight="bold" fontFamily="monospace">
+          {paramValue}{unit ? <tspan fill="#64748B" fontSize="5.8" fontWeight="500"> {unit}</tspan> : ""}
         </text>
       </g>
     )
@@ -863,39 +753,6 @@ export function ScadaSchematicSimulation() {
             <span>MODE: {controlMode}</span>
           </button>
 
-          {/* Telemetry Display Style Selector */}
-          <div className="flex items-center gap-1 bg-sky-100/80 p-0.5 rounded-md border border-sky-200 shadow-xs">
-            <span className="text-[10px] font-bold text-sky-900 font-mono px-1.5 hidden sm:inline">TELEMETRY:</span>
-            <button
-              onClick={() => {
-                setShowTelemetryBadges(true)
-                setTelemetryMode("EMBEDDED")
-              }}
-              className={`px-2 py-0.5 text-[10px] font-mono rounded font-bold transition-all ${
-                showTelemetryBadges && telemetryMode === "EMBEDDED"
-                  ? "bg-sky-600 text-white shadow-xs"
-                  : "text-slate-600 hover:text-sky-900 hover:bg-white/70"
-              }`}
-              title="Option 1: Embedded in-element readouts (Zero pipe collisions)"
-            >
-              1. Embedded
-            </button>
-            <button
-              onClick={() => {
-                setShowTelemetryBadges(true)
-                setTelemetryMode("BADGES")
-              }}
-              className={`px-2 py-0.5 text-[10px] font-mono rounded font-bold transition-all ${
-                showTelemetryBadges && telemetryMode === "BADGES"
-                  ? "bg-sky-600 text-white shadow-xs"
-                  : "text-slate-600 hover:text-sky-900 hover:bg-white/70"
-              }`}
-              title="Option 2: Safe Floating Badges Grid (Optimized coordinates)"
-            >
-              2. Floating Badges
-            </button>
-          </div>
-
           <div className="flex items-center bg-white rounded-md p-0.5 border border-sky-200 shadow-xs">
             {[1, 2, 5].map((speed) => (
               <button
@@ -905,30 +762,6 @@ export function ScadaSchematicSimulation() {
                   }`}
               >
                 {speed}x
-              </button>
-            ))}
-          </div>
-
-          {/* Interactive PSF / ACF Design Option Selector */}
-          {/* Interactive Filter Vessels Design Option Selector (PSF, ACF, Softener) */}
-          <div className="flex items-center gap-1 bg-sky-100/80 p-0.5 rounded-md border border-sky-200 shadow-xs">
-            <span className="text-[10px] font-bold text-sky-900 font-mono px-1.5 hidden sm:inline">PSF/ACF:</span>
-            <span className="text-[10px] font-bold text-sky-900 font-mono px-1.5 hidden sm:inline">FILTERS:</span>
-            {[
-              { id: 1, label: "1. Modern FRP" },
-              { id: 2, label: "2. Animated Flow" },
-              { id: 3, label: "3. SCADA P&ID" },
-              { id: 4, label: "4. Full Cutaway" },
-            ].map((opt) => (
-              <button
-                key={opt.id}
-                onClick={() => setFilterVesselOption(opt.id as 1 | 2 | 3 | 4)}
-                className={`px-2 py-0.5 text-[10px] font-mono rounded font-bold transition-all ${filterVesselOption === opt.id
-                  ? "bg-sky-600 text-white shadow-xs"
-                  : "text-slate-600 hover:text-sky-900 hover:bg-white/70"
-                  }`}
-              >
-                {opt.label}
               </button>
             ))}
           </div>
@@ -963,17 +796,17 @@ export function ScadaSchematicSimulation() {
           WATER CLARITY PROGRESSION:
         </span>
         <div className="flex items-center gap-2 flex-nowrap">
-          <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-[#5D4037]/10 border border-[#5D4037]/30 text-[#4E342E] font-semibold" title="Raw untreated sewage (turbid, high TSS)">
+          <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-[#5D4037]/15 border border-[#5D4037]/40 text-[#4E342E] font-semibold" title="Raw untreated sewage (dark influent sludge)">
             <span className="w-2.5 h-2.5 rounded-full bg-[#5D4037]" />
             1. Raw Sewage (15%)
           </span>
           <span className="text-slate-400">→</span>
-          <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-[#8D7B68]/15 border border-[#8D7B68]/40 text-[#5D4037] font-semibold" title="MBBR biological digestion mixed liquor (faded sewage broth)">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#8D7B68]" />
+          <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-[#8D6E63]/15 border border-[#8D6E63]/40 text-[#5D4037] font-semibold" title="MBBR biological digestion mixed liquor (Bio-Mix)">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#8D6E63]" />
             2. Aeration Bio-Mix (35%)
           </span>
           <span className="text-slate-400">→</span>
-          <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-[#B8AA7B]/25 border border-[#B8AA7B]/60 text-[#786940] font-semibold" title="Clarifier solid-liquid settling supernatant (slightly bad/turbid)">
+          <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-[#B8AA7B]/25 border border-[#B8AA7B]/60 text-[#786940] font-semibold" title="Clarifier solid-liquid settling supernatant">
             <span className="w-2.5 h-2.5 rounded-full bg-[#D2C59D] border border-[#8C7C4E]" />
             3. Clarifier Settling (55%)
           </span>
@@ -1012,41 +845,41 @@ export function ScadaSchematicSimulation() {
           preserveAspectRatio="xMidYMid meet"
         >
           <defs>
-            {/* 1. Raw Sewage / Influent & Collection Tank Water (Murky Greyish-Brown Wastewater) */}
+            {/* 1. Raw Sewage / Influent & Collection Tank Water (Dark Sludge Brown Influent) */}
             <linearGradient id="rawSewageGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#A1887F" stopOpacity="0.88" />
-              <stop offset="45%" stopColor="#8D6E63" stopOpacity="0.92" />
-              <stop offset="100%" stopColor="#5D4037" stopOpacity="0.96" />
+              <stop offset="0%" stopColor="#795548" stopOpacity="0.90" />
+              <stop offset="45%" stopColor="#5D4037" stopOpacity="0.94" />
+              <stop offset="100%" stopColor="#3E2723" stopOpacity="0.97" />
             </linearGradient>
 
             {/* Collection Tank Wave Gradients & Fluid Mask */}
             <linearGradient id="rawSewageWaveFront" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#D7CCC8" stopOpacity="0.88" />
-              <stop offset="40%" stopColor="#8D6E63" stopOpacity="0.88" />
-              <stop offset="100%" stopColor="#5D4037" stopOpacity="0.96" />
+              <stop offset="0%" stopColor="#A1887F" stopOpacity="0.90" />
+              <stop offset="40%" stopColor="#6D4C41" stopOpacity="0.92" />
+              <stop offset="100%" stopColor="#3E2723" stopOpacity="0.96" />
             </linearGradient>
             <linearGradient id="rawSewageWaveBack" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#A1887F" stopOpacity="0.65" />
-              <stop offset="100%" stopColor="#4E342E" stopOpacity="0.90" />
+              <stop offset="0%" stopColor="#8D6E63" stopOpacity="0.75" />
+              <stop offset="100%" stopColor="#4E342E" stopOpacity="0.92" />
             </linearGradient>
             <clipPath id="collectionTankFluidClip">
               <path d="M 2 16 Q 87.5 24 173 16 L 173 76 Q 87.5 93 2 76 Z" />
             </clipPath>
 
-            {/* 2. MBBR Aeration Tank (Aerated Mixed Liquor - Faded Raw Sewage Brown Broth) */}
+            {/* 2. MBBR Aeration Tank (Aerated Mixed Liquor - Murky Raw Sewage / Bio-Mix) */}
             <linearGradient id="mbbrWaterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#C4B5A5" stopOpacity="0.85" />
-              <stop offset="45%" stopColor="#A1887F" stopOpacity="0.88" />
-              <stop offset="100%" stopColor="#6D554D" stopOpacity="0.92" />
+              <stop offset="0%" stopColor="#A1887F" stopOpacity="0.88" />
+              <stop offset="45%" stopColor="#8D6E63" stopOpacity="0.92" />
+              <stop offset="100%" stopColor="#5D4037" stopOpacity="0.96" />
             </linearGradient>
             <linearGradient id="mbbrWaveFront" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#EFEBE9" stopOpacity="0.88" />
-              <stop offset="40%" stopColor="#BCAAA4" stopOpacity="0.85" />
-              <stop offset="100%" stopColor="#8D7B68" stopOpacity="0.92" />
+              <stop offset="0%" stopColor="#D7CCC8" stopOpacity="0.88" />
+              <stop offset="40%" stopColor="#8D6E63" stopOpacity="0.88" />
+              <stop offset="100%" stopColor="#5D4037" stopOpacity="0.96" />
             </linearGradient>
             <linearGradient id="mbbrWaveBack" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#BCAAA4" stopOpacity="0.65" />
-              <stop offset="100%" stopColor="#6D554D" stopOpacity="0.88" />
+              <stop offset="0%" stopColor="#A1887F" stopOpacity="0.65" />
+              <stop offset="100%" stopColor="#4E342E" stopOpacity="0.90" />
             </linearGradient>
             <clipPath id="mbbrTankFluidClip">
               <path d="M 2 16 Q 70 24 138 16 L 138 76 Q 70 93 2 76 Z" />
@@ -1165,6 +998,19 @@ export function ScadaSchematicSimulation() {
               <stop offset="100%" stopColor="#475569" />
             </linearGradient>
 
+            {/* Architectural Building Facade & Glass Gradients (Light Theme) */}
+            <linearGradient id="buildingFacadeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#FFFFFF" />
+              <stop offset="25%" stopColor="#F8FAFC" />
+              <stop offset="70%" stopColor="#F1F5F9" />
+              <stop offset="100%" stopColor="#E2E8F0" />
+            </linearGradient>
+            <linearGradient id="buildingGlassGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#E0F2FE" stopOpacity="0.95" />
+              <stop offset="50%" stopColor="#BAE6FD" stopOpacity="0.90" />
+              <stop offset="100%" stopColor="#7DD3FC" stopOpacity="0.95" />
+            </linearGradient>
+
             {/* 10. 2.5D Cylindrical Glass Vessel Walls (Specular Highlight & Fresnel Backlight) */}
             <linearGradient id="glassCylinderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.5" />
@@ -1259,14 +1105,109 @@ export function ScadaSchematicSimulation() {
           {/* PIPELINE NETWORK (100% FAITHFUL TO THE REFERENCE PHOTO)                */}
           {/* ====================================================================== */}
 
-          {/* 1. RAW INFLUENT INLET (MURKY SEWAGE WATER) */}
-          <path d="M 50 92 L 135 92" stroke="#8D6E63" strokeWidth="5" fill="none" strokeLinecap="round" />
-          <polygon points="127,88 135,92 127,96" fill="#8D6E63" />
-          {isPlaying && (
-            <path d="M 50 92 L 135 92" stroke="#D7CCC8" strokeWidth="2.5" strokeDasharray="5 7" fill="none">
-              <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
-            </path>
-          )}
+          {/* ====================================================================== */}
+          {/* 2.5D FACILITY / BUILDING INFLUENT SOURCE (LIGHT ARCHITECTURAL THEME)   */}
+          {/* ====================================================================== */}
+          <g id="facility-building" transform="translate(8, 30)">
+            {/* 1. 3D Grounding Soft Contact Shadow */}
+            <ellipse cx="26" cy="80" rx="26" ry="5.5" fill="#64748B" opacity="0.25" />
+            <ellipse cx="26" cy="80" rx="18" ry="3.2" fill="#334155" opacity="0.30" />
+
+            {/* 2. Architectural Concrete Foundation Pedestal */}
+            <rect x="0" y="74" width="52" height="6" rx="1.5" fill="#E2E8F0" stroke="#CBD5E1" strokeWidth="1" />
+            <line x1="1" y1="75" x2="51" y2="75" stroke="#FFFFFF" strokeWidth="0.8" opacity="0.9" />
+
+            {/* 3. Main Architectural Tower Body (2.5D Stepped Light Monolith) */}
+            <rect x="4" y="14" width="44" height="60" rx="2" fill="url(#buildingFacadeGrad)" stroke="#94A3B8" strokeWidth="1.2" />
+
+            {/* 4. Rooftop Parapet, Terrace & Perimeter Railing */}
+            <rect x="2" y="10" width="48" height="4.5" rx="1" fill="#F1F5F9" stroke="#CBD5E1" strokeWidth="0.8" />
+            <line x1="5" y1="8" x2="47" y2="8" stroke="#38BDF8" strokeWidth="1" strokeDasharray="3 1.5" opacity="0.85" />
+
+            {/* Rooftop HVAC Mechanical Penthouse */}
+            <rect x="8" y="3.5" width="16" height="7" rx="1" fill="#F8FAFC" stroke="#CBD5E1" strokeWidth="0.8" />
+            <line x1="10" y1="5.5" x2="22" y2="5.5" stroke="#94A3B8" strokeWidth="0.7" />
+            <line x1="10" y1="7.5" x2="22" y2="7.5" stroke="#94A3B8" strokeWidth="0.7" />
+
+            {/* Telecommunications Mast & Active Beacon */}
+            <line x1="38" y1="10" x2="38" y2="0" stroke="#64748B" strokeWidth="1.2" />
+            <circle cx="38" cy="0" r="1.6" fill="#0284C7">
+              <animate attributeName="opacity" values="1; 0.3; 1" dur="1.2s" repeatCount="indefinite" />
+            </circle>
+
+            {/* 5. Curtain-Wall Panoramic Window Bays & Architectural Spandrels */}
+            {/* Floor 4 (Top Floor) */}
+            <rect x="7" y="16" width="16" height="9.5" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" />
+            <rect x="25" y="16" width="16" height="9.5" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" />
+            <line x1="15" y1="16" x2="15" y2="25.5" stroke="#0284C7" strokeWidth="0.5" opacity="0.5" />
+            <line x1="33" y1="16" x2="33" y2="25.5" stroke="#0284C7" strokeWidth="0.5" opacity="0.5" />
+
+            {/* Floor 4-3 Titanium Spandrel Band */}
+            <line x1="4" y1="27.5" x2="48" y2="27.5" stroke="#CBD5E1" strokeWidth="1.4" />
+
+            {/* Floor 3 */}
+            <rect x="7" y="29.5" width="16" height="9.5" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" />
+            <rect x="25" y="29.5" width="16" height="9.5" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" />
+            <line x1="15" y1="29.5" x2="15" y2="39" stroke="#0284C7" strokeWidth="0.5" opacity="0.5" />
+            <line x1="33" y1="29.5" x2="33" y2="39" stroke="#0284C7" strokeWidth="0.5" opacity="0.5" />
+
+            {/* Floor 3-2 Titanium Spandrel Band */}
+            <line x1="4" y1="41" x2="48" y2="41" stroke="#CBD5E1" strokeWidth="1.4" />
+
+            {/* Floor 2 */}
+            <rect x="7" y="43" width="16" height="9.5" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" />
+            <rect x="25" y="43" width="16" height="9.5" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" />
+            <line x1="15" y1="43" x2="15" y2="52.5" stroke="#0284C7" strokeWidth="0.5" opacity="0.5" />
+            <line x1="33" y1="43" x2="33" y2="52.5" stroke="#0284C7" strokeWidth="0.5" opacity="0.5" />
+
+            {/* Floor 2-1 Titanium Spandrel Band */}
+            <line x1="4" y1="54.5" x2="48" y2="54.5" stroke="#CBD5E1" strokeWidth="1.4" />
+
+            {/* Ground Floor Entrance Lobby & Canopy */}
+            <rect x="14" y="58" width="20" height="16" rx="1" fill="#FFFFFF" stroke="#0284C7" strokeWidth="0.8" />
+            {/* Modern Entrance Canopy */}
+            <rect x="11" y="56.5" width="26" height="2.5" rx="0.5" fill="#0284C7" opacity="0.9" />
+            {/* Double Glass Lobby Doors */}
+            <rect x="16" y="60" width="7.5" height="14" fill="#E0F2FE" stroke="#38BDF8" strokeWidth="0.5" />
+            <rect x="24.5" y="60" width="7.5" height="14" fill="#E0F2FE" stroke="#38BDF8" strokeWidth="0.5" />
+            <line x1="24" y1="60" x2="24" y2="74" stroke="#0284C7" strokeWidth="0.6" />
+
+            {/* 6. Cylindrical Glass Specular Reflection Glare (Matches Tanks & Vessels) */}
+            <rect x="6" y="15" width="8" height="58" rx="2" fill="url(#specularSheen)" opacity="0.8" />
+
+            {/* 7. Industrial Sewer Discharge Manifold (ANSI Flange at y=30, matches pipeline y=60) */}
+            <g id="building-sewer-discharge-manifold" transform="translate(45, 26)">
+              {/* Stainless Steel Flange Ring */}
+              <rect x="0" y="0" width="5.5" height="8" rx="1" fill="url(#metalRingGrad)" stroke="#64748B" strokeWidth="0.8" />
+              {/* Flange Bolts */}
+              <circle cx="2.7" cy="1.6" r="0.65" fill="#334155" />
+              <circle cx="2.7" cy="6.4" r="0.65" fill="#334155" />
+            </g>
+
+            {/* 8. Precision SCADA Identification Badge (Light Mode) */}
+            <g transform="translate(26, -6)">
+              <rect x="-24" y="-7" width="48" height="14" rx="3" fill="#FFFFFF" stroke="#0284C7" strokeWidth="1" />
+              <circle cx="-18" cy="0" r="1.8" fill="#16A34A">
+                <animate attributeName="opacity" values="1; 0.4; 1" dur="2s" repeatCount="indefinite" />
+              </circle>
+              <text x="3" y="-1.5" fill="#0369A1" fontSize="4.6" fontWeight="bold" textAnchor="middle" fontFamily="monospace">BUILDING</text>
+              <text x="3" y="3.5" fill="#64748B" fontSize="3" fontWeight="bold" textAnchor="middle" fontFamily="monospace">SEWER SOURCE</text>
+            </g>
+          </g>
+
+          {/* 1. RAW INFLUENT INLET FROM BUILDING (MURKY SEWAGE WATER) */}
+          <g id="raw-influent-from-building">
+            {/* Pipe from Building (56, 60) across to Collection Tank top inlet at (152, 60), then elbows down to (152, 68) */}
+            <path d="M 56 60 L 152 60 L 152 68" stroke="#8D6E63" strokeWidth="5" fill="none" strokeLinejoin="round" />
+            <polygon points="98,56 108,60 98,64" fill="#8D6E63" />
+            {isPlaying && (
+              <path d="M 56 60 L 152 60 L 152 68" stroke="#D7CCC8" strokeWidth="2.5" strokeDasharray="5 7" fill="none" strokeLinejoin="round">
+                <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
+              </path>
+            )}
+            {/* Discharge Nozzle Flange at Pipe Mouth */}
+            <rect x="148" y="66" width="8" height="3" rx="1" fill="#5D4037" stroke="#3E2723" strokeWidth="0.8" />
+          </g>
 
           {/* 2. RED DRAIN & BACKWASH RETURN PIPELINE */}
           <g id="red-drain-pipeline">
@@ -1283,11 +1224,11 @@ export function ScadaSchematicSimulation() {
             <path d="M 545 480 L 545 390" stroke="#DC2626" strokeWidth="4.5" fill="none" />
             <polygon points="541,435 545,425 549,435" fill="#DC2626" />
 
-            {/* Header running across above ACF to far left margin and cleanly into Collection Tank left side (y=68) */}
-            <path d="M 545 390 L 75 390 L 75 68 L 135 68" stroke="#DC2626" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
+            {/* Header running across above ACF to far left margin and cleanly into Collection Tank left side (y=76) */}
+            <path d="M 545 390 L 75 390 L 75 76 L 135 76" stroke="#DC2626" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
             <polygon points="260,386 250,390 260,394" fill="#DC2626" />
             <polygon points="71,210 75,200 79,210" fill="#DC2626" />
-            <polygon points="127,64 135,68 127,72" fill="#DC2626" />
+            <polygon points="127,72 135,76 127,80" fill="#DC2626" />
 
             {/* Animated backwash/rinse flow */}
             {isPlaying && (
@@ -1295,7 +1236,7 @@ export function ScadaSchematicSimulation() {
                 {/* Active Backwash/Rinse Flow from ACF Multiport Valve */}
                 {(acfValveMode === "BACKWASH" || acfValveMode === "RINSE") && (
                   <path
-                    d="M 390 480 L 545 480 L 545 390 L 75 390 L 75 68 L 135 68"
+                    d="M 390 480 L 545 480 L 545 390 L 75 390 L 75 76 L 135 76"
                     stroke="#FCA5A5"
                     strokeWidth="2.5"
                     strokeDasharray="6 8"
@@ -1309,7 +1250,7 @@ export function ScadaSchematicSimulation() {
                 {/* Active Backwash/Rinse Flow from PSF Multiport Valve */}
                 {(psfValveMode === "BACKWASH" || psfValveMode === "RINSE") && (
                   <path
-                    d="M 870 480 L 545 480 L 545 390 L 75 390 L 75 68 L 135 68"
+                    d="M 870 480 L 545 480 L 545 390 L 75 390 L 75 76 L 135 76"
                     stroke="#FCA5A5"
                     strokeWidth="2.5"
                     strokeDasharray="6 8"
@@ -1323,7 +1264,7 @@ export function ScadaSchematicSimulation() {
                 {/* Subtle Standby Connectivity Flow when neither valve is actively backwashing */}
                 {acfValveMode !== "BACKWASH" && acfValveMode !== "RINSE" && psfValveMode !== "BACKWASH" && psfValveMode !== "RINSE" && (
                   <path
-                    d="M 390 480 L 545 480 L 545 390 L 75 390 L 75 68 L 135 68"
+                    d="M 390 480 L 545 480 L 545 390 L 75 390 L 75 76 L 135 76"
                     stroke="#FCA5A5"
                     strokeWidth="1.8"
                     strokeDasharray="4 10"
@@ -1356,13 +1297,13 @@ export function ScadaSchematicSimulation() {
             )}
           </g>
 
-          {/* 4. MBBR AERATION OVERFLOW TO CLARIFIER TANK (RUNS ACROSS THE TOP AT Y=65 - FADED BIO-SLUDGE LIQUOR) */}
+          {/* 4. MBBR AERATION OVERFLOW TO CLARIFIER TANK (RUNS ACROSS THE TOP AT Y=65 - BIO-MIX LIQUOR) */}
           <g id="mbbr-to-clarifier-line">
             <path d="M 570 65 L 740 65" stroke="url(#ssPipeH)" strokeWidth="6.5" fill="none" />
-            <path d="M 570 65 L 740 65" stroke="#8D7B68" strokeWidth="4" fill="none" />
-            <polygon points="728,61 738,65 728,69" fill="#8D7B68" />
+            <path d="M 570 65 L 740 65" stroke="#8D6E63" strokeWidth="4" fill="none" />
+            <polygon points="728,61 738,65 728,69" fill="#8D6E63" />
             {isPlaying && (
-              <path d="M 570 65 L 740 65" stroke="#E0D7D3" strokeWidth="2.5" strokeDasharray="5 7" fill="none">
+              <path d="M 570 65 L 740 65" stroke="#D7CCC8" strokeWidth="2.5" strokeDasharray="5 7" fill="none">
                 <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
               </path>
             )}
@@ -1394,17 +1335,19 @@ export function ScadaSchematicSimulation() {
             <path d="M 600 95 L 600 177" stroke="#D97706" strokeWidth="3.5" fill="none" strokeLinejoin="round" />
             <polygon points="596,168 600,177 604,168" fill="#D97706" />
 
-            {/* 2. Recirculation branch into MBBR AERATION TANK (x=570, y=95) */}
-            <path d="M 600 95 L 570 95" stroke="#D97706" strokeWidth="3.5" fill="none" strokeLinejoin="round" />
-            <polygon points="578,91 570,95 578,99" fill="#D97706" />
+            {/* 2. Feed branch from MBBR AERATION TANK (x=570, y=95) to manifold (x=600) */}
+            <path d="M 570 95 L 600 95" stroke="#D97706" strokeWidth="3.5" fill="none" strokeLinejoin="round" />
+            <polygon points="587,91 595,95 587,99" fill="#D97706" />
 
+            {/* Arrow entering Clarifier underflow at x=781, y=128 */}
+            <polygon points="773,124 781,128 773,132" fill="#D97706" />
 
             {isPlaying && pumps.M4.status === "RUNNING" && (
               <>
-                <path d="M 781 128 L 705 128 L 600 128 L 600 177" stroke="#FDE68A" strokeWidth="2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
+                <path d="M 570 95 L 600 95 L 600 128 L 781 128" stroke="#FDE68A" strokeWidth="2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
                   <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${1.0 / simSpeed}s`} repeatCount="indefinite" />
                 </path>
-                <path d="M 600 128 L 600 95 L 570 95" stroke="#FDE68A" strokeWidth="2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
+                <path d="M 600 95 L 600 177" stroke="#FDE68A" strokeWidth="2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
                   <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
                 </path>
               </>
@@ -1412,7 +1355,7 @@ export function ScadaSchematicSimulation() {
 
             {isPlaying && pumps.M3.status === "RUNNING" && (
               <>
-                <path d="M 781 128 L 705 128 L 705 95 L 570 95" stroke="#FDE68A" strokeWidth="2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
+                <path d="M 570 95 L 705 95 L 705 128 L 781 128" stroke="#FDE68A" strokeWidth="2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
                   <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.9 / simSpeed}s`} repeatCount="indefinite" />
                 </path>
                 <path d="M 600 95 L 600 177" stroke="#FDE68A" strokeWidth="2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
@@ -1472,15 +1415,35 @@ export function ScadaSchematicSimulation() {
             )}
           </g>
 
-          {/* 11. PSF VALVE TO/FROM PSF VESSEL (100% CONNECTED ZERO GAPS) */}
+          {/* 11. PSF VALVE TO/FROM PSF VESSEL (100% CONNECTED ZERO GAPS DUAL MANIFOLD) */}
           <g id="psf-valve-to-vessel">
-            {/* VIN: From right edge of PSF valve (930, 465) into left edge of PSF vessel (970, 465) */}
-            <path d="M 930 465 L 970 465" stroke="#0284C7" strokeWidth="4" fill="none" />
-            <polygon points="962,462 970,465 962,468" fill="#0284C7" />
+            {/* Trunk from PSF Valve Right Nozzle (930, 480) into Manifold Tee at (950, 480) */}
+            <path d="M 930 480 L 950 480" stroke="#0284C7" strokeWidth="4.5" fill="none" />
 
-            {/* VOUT: From left edge of PSF vessel (970, 495) into right edge of valve (930, 495) */}
-            <path d="M 970 495 L 930 495" stroke="#0284C7" strokeWidth="4" fill="none" />
-            <polygon points="938,492 930,495 938,498" fill="#0284C7" />
+            {/* Upper Branch: Tee (950, 480) up to (950, 465) and into Top Distributor at (970, 465) */}
+            <path d="M 950 480 L 950 465 L 970 465" stroke="#0284C7" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
+            <polygon points="962,462 970,465 962,468" fill="#0284C7" />
+            <line x1="970" y1="460" x2="970" y2="470" stroke="#0369A1" strokeWidth="2.5" />
+
+            {/* Lower Branch: Tee (950, 480) down to (950, 495) and into Bottom Collector at (970, 495) */}
+            <path d="M 950 480 L 950 495 L 970 495" stroke="#0284C7" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
+            <polygon points="960,492 952,495 960,498" fill="#0284C7" />
+            <line x1="970" y1="490" x2="970" y2="500" stroke="#0369A1" strokeWidth="2.5" />
+
+            {/* Manifold Tee Junction Fitting */}
+            <circle cx="950" cy="480" r="3.5" fill="#0284C7" stroke="#0369A1" strokeWidth="1" />
+
+            {/* Animated fluid flow pulses */}
+            {isPlaying && (
+              <>
+                <path d="M 930 480 L 950 480 L 950 465 L 970 465" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
+                  <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
+                </path>
+                <path d="M 970 495 L 950 495 L 950 480 L 930 480" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
+                  <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
+                </path>
+              </>
+            )}
           </g>
 
           {/* 12. PSF VALVE OUTLET THROUGH 0.15 Bar OUTLET PRESSURE, ACROSS TO ACF VALVE INLET */}
@@ -1497,15 +1460,35 @@ export function ScadaSchematicSimulation() {
             )}
           </g>
 
-          {/* 13. ACF VALVE TO/FROM ACF VESSEL (100% CONNECTED ZERO GAPS) */}
+          {/* 13. ACF VALVE TO/FROM ACF VESSEL (100% CONNECTED ZERO GAPS DUAL MANIFOLD) */}
           <g id="acf-valve-to-vessel">
-            {/* VIN: From left edge of valve (330, 465) into right edge of ACF vessel (275, 465) */}
-            <path d="M 330 465 L 275 465" stroke="#0284C7" strokeWidth="4" fill="none" />
-            <polygon points="283,462 275,465 283,468" fill="#0284C7" />
+            {/* Trunk from ACF Valve Left Nozzle (330, 480) into Manifold Tee at (305, 480) */}
+            <path d="M 330 480 L 305 480" stroke="#0284C7" strokeWidth="4.5" fill="none" />
 
-            {/* VOUT: From right edge of ACF vessel (275, 495) into left edge of valve (330, 495) */}
-            <path d="M 275 495 L 330 495" stroke="#0284C7" strokeWidth="4" fill="none" />
-            <polygon points="322,492 330,495 322,498" fill="#0284C7" />
+            {/* Upper Branch: Tee (305, 480) up to (305, 465) and into Top Distributor at (275, 465) */}
+            <path d="M 305 480 L 305 465 L 275 465" stroke="#0284C7" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
+            <polygon points="283,462 275,465 283,468" fill="#0284C7" />
+            <line x1="275" y1="460" x2="275" y2="470" stroke="#0369A1" strokeWidth="2.5" />
+
+            {/* Lower Branch: Tee (305, 480) down to (305, 495) and into Bottom Collector at (275, 495) */}
+            <path d="M 305 480 L 305 495 L 275 495" stroke="#0284C7" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
+            <polygon points="285,492 293,495 285,498" fill="#0284C7" />
+            <line x1="275" y1="490" x2="275" y2="500" stroke="#0369A1" strokeWidth="2.5" />
+
+            {/* Manifold Tee Junction Fitting */}
+            <circle cx="305" cy="480" r="3.5" fill="#0284C7" stroke="#0369A1" strokeWidth="1" />
+
+            {/* Animated fluid flow pulses */}
+            {isPlaying && (
+              <>
+                <path d="M 330 480 L 305 480 L 305 465 L 275 465" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
+                  <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
+                </path>
+                <path d="M 275 495 L 305 495 L 305 480 L 330 480" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
+                  <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
+                </path>
+              </>
+            )}
           </g>
 
           {/* 14. ACF VALVE OUTLET UP, LEFT ACROSS TOP OF ACF, DOWN INTO UV LIGHT */}
@@ -1635,8 +1618,82 @@ export function ScadaSchematicSimulation() {
                     )}
                   </path>
 
-                  {/* 3D Liquid Meniscus (Top Surface Soft Fluid Blend) */}
-                  <ellipse cx="87.5" cy={rawY} rx="85.5" ry="6.5" fill="#8D6E63" opacity="0.25" />
+                  {/* 3D Liquid Meniscus (Top Surface Soft Fluid Blend - Dark Sludge) */}
+                  <ellipse cx="87.5" cy={rawY} rx="85.5" ry="6.5" fill="#5D4037" opacity="0.35" />
+
+                  {/* Dynamic Water Dropping Effect from Inlet Pipe Mouth (x=17, y=20 down to rawY) */}
+                  {isPlaying && (
+                    <g id="collection-tank-water-drops">
+                      {/* Cascading wastewater stream */}
+                      <line x1="17" y1="20" x2="17" y2={rawY} stroke="#8D6E63" strokeWidth="1.6" strokeDasharray="3 3" opacity="0.6">
+                        <animate attributeName="stroke-dashoffset" from="12" to="0" dur={`${0.5 / simSpeed}s`} repeatCount="indefinite" />
+                      </line>
+
+                      {/* Droplet 1 */}
+                      <ellipse cx="17" cy="22" rx="1.6" ry="2.2" fill="#8D6E63">
+                        <animate
+                          attributeName="cy"
+                          values={`20; ${rawY}`}
+                          dur={`${0.65 / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                        <animate
+                          attributeName="opacity"
+                          values="0.9; 1; 0.2"
+                          dur={`${0.65 / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                      </ellipse>
+
+                      {/* Droplet 2 (offset) */}
+                      <ellipse cx="17" cy="22" rx="1.3" ry="1.9" fill="#A1887F">
+                        <animate
+                          attributeName="cy"
+                          values={`20; ${rawY}`}
+                          begin={`${0.22 / simSpeed}s`}
+                          dur={`${0.65 / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                        <animate
+                          attributeName="opacity"
+                          values="0.9; 1; 0.2"
+                          begin={`${0.22 / simSpeed}s`}
+                          dur={`${0.65 / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                      </ellipse>
+
+                      {/* Droplet 3 (offset) */}
+                      <ellipse cx="17" cy="22" rx="1.5" ry="2.0" fill="#6D4C41">
+                        <animate
+                          attributeName="cy"
+                          values={`20; ${rawY}`}
+                          begin={`${0.44 / simSpeed}s`}
+                          dur={`${0.65 / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                        <animate
+                          attributeName="opacity"
+                          values="0.9; 1; 0.2"
+                          begin={`${0.44 / simSpeed}s`}
+                          dur={`${0.65 / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                      </ellipse>
+
+                      {/* Impact Splashing / Expanding Surface Ripples */}
+                      <ellipse cx="17" cy={rawY} rx="2" ry="0.8" fill="none" stroke="#D7CCC8" strokeWidth="0.8">
+                        <animate attributeName="rx" values="1.5; 8" dur={`${0.65 / simSpeed}s`} repeatCount="indefinite" />
+                        <animate attributeName="ry" values="0.6; 2.2" dur={`${0.65 / simSpeed}s`} repeatCount="indefinite" />
+                        <animate attributeName="opacity" values="0.9; 0" dur={`${0.65 / simSpeed}s`} repeatCount="indefinite" />
+                      </ellipse>
+                      <ellipse cx="17" cy={rawY} rx="2" ry="0.8" fill="none" stroke="#D7CCC8" strokeWidth="0.8">
+                        <animate attributeName="rx" values="1.5; 8" begin={`${0.32 / simSpeed}s`} dur={`${0.65 / simSpeed}s`} repeatCount="indefinite" />
+                        <animate attributeName="ry" values="0.6; 2.2" begin={`${0.32 / simSpeed}s`} dur={`${0.65 / simSpeed}s`} repeatCount="indefinite" />
+                        <animate attributeName="opacity" values="0.9; 0" begin={`${0.32 / simSpeed}s`} dur={`${0.65 / simSpeed}s`} repeatCount="indefinite" />
+                      </ellipse>
+                    </g>
+                  )}
                 </g>
               )
             })()}
@@ -1705,8 +1762,8 @@ export function ScadaSchematicSimulation() {
                 )}
               </path>
 
-              {/* Soft Meniscus Blend at 50% Waterline (Faded Bio-Sludge Brown) */}
-              <ellipse cx="70" cy="45" rx="68" ry="6.5" fill="#BCAAA4" opacity="0.3" />
+              {/* Soft Meniscus Blend at 50% Waterline (Bio-Mix) */}
+              <ellipse cx="70" cy="45" rx="68" ry="6.5" fill="#A1887F" opacity="0.35" />
             </g>
 
             {/* Rising Aeration Micro-Bubbles (Bottom to 50% Water Surface) */}
@@ -1782,9 +1839,9 @@ export function ScadaSchematicSimulation() {
           {/* DOTTED BOUNDING BOX FOR SLUDGE RECIRCULATION PUMPS M3 & M4 */}
           <rect x="615" y="70" width="85" height="84" rx="4" fill="none" stroke="#93C5FD" strokeWidth="1" strokeDasharray="3 3" />
 
-          {/* SLUDGE PUMPS M3 & M4 (POINTING LEFT, RECIRCULATING TO MBBR & WASTING TO SLUDGE TANK) */}
-          {renderPump("M3", 655, 95, "left", "MBBR RCP 1", undefined, "top")}
-          {renderPump("M4", 655, 128, "left", "MBBR RCP 2", undefined, "bottom")}
+          {/* SLUDGE PUMPS M3 & M4 (POINTING RIGHT, MBBR TO CLARIFIER & WASTING TO SLUDGE TANK) */}
+          {renderPump("M3", 655, 95, "right", "MBBR RCP 1", undefined, "top")}
+          {renderPump("M4", 655, 128, "right", "MBBR RCP 2", undefined, "bottom")}
 
           {/* TANK 4: CLARIFIER TANK WITH CONICAL HOPPER & ROTATING SCRAPER ARM (2.5D CUTAWAY) */}
           <g id="tank-clarifier" transform="translate(740, 48)">
@@ -1840,7 +1897,7 @@ export function ScadaSchematicSimulation() {
             </g>
 
             {/* Settled Biological Sludge Blanket in Conical Hopper Apex */}
-            <path d="M 2 54 L 54 88 Q 70 93 86 88 L 138 54 Z" fill="url(#rawSewageGrad)" />
+            <path d="M 2 54 L 54 88 Q 70 93 86 88 L 138 54 Z" fill="url(#sludgeWaterGrad)" />
 
             {/* Peripheral V-Notch Overflow Weir Trough */}
             <path d="M 4 20 L 136 20" stroke="#38BDF8" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.75" />
@@ -1943,12 +2000,32 @@ export function ScadaSchematicSimulation() {
             <ellipse cx="57.5" cy="12" rx="57.5" ry="6.5" fill="url(#glassRimGrad)" stroke="#94A3B8" strokeWidth="1.5" />
           </g>
 
-          {/* CLARIFIER VALVE */}
-          <g id="valve-clarifier" transform="translate(810, 185)" className="cursor-pointer" onClick={() => setClarifierValveOpen(!clarifierValveOpen)}>
-            {renderMiniTag(0, -18, "V-CLR")}
-            <circle cx="0" cy="0" r="13" fill="url(#metalRingGrad)" stroke="#16A34A" strokeWidth="1" />
-            <circle cx="0" cy="0" r="10.5" fill="#DCFCE7" stroke="#16A34A" strokeWidth="1.8" />
-            <circle cx="7" cy="-7" r="2.2" fill="#16A34A" stroke="#FFFFFF" strokeWidth="0.6" />
+          {/* CLARIFIER VALVE (Industrial 2-Way In-Line Vertical Valve) */}
+          <g
+            id="valve-clarifier"
+            transform="translate(810, 185)"
+            className="cursor-pointer"
+            onClick={() => setClarifierValveOpen(!clarifierValveOpen)}
+          >
+            <title>{`Clarifier Isolation Valve (V-CLR): ${clarifierValveOpen ? "OPEN (Click to Close)" : "CLOSED (Click to Open)"}`}</title>
+            {renderMiniTag(0, -22, "V-CLR")}
+
+            {/* Vertical In-Line Pipe Connection Flanges */}
+            <rect x="-7" y="-17" width="14" height="3" rx="0.8" fill="url(#metalRingGrad)" stroke="#64748B" strokeWidth="0.8" />
+            <rect x="-7" y="14" width="14" height="3" rx="0.8" fill="url(#metalRingGrad)" stroke="#64748B" strokeWidth="0.8" />
+
+            {/* ASME Twin Triangular Valve Body */}
+            <polygon points="-7,-14 0,0 7,-14" fill="#334155" stroke="#0F172A" strokeWidth="1.2" />
+            <polygon points="-7,14 0,0 7,14" fill="#334155" stroke="#0F172A" strokeWidth="1.2" />
+
+            {/* Center Valve Seat & Stem Boss */}
+            <circle cx="0" cy="0" r="6.5" fill={clarifierValveOpen ? "#DCFCE7" : "#FEE2E2"} stroke={clarifierValveOpen ? "#16A34A" : "#DC2626"} strokeWidth="1.3" />
+            <circle cx="0" cy="0" r="2.2" fill={clarifierValveOpen ? "#16A34A" : "#DC2626"} />
+
+            {/* Side Solenoid / Electric Actuator Head */}
+            <line x1="0" y1="0" x2="-10" y2="0" stroke="#64748B" strokeWidth="2" />
+            <rect x="-19" y="-6" width="9" height="12" rx="1.5" fill="#1E293B" stroke={clarifierValveOpen ? "#16A34A" : "#DC2626"} strokeWidth="1" />
+            <circle cx="-14.5" cy="0" r="1.5" fill={clarifierValveOpen ? "#22C55E" : "#EF4444"} />
           </g>
 
           {/* TANK 6: FILTER FEED TANK (2.5D CYLINDRICAL GLASS VESSEL WITH CALIBRATED SIGHT-SCALE) */}
@@ -2029,7 +2106,6 @@ export function ScadaSchematicSimulation() {
             <g>
               <path d="M -5 0 L 5 0 M 0 -5 L 0 5 M -3.5 -3.5 L 3.5 3.5 M -3.5 3.5 L 3.5 -3.5" stroke="#BE123C" strokeWidth="1.6" strokeLinecap="round" />
             </g>
-            <circle cx="9" cy="-9" r="2.5" fill="#DC2626" stroke="#FFFFFF" strokeWidth="0.6" />
           </g>
 
           <g id="blower-2" transform="translate(510, 240)" className="cursor-pointer" onClick={() => handleTogglePump("BL2")}>
@@ -2042,9 +2118,6 @@ export function ScadaSchematicSimulation() {
               )}
               <path d="M -6 0 L 6 0 M 0 -6 L 0 6 M -4 -4 L 4 4 M -4 4 L 4 -4" stroke="#15803D" strokeWidth="1.8" strokeLinecap="round" />
             </g>
-            <circle cx="9" cy="-9" r="2.5" fill="#16A34A" stroke="#FFFFFF" strokeWidth="0.6">
-              {isPlaying && <animate attributeName="opacity" values="0.7;1;0.7" dur="1s" repeatCount="indefinite" />}
-            </circle>
           </g>
 
           {/* FILTER FEED PUMPS: M10 & M11 */}
@@ -2058,15 +2131,14 @@ export function ScadaSchematicSimulation() {
           {/* GREY DASHED BORDER AROUND ACF AREA */}
           <rect x="110" y="415" width="285" height="185" rx="6" fill="none" stroke="#CBD5E1" strokeWidth="1.5" strokeDasharray="4 4" />
 
-          {/* PSF VALVE MULTIPORT BLOCK (UKL 5-Port Multiport Valve) */}
+          {/* PSF VALVE MULTIPORT BLOCK (Industrial 4-Port Multiport Valve) */}
           <g id="psf-valve-block" transform="translate(870, 450)">
             {renderMultiportValve("PSF", psfValveMode, () => {
               const nextModes: Record<MultiportValveMode, MultiportValveMode> = {
-                SERVICE: "BRINE",
-                BRINE: "BACKWASH",
+                SERVICE: "BACKWASH",
                 BACKWASH: "RINSE",
-                RINSE: "REFILL",
-                REFILL: "SERVICE",
+                RINSE: "DRAIN",
+                DRAIN: "SERVICE",
               }
               setPsfValveMode(prev => nextModes[prev] ?? "SERVICE")
             })}
@@ -2077,15 +2149,14 @@ export function ScadaSchematicSimulation() {
             {renderFilterVessel("PSF", filterVesselOption)}
           </g>
 
-          {/* ACF VALVE MULTIPORT BLOCK (UKL 5-Port Multiport Valve) */}
+          {/* ACF VALVE MULTIPORT BLOCK (Industrial 4-Port Multiport Valve) */}
           <g id="acf-valve-block" transform="translate(330, 450)">
             {renderMultiportValve("ACF", acfValveMode, () => {
               const nextModes: Record<MultiportValveMode, MultiportValveMode> = {
-                SERVICE: "BRINE",
-                BRINE: "BACKWASH",
+                SERVICE: "BACKWASH",
                 BACKWASH: "RINSE",
-                RINSE: "REFILL",
-                REFILL: "SERVICE",
+                RINSE: "DRAIN",
+                DRAIN: "SERVICE",
               }
               setAcfValveMode(prev => nextModes[prev] ?? "SERVICE")
             })}
@@ -2096,19 +2167,57 @@ export function ScadaSchematicSimulation() {
             {renderFilterVessel("ACF", filterVesselOption)}
           </g>
 
-          {/* DOSING PUMP */}
-          <g id="dosing-pump" transform="translate(230, 595)">
-            {renderMiniTag(16, -7, "DOSING")}
-            <polygon points="16,0 32,9 32,27 16,36 0,27 0,9" fill="#DCFCE7" stroke="#16A34A" strokeWidth="2" />
-            {/* Animated Stroke Diaphragm Pulse */}
-            {isPlaying && (
-              <circle cx="16" cy="18" r="6" fill="#16A34A" opacity="0.25">
-                <animate attributeName="r" values="3;7;3" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.4;0.1;0.4" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
-              </circle>
-            )}
-            <line x1="16" y1="36" x2="16" y2="50" stroke="#16A34A" strokeWidth="2" />
-            <polygon points="13,50 16,55 19,50" fill="#16A34A" />
+          {/* DOSING PUMP (Precision Solenoid Diaphragm Metering Pump) */}
+          <g id="dosing-pump" transform="translate(225, 595)">
+            {renderMiniTag(20, -7, "DOSING")}
+            {/* Base Mounting Foot Bracket */}
+            <rect x="22" y="34" width="18" height="4" rx="1" fill="#334155" stroke="#0F172A" strokeWidth="0.8" />
+            <circle cx="25" cy="36" r="0.9" fill="#94A3B8" />
+            <circle cx="37" cy="36" r="0.9" fill="#94A3B8" />
+
+            {/* Heavy-Duty Chemical-Resistant Solenoid Drive Enclosure */}
+            <rect x="22" y="14" width="18" height="20" rx="3" fill="#1E293B" stroke="#64748B" strokeWidth="1" />
+            
+            {/* Rear Motor Heat Dissipation Fins */}
+            <line x1="33" y1="17" x2="33" y2="31" stroke="#334155" strokeWidth="1.2" />
+            <line x1="36" y1="17" x2="36" y2="31" stroke="#334155" strokeWidth="1.2" />
+
+            {/* Electronic Stroke Control Dial / Knob */}
+            <circle cx="27" cy="24" r="3.2" fill="#0F172A" stroke="#94A3B8" strokeWidth="0.8" />
+            <circle cx="27" cy="24" r="1.4" fill="#16A34A" />
+
+            {/* Top Discharge Valve Union Nut & Chemical Injection Line */}
+            <rect x="12" y="5" width="6" height="8" rx="1" fill="#475569" stroke="#94A3B8" strokeWidth="0.8" />
+            <rect x="11" y="9" width="8" height="4" rx="0.5" fill="#334155" stroke="#64748B" strokeWidth="0.8" />
+            <polygon points="15,4 12,8 18,8" fill="#16A34A" />
+
+            {/* Bottom Suction Valve Union Nut & Chemical Feed Line Downward Injection */}
+            <rect x="12" y="35" width="6" height="8" rx="1" fill="#475569" stroke="#94A3B8" strokeWidth="0.8" />
+            <rect x="11" y="35" width="8" height="4" rx="0.5" fill="#334155" stroke="#64748B" strokeWidth="0.8" />
+            <line x1="15" y1="43" x2="15" y2="50" stroke="#16A34A" strokeWidth="2" />
+            <polygon points="12,50 15,55 18,50" fill="#16A34A" />
+
+            {/* Manual Degassing / Priming Relief Valve Knob */}
+            <rect x="6" y="9" width="4" height="4" rx="1" fill="#D97706" stroke="#B45309" strokeWidth="0.6" />
+
+            {/* PVDF Transparent Chemical Liquid-End Dosing Head Block */}
+            <rect x="8" y="13" width="14" height="22" rx="2.5" fill="url(#metalRingGrad)" stroke="#0284C7" strokeWidth="1.2" />
+
+            {/* Optical Diaphragm Stroke Sight Chamber */}
+            <circle cx="15" cy="24" r="7" fill="#064E3B" stroke="#22C55E" strokeWidth="1.2" />
+            
+            {/* Reciprocating Diaphragm Stroke Core */}
+            <circle cx="15" cy="24" r="4.2" fill="#16A34A" stroke="#FFFFFF" strokeWidth="0.6">
+              {isPlaying && (
+                <>
+                  <animate attributeName="r" values="3.2; 5.2; 3.2" dur={`${0.75 / simSpeed}s`} repeatCount="indefinite" />
+                  <animate attributeName="opacity" values="0.7; 1; 0.7" dur={`${0.75 / simSpeed}s`} repeatCount="indefinite" />
+                </>
+              )}
+            </circle>
+
+            {/* Specular Sheen Glare Arc */}
+            <path d="M 10 21 A 5.5 5.5 0 0 1 20 21" stroke="#FFFFFF" strokeWidth="1" fill="none" opacity="0.6" strokeLinecap="round" />
           </g>
 
           {/* UV LIGHT */}
@@ -2188,10 +2297,6 @@ export function ScadaSchematicSimulation() {
               )
             })()}
 
-            {/* Internal UV Submerged Dip-Pipe (Left Inlet) */}
-            <line x1="12" y1="14" x2="12" y2="60" stroke="#0284C7" strokeWidth="2.5" />
-            <polygon points="9,58 12,65 15,58" fill="#0284C7" />
-
             {/* Cylindrical Glare Streak */}
             <rect x="5" y="16" width="14" height="54" rx="3" fill="url(#specularSheen)" />
 
@@ -2202,45 +2307,36 @@ export function ScadaSchematicSimulation() {
           {/* M12: FLUSHING PUMP */}
           {renderPump("M12", 515, 645, "right", "FLUSHING PUMP", undefined, "bottom")}
 
-          {/* WATER SOLENOID VALVE */}
-          <g id="valve-water-solenoid" transform="translate(615, 645)" className="cursor-pointer" onClick={() => setWaterSolenoidOpen(!waterSolenoidOpen)}>
-            {renderMiniTag(0, -18, "V-SOL")}
-            <circle cx="0" cy="0" r="14" fill="url(#metalRingGrad)" stroke={waterSolenoidOpen ? "#16A34A" : "#DC2626"} strokeWidth="1" />
-            <circle cx="0" cy="0" r="11" fill={waterSolenoidOpen ? "#DCFCE7" : "#FEE2E2"} stroke={waterSolenoidOpen ? "#16A34A" : "#DC2626"} strokeWidth="1.8" />
-            <circle cx="8" cy="-8" r="2.5" fill={waterSolenoidOpen ? "#16A34A" : "#DC2626"} stroke="#FFFFFF" strokeWidth="0.6" />
+          {/* WATER SOLENOID VALVE (Industrial 2-Way In-Line Horizontal Solenoid Valve) */}
+          <g
+            id="valve-water-solenoid"
+            transform="translate(615, 645)"
+            className="cursor-pointer"
+            onClick={() => setWaterSolenoidOpen(!waterSolenoidOpen)}
+          >
+            <title>{`Treated Water Solenoid Valve (V-SOL): ${waterSolenoidOpen ? "OPEN (Click to Close)" : "CLOSED (Click to Open)"}`}</title>
+            {renderMiniTag(0, -25, "V-SOL")}
+
+            {/* Horizontal In-Line Pipe Connection Flanges */}
+            <rect x="-17" y="-7" width="3" height="14" rx="0.8" fill="url(#metalRingGrad)" stroke="#64748B" strokeWidth="0.8" />
+            <rect x="14" y="-7" width="3" height="14" rx="0.8" fill="url(#metalRingGrad)" stroke="#64748B" strokeWidth="0.8" />
+
+            {/* ASME Twin Triangular Valve Body */}
+            <polygon points="-14,-7 0,0 -14,7" fill="#334155" stroke="#0F172A" strokeWidth="1.2" />
+            <polygon points="14,-7 0,0 14,7" fill="#334155" stroke="#0F172A" strokeWidth="1.2" />
+
+            {/* Center Valve Seat & Stem Boss */}
+            <circle cx="0" cy="0" r="6.5" fill={waterSolenoidOpen ? "#DCFCE7" : "#FEE2E2"} stroke={waterSolenoidOpen ? "#16A34A" : "#DC2626"} strokeWidth="1.3" />
+            <circle cx="0" cy="0" r="2.2" fill={waterSolenoidOpen ? "#16A34A" : "#DC2626"} />
+
+            {/* Top Solenoid Electrical Actuator Coil Head */}
+            <line x1="0" y1="0" x2="0" y2="-10" stroke="#64748B" strokeWidth="2" />
+            <rect x="-6" y="-19" width="12" height="9" rx="1.5" fill="#1E293B" stroke={waterSolenoidOpen ? "#16A34A" : "#DC2626"} strokeWidth="1" />
+            <circle cx="0" cy="-14.5" r="1.5" fill={waterSolenoidOpen ? "#22C55E" : "#EF4444"} />
           </g>
 
-          {/* SOFTENER VESSEL (675, 595) - 2.5D ION-EXCHANGE COLUMN WITH CATION RESIN BED */}
           {/* SOFTENER VESSEL (675, 595) - Dynamic 4-Option Filter Vessel */}
           <g id="vessel-softener" transform="translate(675, 595)">
-            {renderMiniTag(40, 6, "SOFTENER")}
-            {/* Torispherical Upper Head Dome */}
-            <path d="M 1 18 C 1 3, 79 3, 79 18 Z" fill="url(#filterVesselGrad)" stroke="#0284C7" strokeWidth="2" />
-
-            {/* Cylindrical Shell Body */}
-            <rect x="1" y="18" width="78" height="68" fill="url(#filterVesselGrad)" stroke="#0284C7" strokeWidth="2" />
-
-            {/* Torispherical Lower Dish Head */}
-            <path d="M 1 86 C 1 100, 79 100, 79 86 Z" fill="url(#filterVesselGrad)" stroke="#0284C7" strokeWidth="2" />
-
-            {/* Circumferential Weld Seams */}
-            <line x1="1" y1="28" x2="79" y2="28" stroke="#38BDF8" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.8" />
-            <line x1="1" y1="76" x2="79" y2="76" stroke="#38BDF8" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.8" />
-
-            {/* 3D Cutaway Inspection Sight-Glass Window (Cation Resin Bed) */}
-            <g transform="translate(10, 32)">
-              <rect x="0" y="0" width="58" height="40" rx="3" fill="#0F172A" stroke="#7DD3FC" strokeWidth="1.2" />
-              {/* Golden Cation Ion-Exchange Resin Bed */}
-              <rect x="2" y="2" width="54" height="28" fill="url(#resinMediaGrad)" opacity="0.95" />
-              <rect x="2" y="30" width="54" height="8" rx="2" fill="#78350F" opacity="0.95" />
-              {/* Bottom Resin Retention Strainer */}
-              <line x1="8" y1="34" x2="50" y2="34" stroke="#CBD5E1" strokeWidth="1.8" />
-              {/* Sight Glass Glare */}
-              <rect x="2" y="2" width="18" height="36" rx="2" fill="url(#specularSheen)" opacity="0.4" />
-            </g>
-
-            {/* Specular Glare Strip */}
-            <rect x="4" y="8" width="9" height="80" rx="2" fill="url(#specularSheen)" opacity="0.55" />
             {renderFilterVessel("SOFTENER", filterVesselOption)}
           </g>
 
@@ -2314,101 +2410,60 @@ export function ScadaSchematicSimulation() {
           </g>
 
           {/* ====================================================================== */}
-          {/* LIVE TELEMETRY OVERLAY: OPTION 1 (EMBEDDED) VS OPTION 2 (FLOATING BADGES) */}
+          {/* TELEMETRY OVERLAY LAYER (ALL BADGES POSITIONED DIRECTLY ON ELEMENT TOP)*/}
           {/* ====================================================================== */}
           {showTelemetryBadges && (
             <g id="telemetry-details-overlay">
-              {telemetryMode === "EMBEDDED" ? (
-                // OPTION 1: EMBEDDED IN-ELEMENT READOUTS (ZERO PIPE COLLISION)
-                <g id="telemetry-embedded-mode">
-                  {/* Tanks: Embedded vapor headspace capsules */}
-                  {renderEmbeddedTankPill(222.5, 70, "TK-01", `${collectionLevel}%`, "Turbid 15%")}
-                  {renderEmbeddedTankPill(500, 70, "MBBR", `${do1.toFixed(2)} DO`, "Bio 35%")}
-                  {renderEmbeddedTankPill(810, 70, "CLR-01", `${clarifierTss.toFixed(1)} TSS`, "Settling 55%", "#A855F7")}
-                  {renderEmbeddedTankPill(652.5, 185, "SLUDGE", `${sludgeLevel}%`, "WAS Recirc", "#D97706")}
-                  {renderEmbeddedTankPill(810, 262, "FF-TK", `${filterFeedLevel}%`, "Pre-Filt 75%", "#14B8A6")}
-                  {renderEmbeddedTankPill(390, 625, "TREATED", `${treatedLevel}%`, "Clean 95%", "#0284C7")}
-                  {renderEmbeddedTankPill(910, 625, "SOFT-TK", `${softWaterLevel}%`, "Pure 99.9%", "#06B6D4")}
-                  {renderEmbeddedTankPill(715, 621, "SOFTENER", `${softwaterHardness.toFixed(1)} mg/L`, "Zero Hardness", "#10B981")}
+              {/* 1. Collection Tank (Top Center) */}
+              {renderTelemetryBadge(188, 20, "TK-01", "Level", `${collectionLevel}`, "%", "NORMAL")}
 
-                  {/* Pumps: Docked micro-flow readouts */}
-                  {renderEmbeddedPumpFlow(380, 36, "M1", pumps.M1.flowRate, pumps.M1.status)}
-                  {renderEmbeddedPumpFlow(380, 81, "M2", pumps.M2.flowRate, pumps.M2.status)}
-                  {renderEmbeddedPumpFlow(448, 175, "BL1", pumps.BL1.flowRate, pumps.BL1.status)}
-                  {renderEmbeddedPumpFlow(448, 235, "BL2", pumps.BL2.flowRate, pumps.BL2.status)}
-                  {renderEmbeddedPumpFlow(655, 71, "M3", pumps.M3.flowRate, pumps.M3.status)}
-                  {renderEmbeddedPumpFlow(655, 152, "M4", pumps.M4.flowRate, pumps.M4.status)}
-                  {renderEmbeddedPumpFlow(738, 365, "M10", pumps.M10.flowRate, pumps.M10.status)}
-                  {renderEmbeddedPumpFlow(882, 365, "M11", pumps.M11.flowRate, pumps.M11.status)}
-                  {renderEmbeddedPumpFlow(500, 621, "M12", pumps.M12.flowRate, pumps.M12.status)}
+              {/* 2. Feed Pumps M1 & M2 (M1 above upper pipe, M2 below lower pipe - Zero Pipe Collisions) */}
+              {renderTelemetryBadge(351, 46, "M1", "Flow", pumps.M1.flowRate.toFixed(1), "m³/h", pumps.M1.status)}
+              {renderTelemetryBadge(351, 138, "M2", "Flow", pumps.M2.flowRate.toFixed(1), "m³/h", pumps.M2.status)}
 
-                  {/* Filter Vessels & Multiport Valves */}
-                  {renderTelemetryBadge(980, 398, "PSF", "ΔP", (inletPressure - outletPressure).toFixed(2), "Bar", "NORMAL")}
-                  {renderTelemetryBadge(205, 398, "ACF", "Time", formatTime(acfSeconds), "", "NORMAL", 78)}
-                  {renderTelemetryBadge(870, 398, "PSF-MPV", "Mode", psfValveMode, "", psfValveMode === "SERVICE" ? "NORMAL" : "STANDBY", 72)}
-                  {renderTelemetryBadge(330, 398, "ACF-MPV", "Mode", acfValveMode, "", acfValveMode === "SERVICE" ? "NORMAL" : "STANDBY", 72)}
-                </g>
-              ) : (
-                // OPTION 2: MATHEMATICALLY SAFE FLOATING BADGES GRID (OPTIMIZED NON-COLLIDING COORDINATES)
-                <g id="telemetry-badges-mode">
-                  {/* 1. Collection Tank (Upper margin clear of nozzles) */}
-                  {renderTelemetryBadge(225, 20, "TK-01", "Level", `${collectionLevel}`, "%", "NORMAL")}
-                  {renderTelemetryBadge(225, 38, "TK-01", "Quality", "Turbid 15%", "", "STOPPED", 76)}
+              {/* 3. MBBR Aeration Tank (Top Center) */}
+              {renderTelemetryBadge(466, 20, "MBBR", "Level", `${mbbrLevel}`, "%", "NORMAL")}
 
-                  {/* 2. Feed Pumps M1 & M2 (Shifted off discharge pipe line) */}
-                  {renderTelemetryBadge(346, 32, "M1", "Flow", pumps.M1.flowRate.toFixed(1), "m³/h", pumps.M1.status)}
-                  {renderTelemetryBadge(346, 78, "M2", "Flow", pumps.M2.flowRate.toFixed(1), "m³/h", pumps.M2.status)}
+              {/* 4. Aeration Blowers BL1 & BL2 (Shifted cleanly to the right of blowers at x=535, clear of orange vertical header) */}
+              {renderTelemetryBadge(535, 172, "BL1", "Flow", `${pumps.BL1.flowRate.toFixed(0)}`, "m³/h", pumps.BL1.status)}
+              {renderTelemetryBadge(535, 232, "BL2", "Flow", `${pumps.BL2.flowRate.toFixed(0)}`, "m³/h", pumps.BL2.status)}
 
-                  {/* 3. MBBR Aeration Tank (Upper clear zone) */}
-                  {renderTelemetryBadge(485, 20, "MBBR", "DO", do1.toFixed(2), "mg/L", "NORMAL")}
-                  {renderTelemetryBadge(485, 38, "MBBR", "Quality", "Bio-Mix 35%", "", "NORMAL", 80)}
+              {/* 5. Sludge Recirculation Pumps M3 & M4 (Shifted right of vertical drop at x=600, with clean vertical spacing) */}
+              {renderTelemetryBadge(621, 56, "M3", "Flow", pumps.M3.flowRate.toFixed(1), "m³/h", pumps.M3.status)}
+              {renderTelemetryBadge(621, 102, "M4", "Flow", pumps.M4.flowRate.toFixed(1), "m³/h", pumps.M4.status)}
 
-                  {/* 4. Aeration Blowers BL1 & BL2 (Shifted left of vertical riser) */}
-                  {renderTelemetryBadge(415, 166, "BL1", "Flow", `${pumps.BL1.flowRate.toFixed(0)}`, "m³/h", pumps.BL1.status)}
-                  {renderTelemetryBadge(415, 226, "BL2", "Flow", `${pumps.BL2.flowRate.toFixed(0)}`, "m³/h", pumps.BL2.status)}
+              {/* 6. Sludge Holding Tank (Top Center, clean margin above conical rim) */}
+              {renderTelemetryBadge(621, 142, "SLUDGE", "Level", `${sludgeLevel}`, "%", "NORMAL")}
 
-                  {/* 5. Sludge Recirculation Pumps M3 & M4 (Shifted above/below suction pipes) */}
-                  {renderTelemetryBadge(620, 68, "M3", "Flow", pumps.M3.flowRate.toFixed(1), "m³/h", pumps.M3.status)}
-                  {renderTelemetryBadge(620, 104, "M4", "Flow", pumps.M4.flowRate.toFixed(1), "m³/h", pumps.M4.status)}
+              {/* 7. Clarifier Tank (Top Center) */}
+              {renderTelemetryBadge(776, 20, "CLR-01", "Level", `${clarifierLevel}`, "%", "NORMAL")}
 
-                  {/* 6. Sludge Holding Tank */}
-                  {renderTelemetryBadge(618, 142, "SLUDGE", "Level", `${sludgeLevel}`, "%", "NORMAL")}
+              {/* 8. Filter Feed Tank (Top Center) */}
+              {renderTelemetryBadge(776, 214, "FF-TK", "Level", `${filterFeedLevel}`, "%", "NORMAL")}
 
-                  {/* 7. Clarifier Tank */}
-                  {renderTelemetryBadge(800, 20, "CLR-01", "TSS", clarifierTss.toFixed(2), "mg/L", "NORMAL")}
-                  {renderTelemetryBadge(800, 38, "CLR-01", "Quality", "Settling 55%", "", "STANDBY", 82)}
+              {/* 9. Filter Feed Pumps M10 & M11 (Flanking the pumps: M10 on the left, M11 on the right to eliminate mutual collision & pipe overlap) */}
+              {renderTelemetryBadge(695, 357, "M10", "Flow", pumps.M10.flowRate.toFixed(1), "m³/h", pumps.M10.status)}
+              {renderTelemetryBadge(875, 357, "M11", "Flow", pumps.M11.flowRate.toFixed(1), "m³/h", pumps.M11.status)}
 
-                  {/* 8. Filter Feed Tank */}
-                  {renderTelemetryBadge(800, 214, "FF-TK", "Level", `${filterFeedLevel}`, "%", "NORMAL")}
-                  {renderTelemetryBadge(800, 232, "FF-TK", "Quality", "Pre-Filt 75%", "", "NORMAL", 80)}
+              {/* 10. Media Filter Vessels PSF & ACF (Upper clean margins) */}
+              {renderTelemetryBadge(966, 396, "PSF", "ΔP", (inletPressure - outletPressure).toFixed(2), "Bar", "NORMAL")}
+              {renderTelemetryBadge(200, 394, "ACF", "Time", formatTime(acfSeconds), "", "NORMAL", 78)}
 
-                  {/* 9. Filter Feed Pumps M10 & M11 (Shifted away from vertical suction lines) */}
-                  {renderTelemetryBadge(705, 356, "M10", "Flow", pumps.M10.flowRate.toFixed(1), "m³/h", pumps.M10.status)}
-                  {renderTelemetryBadge(864, 356, "M11", "Flow", pumps.M11.flowRate.toFixed(1), "m³/h", pumps.M11.status)}
+              {/* 10b. PSF & ACF Multiport Valves (Cleanly placed directly underneath valves at y=520, clear of feed pipes above) */}
+              {renderTelemetryBadge(864, 520, "PSF-MPV", "Mode", psfValveMode, "", psfValveMode === "SERVICE" ? "NORMAL" : "STANDBY", 72)}
+              {renderTelemetryBadge(324, 520, "ACF-MPV", "Mode", acfValveMode, "", acfValveMode === "SERVICE" ? "NORMAL" : "STANDBY", 72)}
 
-                  {/* 10. Media Filter Vessels PSF & ACF (Uniform ribbon at y=398) */}
-                  {renderTelemetryBadge(980, 398, "PSF", "ΔP", (inletPressure - outletPressure).toFixed(2), "Bar", "NORMAL")}
-                  {renderTelemetryBadge(205, 398, "ACF", "Time", formatTime(acfSeconds), "", "NORMAL", 78)}
+              {/* 11. Treated Water Tank (Top Center) */}
+              {renderTelemetryBadge(356, 574, "TREATED", "Level", `${treatedLevel}`, "%", "NORMAL")}
 
-                  {/* 10b. PSF & ACF Multiport Valve Mode Badges */}
-                  {renderTelemetryBadge(870, 398, "PSF-MPV", "Mode", psfValveMode, "", psfValveMode === "SERVICE" ? "NORMAL" : "STANDBY", 72)}
-                  {renderTelemetryBadge(330, 398, "ACF-MPV", "Mode", acfValveMode, "", acfValveMode === "SERVICE" ? "NORMAL" : "STANDBY", 72)}
+              {/* 12. Flushing Pump M12 (Centered above pump, clear of vertical risers) */}
+              {renderTelemetryBadge(481, 610, "M12", "Flow", pumps.M12.flowRate.toFixed(1), "m³/h", pumps.M12.status)}
 
-                  {/* 11. Treated Water Tank */}
-                  {renderTelemetryBadge(390, 580, "TREATED", "Level", `${treatedLevel}`, "%", "NORMAL")}
-                  {renderTelemetryBadge(390, 598, "TREATED", "Quality", "Clean 95%", "", "NORMAL", 78)}
+              {/* 13. Soft Water Tank (Top Center) */}
+              {renderTelemetryBadge(876, 574, "SOFT-TK", "Level", `${softWaterLevel}`, "%", "NORMAL")}
 
-                  {/* 12. Flushing Pump M12 */}
-                  {renderTelemetryBadge(465, 618, "M12", "Flow", pumps.M12.flowRate.toFixed(1), "m³/h", pumps.M12.status)}
-
-                  {/* 13. Soft Water Tank */}
-                  {renderTelemetryBadge(910, 580, "SOFT-TK", "Level", `${softWaterLevel}`, "%", "NORMAL")}
-                  {renderTelemetryBadge(910, 598, "SOFT-TK", "Quality", "Pure 99.9%", "", "NORMAL", 78)}
-
-                  {/* 14. Softener Telemetry Badge */}
-                  {renderTelemetryBadge(680, 565, "SOFTENER", "Hardness", softwaterHardness.toFixed(2), "mg/L", "NORMAL", 80)}
-                </g>
-              )}
+              {/* 14. Softener Vessel (Top Center) */}
+              {renderTelemetryBadge(675, 560, "SOFTENER", "Hardness", softwaterHardness.toFixed(2), "mg/L", "NORMAL", 80)}
             </g>
           )}
         </svg>

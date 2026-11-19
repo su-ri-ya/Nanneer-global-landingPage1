@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 200" width="160" height="200">
+  <defs>
+    <filter id="bottomShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#0b2545" flood-opacity="0.28" />
+    </filter>
+    
+    <linearGradient id="filterVesselGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="25%" stop-color="#0284c7" />
+      <stop offset="55%" stop-color="#0369a1" />
+      <stop offset="85%" stop-color="#075985" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="sandMediaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#d97706" />
+      <stop offset="50%" stop-color="#b45309" />
+      <stop offset="100%" stop-color="#92400e" />
+    </linearGradient>
+    <linearGradient id="carbonMediaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#334155" />
+      <stop offset="50%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="resinMediaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" />
+      <stop offset="50%" stop-color="#d97706" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+    
+  </defs>
+
+  <!-- 3D Ground Support Shadow -->
+  <ellipse cx="80" cy="188" rx="64" ry="8" fill="#0f172a" opacity="0.25" filter="url(#bottomShadow)" />
+
+  <!-- Structural Steel Stand Legs -->
+  <rect x="22" y="148" width="8" height="36" rx="1.5" fill="#075985" stroke="#0284c7" stroke-width="1.5" />
+  <rect x="90" y="148" width="8" height="36" rx="1.5" fill="#075985" stroke="#0284c7" stroke-width="1.5" />
+  <line x1="30" y1="168" x2="90" y2="168" stroke="#0284c7" stroke-width="2.5" />
+
+  <!-- ASME Pressure Filter Vessel Shell -->
+  <g transform="translate(20, 10)">
+    <!-- Dished Top Head -->
+    <path d="M 1 35 C 1 10, 119 10, 119 35 Z" fill="url(#filterVesselGrad)" stroke="#0284c7" stroke-width="3" />
+    <!-- Straight Shell Body -->
+    <rect x="1" y="35" width="118" height="105" fill="url(#filterVesselGrad)" stroke="#0284c7" stroke-width="3" />
+    <!-- Dished Bottom Head -->
+    <path d="M 1 140 C 1 165, 119 165, 119 140 Z" fill="url(#filterVesselGrad)" stroke="#0284c7" stroke-width="3" />
+    
+    <!-- Top Flanged Inspection Manway Hatch -->
+    <rect x="44" y="6" width="32" height="10" rx="2" fill="#cbd5e1" stroke="#0284c7" stroke-width="2" />
+    <!-- Specular Curvature Highlight -->
+    <rect x="8" y="16" width="12" height="135" rx="3" fill="#ffffff" opacity="0.3" />
+  </g>
+</svg>

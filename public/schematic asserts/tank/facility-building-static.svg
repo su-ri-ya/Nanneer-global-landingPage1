@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 75 125" width="75" height="125">
+  <defs>
+    <linearGradient id="buildingFacadeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="25%" stop-color="#F8FAFC" />
+      <stop offset="70%" stop-color="#F1F5F9" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+    <linearGradient id="buildingGlassGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E0F2FE" stop-opacity="0.95" />
+      <stop offset="50%" stop-color="#BAE6FD" stop-opacity="0.90" />
+      <stop offset="100%" stop-color="#7DD3FC" stop-opacity="0.95" />
+    </linearGradient>
+    <linearGradient id="metalRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="40%" stop-color="#E2E8F0" />
+      <stop offset="70%" stop-color="#94A3B8" />
+      <stop offset="100%" stop-color="#475569" />
+    </linearGradient>
+    <linearGradient id="specularSheen" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.35" />
+      <stop offset="30%" stop-color="#FFFFFF" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  <g transform="translate(10, 22)">
+    <!-- 1. 3D Grounding Soft Contact Shadow -->
+    <ellipse cx="26" cy="80" rx="26" ry="5.5" fill="#64748B" opacity="0.25" />
+    <ellipse cx="26" cy="80" rx="18" ry="3.2" fill="#334155" opacity="0.30" />
+
+    <!-- 2. Architectural Concrete Foundation Pedestal -->
+    <rect x="0" y="74" width="52" height="6" rx="1.5" fill="#E2E8F0" stroke="#CBD5E1" stroke-width="1" />
+    <line x1="1" y1="75" x2="51" y2="75" stroke="#FFFFFF" stroke-width="0.8" opacity="0.9" />
+
+    <!-- 3. Main Architectural Tower Body (2.5D Stepped Light Monolith) -->
+    <rect x="4" y="14" width="44" height="60" rx="2" fill="url(#buildingFacadeGrad)" stroke="#94A3B8" stroke-width="1.2" />
+
+    <!-- 4. Rooftop Parapet, Terrace & Perimeter Railing -->
+    <rect x="2" y="10" width="48" height="4.5" rx="1" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="0.8" />
+    <line x1="5" y1="8" x2="47" y2="8" stroke="#38BDF8" stroke-width="1" stroke-dasharray="3 1.5" opacity="0.85" />
+
+    <!-- Rooftop HVAC Mechanical Penthouse -->
+    <rect x="8" y="3.5" width="16" height="7" rx="1" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="0.8" />
+    <line x1="10" y1="5.5" x2="22" y2="5.5" stroke="#94A3B8" stroke-width="0.7" />
+    <line x1="10" y1="7.5" x2="22" y2="7.5" stroke="#94A3B8" stroke-width="0.7" />
+
+    <!-- Telecommunications Mast & Active Beacon -->
+    <line x1="38" y1="10" x2="38" y2="0" stroke="#64748B" stroke-width="1.2" />
+      <circle cx="38" cy="0" r="1.6" fill="#0284C7" />
+
+    <!-- 5. Curtain-Wall Panoramic Window Bays & Architectural Spandrels -->
+    <!-- Floor 4 -->
+    <rect x="7" y="16" width="16" height="9.5" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" stroke-width="0.6" />
+    <rect x="25" y="16" width="16" height="9.5" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" stroke-width="0.6" />
+    <line x1="15" y1="16" x2="15" y2="25.5" stroke="#0284C7" stroke-width="0.5" opacity="0.5" />
+    <line x1="33" y1="16" x2="33" y2="25.5" stroke="#0284C7" stroke-width="0.5" opacity="0.5" />
+    <line x1="4" y1="27.5" x2="48" y2="27.5" stroke="#CBD5E1" stroke-width="1.4" />
+
+    <!-- Floor 3 -->
+    <rect x="7" y="29.5" width="16" height="9.5" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" stroke-width="0.6" />
+    <rect x="25" y="29.5" width="16" height="9.5" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" stroke-width="0.6" />
+    <line x1="15" y1="29.5" x2="15" y2="39" stroke="#0284C7" stroke-width="0.5" opacity="0.5" />
+    <line x1="33" y1="29.5" x2="33" y2="39" stroke="#0284C7" stroke-width="0.5" opacity="0.5" />
+    <line x1="4" y1="41" x2="48" y2="41" stroke="#CBD5E1" stroke-width="1.4" />
+
+    <!-- Floor 2 -->
+    <rect x="7" y="43" width="16" height="9.5" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" stroke-width="0.6" />
+    <rect x="25" y="43" width="16" height="9.5" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" stroke-width="0.6" />
+    <line x1="15" y1="43" x2="15" y2="52.5" stroke="#0284C7" stroke-width="0.5" opacity="0.5" />
+    <line x1="33" y1="43" x2="33" y2="52.5" stroke="#0284C7" stroke-width="0.5" opacity="0.5" />
+    <line x1="4" y1="54.5" x2="48" y2="54.5" stroke="#CBD5E1" stroke-width="1.4" />
+
+    <!-- Ground Floor Entrance Lobby & Canopy -->
+    <rect x="14" y="58" width="20" height="16" rx="1" fill="#FFFFFF" stroke="#0284C7" stroke-width="0.8" />
+    <rect x="11" y="56.5" width="26" height="2.5" rx="0.5" fill="#0284C7" opacity="0.9" />
+    <rect x="16" y="60" width="7.5" height="14" fill="#E0F2FE" stroke="#38BDF8" stroke-width="0.5" />
+    <rect x="24.5" y="60" width="7.5" height="14" fill="#E0F2FE" stroke="#38BDF8" stroke-width="0.5" />
+    <line x1="24" y1="60" x2="24" y2="74" stroke="#0284C7" stroke-width="0.6" />
+
+    <!-- 6. Cylindrical Glass Specular Glare -->
+    <rect x="6" y="15" width="8" height="58" rx="2" fill="url(#specularSheen)" opacity="0.8" pointer-events="none" />
+
+    <!-- 7. Industrial Sewer Discharge Manifold (ANSI Flange) -->
+    <g id="building-sewer-discharge-manifold" transform="translate(45, 26)">
+      <rect x="0" y="0" width="5.5" height="8" rx="1" fill="url(#metalRingGrad)" stroke="#64748B" stroke-width="0.8" />
+      <circle cx="2.7" cy="1.6" r="0.65" fill="#334155" />
+      <circle cx="2.7" cy="6.4" r="0.65" fill="#334155" />
+    </g>
+
+    <!-- 8. Precision SCADA Identification Badge (Light Mode) -->
+    <g transform="translate(26, -8)">
+      <rect x="-24" y="-7" width="48" height="14" rx="3" fill="#FFFFFF" stroke="#0284C7" stroke-width="1" />
+      <circle cx="-18" cy="0" r="1.8" fill="#16A34A" />
+      <text x="3" y="-1.5" fill="#0369A1" font-size="4.6" font-weight="bold" text-anchor="middle" font-family="monospace">BUILDING</text>
+      <text x="3" y="3.5" fill="#64748B" font-size="3" font-weight="bold" text-anchor="middle" font-family="monospace">SEWER SOURCE</text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 180" width="200" height="180">
+  <defs>
+    <filter id="bottomShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#0b2545" flood-opacity="0.28" />
+    </filter>
+    
+    <!-- Collection Tank (Dark Sludge Brown Influent) -->
+    <linearGradient id="rawSewageGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#795548" stop-opacity="0.90" />
+      <stop offset="45%" stop-color="#5d4037" stop-opacity="0.94" />
+      <stop offset="100%" stop-color="#3e2723" stop-opacity="0.97" />
+    </linearGradient>
+    <linearGradient id="rawSewageWaveFront" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#a1887f" stop-opacity="0.90" />
+      <stop offset="40%" stop-color="#6d4c41" stop-opacity="0.92" />
+      <stop offset="100%" stop-color="#3e2723" stop-opacity="0.96" />
+    </linearGradient>
+    <linearGradient id="rawSewageWaveBack" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8d6e63" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#4e342e" stop-opacity="0.92" />
+    </linearGradient>
+
+    <!-- MBBR Aeration Tank (Murky Raw Sewage / Bio-Mix) -->
+    <linearGradient id="mbbrWaterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#a1887f" stop-opacity="0.88" />
+      <stop offset="45%" stop-color="#8d6e63" stop-opacity="0.92" />
+      <stop offset="100%" stop-color="#5d4037" stop-opacity="0.96" />
+    </linearGradient>
+    <linearGradient id="mbbrWaveFront" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#d7ccc8" stop-opacity="0.88" />
+      <stop offset="40%" stop-color="#8d6e63" stop-opacity="0.88" />
+      <stop offset="100%" stop-color="#5d4037" stop-opacity="0.96" />
+    </linearGradient>
+    <linearGradient id="mbbrWaveBack" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#a1887f" stop-opacity="0.65" />
+      <stop offset="100%" stop-color="#4e342e" stop-opacity="0.90" />
+    </linearGradient>
+
+    <!-- Clarifier Tank (Amber Supernatant) -->
+    <linearGradient id="clarifierWaterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#d2c59d" stop-opacity="0.88" />
+      <stop offset="35%" stop-color="#b8aa7b" stop-opacity="0.86" />
+      <stop offset="68%" stop-color="#8d6e63" stop-opacity="0.90" />
+      <stop offset="100%" stop-color="#3e2723" stop-opacity="0.98" />
+    </linearGradient>
+    <linearGradient id="clarifierWaveFront" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#efe8d0" stop-opacity="0.88" />
+      <stop offset="45%" stop-color="#d2c59d" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#a69865" stop-opacity="0.92" />
+    </linearGradient>
+    <linearGradient id="clarifierWaveBack" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#c4b788" stop-opacity="0.65" />
+      <stop offset="100%" stop-color="#8c7c4e" stop-opacity="0.88" />
+    </linearGradient>
+
+    <!-- Sludge Holding Tank (Dense Thickened WAS) -->
+    <linearGradient id="sludgeWaterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#5d4037" stop-opacity="0.95" />
+      <stop offset="50%" stop-color="#3e2723" stop-opacity="0.97" />
+      <stop offset="100%" stop-color="#211109" stop-opacity="0.99" />
+    </linearGradient>
+
+    <!-- Filter Feed Tank (Pre-Filtered Secondary Effluent) -->
+    <linearGradient id="filterFeedGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e0f2fe" stop-opacity="0.85" />
+      <stop offset="50%" stop-color="#80cbc4" stop-opacity="0.88" />
+      <stop offset="100%" stop-color="#00695c" stop-opacity="0.92" />
+    </linearGradient>
+
+    <!-- Treated Clean Water Tank -->
+    <linearGradient id="treatedWaterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f0f9ff" stop-opacity="0.9" />
+      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0.95" />
+    </linearGradient>
+
+    <!-- Soft Water Tank -->
+    <linearGradient id="softWaterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f0f9ff" stop-opacity="0.98" />
+      <stop offset="45%" stop-color="#06b6d4" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#0369a1" stop-opacity="0.98" />
+    </linearGradient>
+
+    <clipPath id="stdTankFluidClip">
+      <path d="M 12 36 Q 100 48 188 36 L 188 142 Q 100 162 12 142 Z" />
+    </clipPath>
+    <clipPath id="clarifierFluidClip">
+      <path d="M 12 36 Q 100 48 188 36 L 188 95 L 12 95 Z" />
+    </clipPath>
+    
+  </defs>
+
+  <!-- 3D Ground Shadow -->
+  <ellipse cx="100" cy="162" rx="72" ry="10" fill="#0f172a" opacity="0.25" filter="url(#bottomShadow)" />
+
+  <!-- 2.5D Conical Hopper Tank Hull (Upper Cylinder + 60° Funnel Apex) -->
+  <path d="M 10 32 L 10 95 L 75 146 Q 100 154 125 146 L 190 95 L 190 32 Z" fill="url(#glassCylinderGrad)" stroke="#0284c7" stroke-width="2.5" />
+  
+    <!-- Supernatant Clarified Water Zone (Upper Section Amber) -->
+    <g clipPath="url(#clarifierFluidClip)">
+      <path d="M 12 70 L 12 95 L 188 95 L 188 70 Z" fill="url(#clarifierWaterGrad)" />
+      <!-- Wave 1: Back Wave -->
+      <path d="M -60 70 q 20 -6, 40 0 t 40 0 t 40 0 t 40 0 t 40 0 t 40 0 t 40 0 L 260 110 L -60 110 Z" fill="url(#clarifierWaveBack)">
+        
+      </path>
+      <!-- Wave 2: Front Wave -->
+      <path d="M -88 70 q 28 -7, 56 0 t 56 0 t 56 0 t 56 0 t 56 0 t 56 0 L 320 110 L -88 110 Z" fill="url(#clarifierWaveFront)">
+        
+      </path>
+      <!-- Surface Meniscus -->
+      <ellipse cx="100" cy="70" rx="88" ry="8" fill="#d2c59d" opacity="0.35" />
+    </g>
+
+    <!-- Settled Biological Sludge Blanket in Conical Hopper Apex -->
+    <path d="M 12 95 L 75 146 Q 100 154 125 146 L 188 95 Z" fill="url(#sludgeWaterGrad)" />
+
+    <!-- Submerged Clarifier Bridge & Rotating Scraper Rake Arm -->
+    <g transform="translate(100, 92)">
+      <circle cx="0" cy="0" r="22" fill="#1e293b" stroke="#16a34a" stroke-width="2" />
+      <circle cx="0" cy="0" r="16" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5" />
+      <g>
+        
+        <line x1="-16" y1="0" x2="16" y2="0" stroke="#15803d" stroke-width="3" stroke-linecap="round" />
+        <line x1="0" y1="-16" x2="0" y2="16" stroke="#15803d" stroke-width="3" stroke-linecap="round" />
+        <line x1="-11" y1="-4" x2="-11" y2="4" stroke="#15803d" stroke-width="1.8" />
+        <line x1="11" y1="-4" x2="11" y2="4" stroke="#15803d" stroke-width="1.8" />
+      </g>
+      <circle cx="0" cy="0" r="4.5" fill="#15803d" />
+    </g>
+  <!-- Cylindrical Specular Glare -->
+  <rect x="18" y="34" width="20" height="60" rx="4" fill="url(#specularSheen)" opacity="0.8" />
+  <!-- Top Flange Rim -->
+  <ellipse cx="100" cy="32" rx="90" ry="10" fill="url(#glassRimGrad)" stroke="#0284c7" stroke-width="2" />
+</svg>

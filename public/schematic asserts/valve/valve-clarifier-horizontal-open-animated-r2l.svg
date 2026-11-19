@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="metalFlangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="40%" stop-color="#E2E8F0" />
+      <stop offset="80%" stop-color="#CBD5E1" />
+      <stop offset="100%" stop-color="#94A3B8" />
+    </linearGradient>
+  </defs>
+  <!-- Horizontal In-Line Pipe Connection Flanges -->
+  <rect x="6" y="20" width="4" height="12" rx="1" fill="url(#metalFlangeGrad)" stroke="#64748B" stroke-width="0.8" />
+  <rect x="38" y="20" width="4" height="12" rx="1" fill="url(#metalFlangeGrad)" stroke="#64748B" stroke-width="0.8" />
+
+  <!-- Twin Triangular Body -->
+  <polygon points="10,18 24,26 10,34" fill="#334155" stroke="#0F172A" stroke-width="1.2" />
+  <polygon points="38,18 24,26 38,34" fill="#334155" stroke="#0F172A" stroke-width="1.2" />
+  <!-- Animated Horizontal Process Stream (R->L) -->
+  <line x1="6" y1="26" x2="42" y2="26" stroke="#EFE8D0" stroke-width="2.5" stroke-dasharray="4 6" stroke-linecap="round">
+    <animate attributeName="stroke-dashoffset" from="0" to="20" dur="0.8s" repeatCount="indefinite" />
+  </line>
+
+  <!-- Center Seat -->
+  <circle cx="24" cy="26" r="7" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.4" />
+  <circle cx="24" cy="26" r="2.5" fill="#16A34A">
+      <animate attributeName="r" values="2;4.2;2" dur="0.9s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0.7;1;0.7" dur="0.9s" repeatCount="indefinite" />
+  </circle>
+
+  <!-- Top Solenoid Electrical Actuator Coil Head -->
+  <line x1="24" y1="26" x2="24" y2="15" stroke="#64748B" stroke-width="2.5" />
+  <rect x="18" y="5" width="12" height="11" rx="2" fill="#1E293B" stroke="#16A34A" stroke-width="1.2" />
+  <rect x="20" y="7" width="8" height="3" rx="0.5" fill="#15803D" />
+  <circle cx="24" cy="13" r="1.5" fill="#22C55E">
+      <animate attributeName="opacity" values="0.5;1;0.5" dur="1s" repeatCount="indefinite" />
+  </circle>
+</svg>

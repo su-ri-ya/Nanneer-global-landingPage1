@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="metalFlangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="40%" stop-color="#E2E8F0" />
+      <stop offset="80%" stop-color="#CBD5E1" />
+      <stop offset="100%" stop-color="#94A3B8" />
+    </linearGradient>
+  </defs>
+  <!-- Horizontal Flanges -->
+  <rect x="6" y="18" width="4" height="12" rx="1" fill="url(#metalFlangeGrad)" stroke="#64748B" stroke-width="0.8" />
+  <rect x="38" y="18" width="4" height="12" rx="1" fill="url(#metalFlangeGrad)" stroke="#64748B" stroke-width="0.8" />
+
+  <!-- Valve Body -->
+  <rect x="10" y="18" width="28" height="12" rx="2" fill="#334155" stroke="#0F172A" stroke-width="1.2" />
+
+  <!-- Flow Direction Arrow & Internal Check Flap -->
+  <polygon points="20,20 28,24 20,28" fill="#38BDF8" stroke="#0284C7" stroke-width="0.8">
+    <animate attributeName="opacity" values="0.6;1;0.6" dur="0.9s" repeatCount="indefinite" />
+  </polygon>
+  <line x1="17" y1="20" x2="17" y2="28" stroke="#CBD5E1" stroke-width="1.5" stroke-linecap="round" />
+</svg>

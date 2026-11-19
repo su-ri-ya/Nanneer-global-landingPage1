@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <filter id="bottomShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#0b2545" flood-opacity="0.28" />
+    </filter>
+  </defs>
+
+  <g filter="url(#bottomShadow)">
+    <!-- Valve Body Flange Ring -->
+    <circle cx="100" cy="100" r="48" fill="#1e293b" stroke="#334155" stroke-width="4" />
+    <circle cx="100" cy="100" r="38" fill="#0f172a" stroke="#16a34a" stroke-width="3" />
+    
+    <!-- Internal Butterfly Disc -->
+    <g transform="rotate(0 100 100)">
+      <ellipse cx="100" cy="100" rx="34" ry="7" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5" />
+      <line x1="100" y1="62" x2="100" y2="138" stroke="#16a34a" stroke-width="3.5" stroke-linecap="round" />
+    </g>
+    <!-- Top Actuator Stem -->
+    <rect x="94" y="38" width="12" height="18" fill="#475569" stroke="#1e293b" stroke-width="1.5" />
+    <circle cx="100" cy="36" r="8" fill="#16a34a" stroke="#0f172a" stroke-width="1.5" />
+  </g>
+</svg>
