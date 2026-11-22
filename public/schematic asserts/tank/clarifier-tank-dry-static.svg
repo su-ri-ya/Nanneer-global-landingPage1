@@ -1,103 +1,60 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 180" width="200" height="180">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 125" width="170" height="125">
   <defs>
     <filter id="bottomShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#0b2545" flood-opacity="0.28" />
+      <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#0f172a" flood-opacity="0.25" />
     </filter>
-    
-    <!-- Collection Tank (Dark Sludge Brown Influent) -->
-    <linearGradient id="rawSewageGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#795548" stop-opacity="0.90" />
-      <stop offset="45%" stop-color="#5d4037" stop-opacity="0.94" />
-      <stop offset="100%" stop-color="#3e2723" stop-opacity="0.97" />
+    <linearGradient id="glassCylinderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.5" />
+      <stop offset="8%" stop-color="#FFFFFF" stop-opacity="0.85" />
+      <stop offset="22%" stop-color="#F8FAFC" stop-opacity="0.3" />
+      <stop offset="70%" stop-color="#E0F2FE" stop-opacity="0.2" />
+      <stop offset="92%" stop-color="#38BDF8" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#0284C7" stop-opacity="0.5" />
     </linearGradient>
-    <linearGradient id="rawSewageWaveFront" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#a1887f" stop-opacity="0.90" />
-      <stop offset="40%" stop-color="#6d4c41" stop-opacity="0.92" />
-      <stop offset="100%" stop-color="#3e2723" stop-opacity="0.96" />
+    <linearGradient id="glassRimGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#94A3B8" stop-opacity="0.8" />
+      <stop offset="25%" stop-color="#FFFFFF" stop-opacity="0.95" />
+      <stop offset="70%" stop-color="#E2E8F0" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#64748B" stop-opacity="0.9" />
     </linearGradient>
-    <linearGradient id="rawSewageWaveBack" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#8d6e63" stop-opacity="0.75" />
-      <stop offset="100%" stop-color="#4e342e" stop-opacity="0.92" />
+    <linearGradient id="specularSheen" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.35" />
+      <stop offset="30%" stop-color="#FFFFFF" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
     </linearGradient>
-
-    <!-- MBBR Aeration Tank (Murky Raw Sewage / Bio-Mix) -->
-    <linearGradient id="mbbrWaterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#a1887f" stop-opacity="0.88" />
-      <stop offset="45%" stop-color="#8d6e63" stop-opacity="0.92" />
-      <stop offset="100%" stop-color="#5d4037" stop-opacity="0.96" />
-    </linearGradient>
-    <linearGradient id="mbbrWaveFront" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#d7ccc8" stop-opacity="0.88" />
-      <stop offset="40%" stop-color="#8d6e63" stop-opacity="0.88" />
-      <stop offset="100%" stop-color="#5d4037" stop-opacity="0.96" />
-    </linearGradient>
-    <linearGradient id="mbbrWaveBack" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#a1887f" stop-opacity="0.65" />
-      <stop offset="100%" stop-color="#4e342e" stop-opacity="0.90" />
-    </linearGradient>
-
-    <!-- Clarifier Tank (Amber Supernatant) -->
-    <linearGradient id="clarifierWaterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#d2c59d" stop-opacity="0.88" />
-      <stop offset="35%" stop-color="#b8aa7b" stop-opacity="0.86" />
-      <stop offset="68%" stop-color="#8d6e63" stop-opacity="0.90" />
-      <stop offset="100%" stop-color="#3e2723" stop-opacity="0.98" />
-    </linearGradient>
-    <linearGradient id="clarifierWaveFront" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#efe8d0" stop-opacity="0.88" />
-      <stop offset="45%" stop-color="#d2c59d" stop-opacity="0.85" />
-      <stop offset="100%" stop-color="#a69865" stop-opacity="0.92" />
-    </linearGradient>
-    <linearGradient id="clarifierWaveBack" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#c4b788" stop-opacity="0.65" />
-      <stop offset="100%" stop-color="#8c7c4e" stop-opacity="0.88" />
-    </linearGradient>
-
-    <!-- Sludge Holding Tank (Dense Thickened WAS) -->
-    <linearGradient id="sludgeWaterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#5d4037" stop-opacity="0.95" />
-      <stop offset="50%" stop-color="#3e2723" stop-opacity="0.97" />
-      <stop offset="100%" stop-color="#211109" stop-opacity="0.99" />
-    </linearGradient>
-
-    <!-- Filter Feed Tank (Pre-Filtered Secondary Effluent) -->
-    <linearGradient id="filterFeedGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#e0f2fe" stop-opacity="0.85" />
-      <stop offset="50%" stop-color="#80cbc4" stop-opacity="0.88" />
-      <stop offset="100%" stop-color="#00695c" stop-opacity="0.92" />
-    </linearGradient>
-
-    <!-- Treated Clean Water Tank -->
-    <linearGradient id="treatedWaterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#f0f9ff" stop-opacity="0.9" />
-      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.9" />
-      <stop offset="100%" stop-color="#0284c7" stop-opacity="0.95" />
-    </linearGradient>
-
-    <!-- Soft Water Tank -->
-    <linearGradient id="softWaterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#f0f9ff" stop-opacity="0.98" />
-      <stop offset="45%" stop-color="#06b6d4" stop-opacity="0.95" />
-      <stop offset="100%" stop-color="#0369a1" stop-opacity="0.98" />
-    </linearGradient>
-
-    <clipPath id="stdTankFluidClip">
-      <path d="M 12 36 Q 100 48 188 36 L 188 142 Q 100 162 12 142 Z" />
-    </clipPath>
-    <clipPath id="clarifierFluidClip">
-      <path d="M 12 36 Q 100 48 188 36 L 188 95 L 12 95 Z" />
-    </clipPath>
-    
+    <radialGradient id="metalRingGrad" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="40%" stop-color="#E2E8F0" />
+      <stop offset="85%" stop-color="#94A3B8" />
+      <stop offset="100%" stop-color="#475569" />
+    </radialGradient>
   </defs>
+  <!-- 3D Ground Contact Shadow under Hopper Apex -->
+  <ellipse cx="85" cy="106" rx="56" ry="7.5" fill="#0F172A" opacity="0.25" filter="url(#bottomShadow)" />
 
-  <!-- 3D Ground Shadow -->
-  <ellipse cx="100" cy="162" rx="72" ry="10" fill="#0f172a" opacity="0.25" filter="url(#bottomShadow)" />
+  <g transform="translate(15, 12)">
+    <!-- 2.5D Conical Hopper Tank Hull (Cylindrical Upper + 60° Conical Funnel Bottom) -->
+    <path d="M 0 14 L 0 54 L 54 88 Q 70 93 86 88 L 140 54 L 140 14 Z" fill="url(#glassCylinderGrad)" stroke="#0284C7" stroke-width="2" />
 
-  <!-- 2.5D Conical Hopper Tank Hull (Upper Cylinder + 60° Funnel Apex) -->
-  <path d="M 10 32 L 10 95 L 75 146 Q 100 154 125 146 L 190 95 L 190 32 Z" fill="url(#glassCylinderGrad)" stroke="#0284c7" stroke-width="2.5" />
-  
-  <!-- Cylindrical Specular Glare -->
-  <rect x="18" y="34" width="20" height="60" rx="4" fill="url(#specularSheen)" opacity="0.8" />
-  <!-- Top Flange Rim -->
-  <ellipse cx="100" cy="32" rx="90" ry="10" fill="url(#glassRimGrad)" stroke="#0284c7" stroke-width="2" />
+    <!-- Cylindrical Specular Glare -->
+    <rect x="5" y="16" width="14" height="38" rx="3" fill="url(#specularSheen)" pointer-events="none" />
+
+    <!-- Peripheral V-Notch Overflow Weir Trough -->
+    <path d="M 4 20 L 136 20" stroke="#38BDF8" stroke-width="1.2" stroke-dasharray="3 2" opacity="0.75" />
+
+    <!-- Clarifier Central Drive Bridge & Scraper Rake Arm Assembly -->
+    <g transform="translate(70, 58)">
+      <circle cx="0" cy="0" r="16" fill="url(#metalRingGrad)" stroke="#16A34A" stroke-width="1.5" />
+      <circle cx="0" cy="0" r="11" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.2" />
+      <line x1="-11" y1="0" x2="11" y2="0" stroke="#15803D" stroke-width="2.2" stroke-linecap="round" />
+      <line x1="0" y1="-11" x2="0" y2="11" stroke="#15803D" stroke-width="2.2" stroke-linecap="round" />
+      <line x1="-8" y1="-3" x2="-8" y2="3" stroke="#15803D" stroke-width="1.4" stroke-linecap="round" />
+      <line x1="8" y1="-3" x2="8" y2="3" stroke="#15803D" stroke-width="1.4" stroke-linecap="round" />
+      <circle cx="0" cy="0" r="3.2" fill="#15803D" />
+    </g>
+
+    <!-- 3D Top Glass Vessel Flange & Rim -->
+    <ellipse cx="70" cy="14" rx="70" ry="7.5" fill="url(#glassRimGrad)" stroke="#0284C7" stroke-width="1.5" />
+    <ellipse cx="70" cy="14" rx="65" ry="5.0" fill="none" stroke="#93C5FD" stroke-width="1" stroke-dasharray="2 2" />
+  </g>
 </svg>

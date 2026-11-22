@@ -1,14 +1,13 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
+import Image from "next/image"
 import {
   Play,
   Pause,
   RotateCcw,
   Sliders,
-  Info,
   Activity,
-  Droplets,
 } from "lucide-react"
 
 type PumpStatus = "RUNNING" | "STANDBY" | "STOPPED"
@@ -60,10 +59,10 @@ export function ScadaSchematicSimulation() {
 
   // Equipment Pumps State (MBBR & Tertiary Polishing Train)
   const [pumps, setPumps] = useState<Record<string, PumpState>>({
-    M1: { id: "M1", name: "MBBR RSTP 1", code: "M1", status: "RUNNING", powerKw: 4.0, flowRate: 18.5 },
-    M2: { id: "M2", name: "MBBR RSTP 2", code: "M2", status: "STOPPED", powerKw: 4.0, flowRate: 0 },
-    M3: { id: "M3", name: "MBBR RCP 1", code: "M3", status: "STOPPED", powerKw: 1.5, flowRate: 0 },
-    M4: { id: "M4", name: "MBBR RCP 2", code: "M4", status: "RUNNING", powerKw: 1.5, flowRate: 6.8 },
+    M1: { id: "M1", name: "MBBR PUMP 1", code: "M1", status: "RUNNING", powerKw: 4.0, flowRate: 18.5 },
+    M2: { id: "M2", name: "MBBR PUMP 2", code: "M2", status: "STOPPED", powerKw: 4.0, flowRate: 0 },
+    M3: { id: "M3", name: "MBBR PUMP 3", code: "M3", status: "STOPPED", powerKw: 1.5, flowRate: 0 },
+    M4: { id: "M4", name: "MBBR PUMP 4", code: "M4", status: "RUNNING", powerKw: 1.5, flowRate: 6.8 },
     M10: { id: "M10", name: "FF PUMP 1", code: "M10", status: "STOPPED", powerKw: 3.0, flowRate: 0 },
     M11: { id: "M11", name: "FF PUMP 2", code: "M11", status: "STOPPED", powerKw: 3.0, flowRate: 0 },
     M12: { id: "M12", name: "FLUSHING PUMP", code: "M12", status: "STOPPED", powerKw: 5.5, flowRate: 0 },
@@ -246,21 +245,82 @@ export function ScadaSchematicSimulation() {
 
         {/* 5. Flow Direction Arrow */}
         {arrow}
+
+        {/* 6. Pump Identifier Tag */}
+        {tagLine1 && (
+          <g transform={`translate(0, ${tagPos === "bottom" ? (arrowDir === "down" ? 27 : 22) : (arrowDir === "up" ? -25 : -20)})`}>
+            <rect
+              x="-28"
+              y="-7"
+              width="56"
+              height="14"
+              rx="3"
+              fill="#FFFFFF"
+              stroke={color}
+              strokeWidth="1"
+              opacity="0.95"
+              filter="drop-shadow(0px 1px 1.5px rgba(0,0,0,0.12))"
+            />
+            <text
+              x="0"
+              y="3"
+              textAnchor="middle"
+              fill={color}
+              fontSize="7.2"
+              fontWeight="bold"
+              fontFamily="monospace"
+            >
+              {tagLine1}
+            </text>
+          </g>
+        )}
       </g>
     )
   }
 
-  // Mini Equipment Identifier Tag (Hidden per user request: "remove the all name for now m2,m1,........")
-  const renderMiniTag = (_x: number, _y: number, _label: string) => {
-    return null
+  // Equipment Identification Name Tag (High-Visibility Professional SCADA Pill)
+  const renderMiniTag = (x: number, y: number, label: string, maxW?: number) => {
+    const rawWidth = label.length * 5.8 + 16
+    const textWidth = maxW ? Math.min(rawWidth, maxW) : Math.max(rawWidth, 44)
+    const fontSize = textWidth < 55 ? "7.0" : "7.6"
+    return (
+      <g transform={`translate(${x}, ${y})`} className="pointer-events-none select-none">
+        {/* Drop shadow container */}
+        <rect
+          x={-textWidth / 2}
+          y="-7"
+          width={textWidth}
+          height="14"
+          rx="3.5"
+          fill="#FFFFFF"
+          stroke="#0284C7"
+          strokeWidth="1.1"
+          opacity="0.95"
+          filter="drop-shadow(0px 1px 2px rgba(15, 23, 42, 0.16))"
+        />
+        {/* Precision Cyan Status Pip */}
+        <circle cx={-textWidth / 2 + 6.5} cy="0" r="1.8" fill="#0284C7" />
+        <circle cx={-textWidth / 2 + 6.5} cy="0" r="0.7" fill="#E0F2FE" />
+        {/* Bold Equipment Title */}
+        <text
+          x={3.0}
+          y="2.5"
+          textAnchor="middle"
+          fill="#0369A1"
+          fontSize={fontSize}
+          fontWeight="bold"
+          fontFamily="monospace"
+        >
+          {label}
+        </text>
+      </g>
+    )
   }
 
   // 4 Design Options for PSF, ACF & Softener Filter Vessels
   const renderFilterVessel = (type: "PSF" | "ACF" | "SOFTENER", option: 1 | 2 | 3 | 4) => {
     return (
       <g id={`vessel-${type.toLowerCase()}-internals`}>
-        {/* Mini Tag at top of vessel */}
-        {renderMiniTag(41, 10, type)}
 
         {/* Option 1: Modern FRP (Clean Minimalist Composite Pressure Vessel) */}
         {option === 1 && (
@@ -423,11 +483,11 @@ export function ScadaSchematicSimulation() {
 
             {/* Dial Pressure / Hardness Gauge */}
             <g transform={`translate(${type === "PSF" ? 62 : type === "ACF" ? 20 : 62}, 28)`}>
-              <circle cx="0" cy="0" r="7.5" fill="#FFFFFF" stroke="#0284C7" strokeWidth="1.2" />
-              <circle cx="0" cy="0" r="6" fill="#F0F9FF" />
-              <line x1="0" y1="0" x2="3.5" y2="-3" stroke="#DC2626" strokeWidth="1" />
-              <circle cx="0" cy="0" r="1.2" fill="#0F172A" />
-              <text x="0" y="12" textAnchor="middle" fill="#0369A1" fontSize="5" fontWeight="bold" fontFamily="monospace">
+              <circle cx="0" cy="0" r="9" fill="#FFFFFF" stroke="#0284C7" strokeWidth="1.3" />
+              <circle cx="0" cy="0" r="7.5" fill="#F0F9FF" />
+              <line x1="0" y1="0" x2="4.5" y2="-4" stroke="#DC2626" strokeWidth="1.2" />
+              <circle cx="0" cy="0" r="1.4" fill="#0F172A" />
+              <text x="0" y="14" textAnchor="middle" fill="#0369A1" fontSize="7.2" fontWeight="bold" fontFamily="monospace">
                 {type === "PSF" ? `${inletPressure.toFixed(2)}B` : type === "ACF" ? `${outletPressure.toFixed(2)}B` : `${softwaterHardness.toFixed(0)}ppm`}
               </text>
             </g>
@@ -472,6 +532,11 @@ export function ScadaSchematicSimulation() {
             <line x1="16" y1="98" x2="66" y2="98" stroke="#CBD5E1" strokeWidth="2" strokeLinecap="round" />
           </g>
         )}
+
+        {/* Vessel Identifier Name Tag - Centered in Vessel Body */}
+        {type === "PSF" && renderMiniTag(41, 62, "PSF", 62)}
+        {type === "ACF" && renderMiniTag(41, 62, "ACF", 62)}
+        {type === "SOFTENER" && renderMiniTag(41, 62, "SOFTENER", 66)}
       </g>
     )
   }
@@ -509,171 +574,234 @@ export function ScadaSchematicSimulation() {
       >
         <title>{`${name} 4-Port Multiport Valve: Mode ${mode} (Click to switch to ${nextMode})`}</title>
 
-        {/* 4 Threaded Pipe Union Nozzles (Clean Orthogonal 4-Way Configuration) */}
+        {/* Scaled to exactly match SCADA pump visual diameter (r=15 outer casing vs r=14 pump casing) */}
+        <g transform="translate(30, 30) scale(0.65) translate(-30, -30)">
+          {/* 4 Threaded Pipe Union Nozzles (Clean Orthogonal 4-Way Configuration) */}
 
-        {/* Port 1: Top Nozzle (12 o'clock - Raw Water Inlet) */}
-        <g id={`${name}-p1-top`}>
-          <rect x="23" y="0" width="14" height="10" rx="1" fill="#18181B" stroke="#09090B" strokeWidth="0.8" />
-          <line x1="24" y1="2.5" x2="36" y2="2.5" stroke="#3F3F46" strokeWidth="0.8" />
-          <line x1="24" y1="5" x2="36" y2="5" stroke="#3F3F46" strokeWidth="0.8" />
-          <line x1="24" y1="7.5" x2="36" y2="7.5" stroke="#3F3F46" strokeWidth="0.8" />
-          <rect x="20.5" y="8" width="19" height="5" rx="1.5" fill="#27272A" stroke="#09090B" strokeWidth="0.8" />
-          <line x1="24" y1="8" x2="24" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
-          <line x1="30" y1="8" x2="30" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
-          <line x1="36" y1="8" x2="36" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
-        </g>
+          {/* Port 1: Top Nozzle (12 o'clock - Raw Water Inlet) */}
+          <g id={`${name}-p1-top`}>
+            <rect x="23" y="0" width="14" height="10" rx="1" fill="#18181B" stroke="#09090B" strokeWidth="0.8" />
+            <line x1="24" y1="2.5" x2="36" y2="2.5" stroke="#3F3F46" strokeWidth="0.8" />
+            <line x1="24" y1="5" x2="36" y2="5" stroke="#3F3F46" strokeWidth="0.8" />
+            <line x1="24" y1="7.5" x2="36" y2="7.5" stroke="#3F3F46" strokeWidth="0.8" />
+            <rect x="20.5" y="8" width="19" height="5" rx="1.5" fill="#27272A" stroke="#09090B" strokeWidth="0.8" />
+            <line x1="24" y1="8" x2="24" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
+            <line x1="30" y1="8" x2="30" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
+            <line x1="36" y1="8" x2="36" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
+          </g>
 
-        {/* Port 2: Bottom Nozzle (6 o'clock - Filtered Outlet) */}
-        <g id={`${name}-p2-bottom`} transform="rotate(180 30 30)">
-          <rect x="23" y="0" width="14" height="10" rx="1" fill="#18181B" stroke="#09090B" strokeWidth="0.8" />
-          <line x1="24" y1="2.5" x2="36" y2="2.5" stroke="#3F3F46" strokeWidth="0.8" />
-          <line x1="24" y1="5" x2="36" y2="5" stroke="#3F3F46" strokeWidth="0.8" />
-          <line x1="24" y1="7.5" x2="36" y2="7.5" stroke="#3F3F46" strokeWidth="0.8" />
-          <rect x="20.5" y="8" width="19" height="5" rx="1.5" fill="#27272A" stroke="#09090B" strokeWidth="0.8" />
-          <line x1="24" y1="8" x2="24" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
-          <line x1="30" y1="8" x2="30" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
-          <line x1="36" y1="8" x2="36" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
-        </g>
+          {/* Port 2: Bottom Nozzle (6 o'clock - Filtered Outlet) */}
+          <g id={`${name}-p2-bottom`} transform="rotate(180 30 30)">
+            <rect x="23" y="0" width="14" height="10" rx="1" fill="#18181B" stroke="#09090B" strokeWidth="0.8" />
+            <line x1="24" y1="2.5" x2="36" y2="2.5" stroke="#3F3F46" strokeWidth="0.8" />
+            <line x1="24" y1="5" x2="36" y2="5" stroke="#3F3F46" strokeWidth="0.8" />
+            <line x1="24" y1="7.5" x2="36" y2="7.5" stroke="#3F3F46" strokeWidth="0.8" />
+            <rect x="20.5" y="8" width="19" height="5" rx="1.5" fill="#27272A" stroke="#09090B" strokeWidth="0.8" />
+            <line x1="24" y1="8" x2="24" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
+            <line x1="30" y1="8" x2="30" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
+            <line x1="36" y1="8" x2="36" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
+          </g>
 
-        {/* Port 3: Left Nozzle (9 o'clock - Vessel Manifold Connection / Drain) */}
-        <g id={`${name}-p3-left`} transform="rotate(270 30 30)">
-          <rect x="23" y="0" width="14" height="10" rx="1" fill="#18181B" stroke="#09090B" strokeWidth="0.8" />
-          <line x1="24" y1="2.5" x2="36" y2="2.5" stroke="#3F3F46" strokeWidth="0.8" />
-          <line x1="24" y1="5" x2="36" y2="5" stroke="#3F3F46" strokeWidth="0.8" />
-          <line x1="24" y1="7.5" x2="36" y2="7.5" stroke="#3F3F46" strokeWidth="0.8" />
-          <rect x="20.5" y="8" width="19" height="5" rx="1.5" fill="#27272A" stroke="#09090B" strokeWidth="0.8" />
-          <line x1="24" y1="8" x2="24" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
-          <line x1="30" y1="8" x2="30" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
-          <line x1="36" y1="8" x2="36" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
-        </g>
+          {/* Port 3: Left Nozzle (9 o'clock - Vessel Manifold Connection / Drain) */}
+          <g id={`${name}-p3-left`} transform="rotate(270 30 30)">
+            <rect x="23" y="0" width="14" height="10" rx="1" fill="#18181B" stroke="#09090B" strokeWidth="0.8" />
+            <line x1="24" y1="2.5" x2="36" y2="2.5" stroke="#3F3F46" strokeWidth="0.8" />
+            <line x1="24" y1="5" x2="36" y2="5" stroke="#3F3F46" strokeWidth="0.8" />
+            <line x1="24" y1="7.5" x2="36" y2="7.5" stroke="#3F3F46" strokeWidth="0.8" />
+            <rect x="20.5" y="8" width="19" height="5" rx="1.5" fill="#27272A" stroke="#09090B" strokeWidth="0.8" />
+            <line x1="24" y1="8" x2="24" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
+            <line x1="30" y1="8" x2="30" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
+            <line x1="36" y1="8" x2="36" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
+          </g>
 
-        {/* Port 4: Right Nozzle (3 o'clock - Drain / Vessel Manifold Connection) */}
-        <g id={`${name}-p4-right`} transform="rotate(90 30 30)">
-          <rect x="23" y="0" width="14" height="10" rx="1" fill="#18181B" stroke="#09090B" strokeWidth="0.8" />
-          <line x1="24" y1="2.5" x2="36" y2="2.5" stroke="#3F3F46" strokeWidth="0.8" />
-          <line x1="24" y1="5" x2="36" y2="5" stroke="#3F3F46" strokeWidth="0.8" />
-          <line x1="24" y1="7.5" x2="36" y2="7.5" stroke="#3F3F46" strokeWidth="0.8" />
-          <rect x="20.5" y="8" width="19" height="5" rx="1.5" fill="#27272A" stroke="#09090B" strokeWidth="0.8" />
-          <line x1="24" y1="8" x2="24" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
-          <line x1="30" y1="8" x2="30" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
-          <line x1="36" y1="8" x2="36" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
-        </g>
+          {/* Port 4: Right Nozzle (3 o'clock - Drain / Vessel Manifold Connection) */}
+          <g id={`${name}-p4-right`} transform="rotate(90 30 30)">
+            <rect x="23" y="0" width="14" height="10" rx="1" fill="#18181B" stroke="#09090B" strokeWidth="0.8" />
+            <line x1="24" y1="2.5" x2="36" y2="2.5" stroke="#3F3F46" strokeWidth="0.8" />
+            <line x1="24" y1="5" x2="36" y2="5" stroke="#3F3F46" strokeWidth="0.8" />
+            <line x1="24" y1="7.5" x2="36" y2="7.5" stroke="#3F3F46" strokeWidth="0.8" />
+            <rect x="20.5" y="8" width="19" height="5" rx="1.5" fill="#27272A" stroke="#09090B" strokeWidth="0.8" />
+            <line x1="24" y1="8" x2="24" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
+            <line x1="30" y1="8" x2="30" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
+            <line x1="36" y1="8" x2="36" y2="13" stroke="#3F3F46" strokeWidth="0.6" />
+          </g>
 
-        {/* Main Outer Casing Flange Body (Centered at cx=30, cy=30) */}
-        <circle cx="30" cy="30" r="23" fill="url(#mpvCasingGrad)" stroke="#3F3F46" strokeWidth="1.2" />
-        <circle cx="30" cy="30" r="21.5" fill="none" stroke="#18181B" strokeWidth="1" />
+          {/* Main Outer Casing Flange Body (Centered at cx=30, cy=30) */}
+          <circle cx="30" cy="30" r="23" fill="url(#mpvCasingGrad)" stroke="#3F3F46" strokeWidth="1.2" />
+          <circle cx="30" cy="30" r="21.5" fill="none" stroke="#18181B" strokeWidth="1" />
 
-        {/* 12 Flange Perimeter Hex Bolts (R = 19.2 around cx=30, cy=30) */}
-        <circle cx="49.2" cy="30" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
-        <circle cx="49.0" cy="29.8" r="0.4" fill="#FFFFFF" />
-        <circle cx="46.6" cy="39.6" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
-        <circle cx="46.4" cy="39.4" r="0.4" fill="#FFFFFF" />
-        <circle cx="39.6" cy="46.6" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
-        <circle cx="39.4" cy="46.4" r="0.4" fill="#FFFFFF" />
-        <circle cx="30" cy="49.2" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
-        <circle cx="29.8" cy="49.0" r="0.4" fill="#FFFFFF" />
-        <circle cx="20.4" cy="46.6" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
-        <circle cx="20.2" cy="46.4" r="0.4" fill="#FFFFFF" />
-        <circle cx="13.4" cy="39.6" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
-        <circle cx="13.2" cy="39.4" r="0.4" fill="#FFFFFF" />
-        <circle cx="10.8" cy="30" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
-        <circle cx="10.6" cy="29.8" r="0.4" fill="#FFFFFF" />
-        <circle cx="13.4" cy="20.4" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
-        <circle cx="13.2" cy="20.2" r="0.4" fill="#FFFFFF" />
-        <circle cx="20.4" cy="13.4" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
-        <circle cx="20.2" cy="13.2" r="0.4" fill="#FFFFFF" />
-        <circle cx="30" cy="10.8" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
-        <circle cx="29.8" cy="10.6" r="0.4" fill="#FFFFFF" />
-        <circle cx="39.6" cy="13.4" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
-        <circle cx="39.4" cy="13.2" r="0.4" fill="#FFFFFF" />
-        <circle cx="46.6" cy="20.4" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
-        <circle cx="46.4" cy="20.2" r="0.4" fill="#FFFFFF" />
+          {/* 12 Flange Perimeter Hex Bolts (R = 19.2 around cx=30, cy=30) */}
+          <circle cx="49.2" cy="30" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
+          <circle cx="49.0" cy="29.8" r="0.4" fill="#FFFFFF" />
+          <circle cx="46.6" cy="39.6" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
+          <circle cx="46.4" cy="39.4" r="0.4" fill="#FFFFFF" />
+          <circle cx="39.6" cy="46.6" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
+          <circle cx="39.4" cy="46.4" r="0.4" fill="#FFFFFF" />
+          <circle cx="30" cy="49.2" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
+          <circle cx="29.8" cy="49.0" r="0.4" fill="#FFFFFF" />
+          <circle cx="20.4" cy="46.6" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
+          <circle cx="20.2" cy="46.4" r="0.4" fill="#FFFFFF" />
+          <circle cx="13.4" cy="39.6" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
+          <circle cx="13.2" cy="39.4" r="0.4" fill="#FFFFFF" />
+          <circle cx="10.8" cy="30" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
+          <circle cx="10.6" cy="29.8" r="0.4" fill="#FFFFFF" />
+          <circle cx="13.4" cy="20.4" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
+          <circle cx="13.2" cy="20.2" r="0.4" fill="#FFFFFF" />
+          <circle cx="20.4" cy="13.4" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
+          <circle cx="20.2" cy="13.2" r="0.4" fill="#FFFFFF" />
+          <circle cx="30" cy="10.8" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
+          <circle cx="29.8" cy="10.6" r="0.4" fill="#FFFFFF" />
+          <circle cx="39.6" cy="13.4" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
+          <circle cx="39.4" cy="13.2" r="0.4" fill="#FFFFFF" />
+          <circle cx="46.6" cy="20.4" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" strokeWidth="0.4" />
+          <circle cx="46.4" cy="20.2" r="0.4" fill="#FFFFFF" />
 
-        {/* Inner Bezel Ring */}
-        <circle cx="30" cy="30" r="16" fill="#09090B" stroke="#27272A" strokeWidth="0.8" />
+          {/* Inner Bezel Ring */}
+          <circle cx="30" cy="30" r="16" fill="#09090B" stroke="#27272A" strokeWidth="0.8" />
 
-        {/* Blue Dial Plate Face */}
-        <circle cx="30" cy="30" r="14.8" fill="url(#mpvDialGrad)" stroke="#38BDF8" strokeWidth="0.6" />
-        <circle cx="30" cy="30" r="13.6" fill="none" stroke="#60A5FA" strokeWidth="0.4" strokeOpacity="0.5" />
+          {/* Blue Dial Plate Face */}
+          <circle cx="30" cy="30" r="14.8" fill="url(#mpvDialGrad)" stroke="#38BDF8" strokeWidth="0.6" />
+          <circle cx="30" cy="30" r="13.6" fill="none" stroke="#60A5FA" strokeWidth="0.4" strokeOpacity="0.5" />
 
-        {/* Animated Internal Fluid Flow Paths (When Simulation is Active) */}
-        {isPlaying && (
-          <g id={`${name}-fluid-animations`}>
-            {/* Pulsing Active Core Ring */}
-            <circle cx="30" cy="30" r="14.2" fill="none" stroke="#38BDF8" strokeWidth="1" opacity="0.3">
-              <animate attributeName="opacity" values="0.15;0.7;0.15" dur={`${1.8 / simSpeed}s`} repeatCount="indefinite" />
-            </circle>
+          {/* Animated Internal Fluid Flow Paths (When Simulation is Active) */}
+          {isPlaying && (
+            <g id={`${name}-fluid-animations`}>
+              {/* Pulsing Active Core Ring */}
+              <circle cx="30" cy="30" r="14.2" fill="none" stroke="#38BDF8" strokeWidth="1" opacity="0.3">
+                <animate attributeName="opacity" values="0.15;0.7;0.15" dur={`${1.8 / simSpeed}s`} repeatCount="indefinite" />
+              </circle>
 
-            {/* Mode: SERVICE - Fluid downflow stream from Inlet to Vessel & Outlet */}
-            {mode === "SERVICE" && (
-              <g>
-                <path d="M 30 10 L 30 23 M 30 37 L 30 50" stroke="#BAE6FD" strokeWidth="1.8" strokeLinecap="round" strokeDasharray="3 3">
+              {/* Mode: SERVICE - Fluid downflow stream from Inlet to Vessel & Outlet */}
+              {mode === "SERVICE" && (
+                <g>
+                  <path d="M 30 10 L 30 23 M 30 37 L 30 50" stroke="#BAE6FD" strokeWidth="1.8" strokeLinecap="round" strokeDasharray="3 3">
+                    <animate attributeName="stroke-dashoffset" from="12" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
+                  </path>
+                  <circle cx="30" cy="30" r="5" fill="#38BDF8" opacity="0.2">
+                    <animate attributeName="r" values="3;6;3" dur={`${1.2 / simSpeed}s`} repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.3;0.1;0.3" dur={`${1.2 / simSpeed}s`} repeatCount="indefinite" />
+                  </circle>
+                </g>
+              )}
+
+              {/* Mode: BACKWASH / RINSE / DRAIN - Flush discharge stream to Port 4 Drain */}
+              {(mode === "BACKWASH" || mode === "RINSE" || mode === "DRAIN") && (
+                <path d="M 30 30 L 50 30" stroke="#FCA5A5" strokeWidth="2" strokeLinecap="round" strokeDasharray="3 3">
                   <animate attributeName="stroke-dashoffset" from="12" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
                 </path>
-                <circle cx="30" cy="30" r="5" fill="#38BDF8" opacity="0.2">
-                  <animate attributeName="r" values="3;6;3" dur={`${1.2 / simSpeed}s`} repeatCount="indefinite" />
-                  <animate attributeName="opacity" values="0.3;0.1;0.3" dur={`${1.2 / simSpeed}s`} repeatCount="indefinite" />
-                </circle>
-              </g>
-            )}
+              )}
+            </g>
+          )}
 
-            {/* Mode: BACKWASH / RINSE / DRAIN - Flush discharge stream to Port 4 Drain */}
-            {(mode === "BACKWASH" || mode === "RINSE" || mode === "DRAIN") && (
-              <path d="M 30 30 L 50 30" stroke="#FCA5A5" strokeWidth="2" strokeLinecap="round" strokeDasharray="3 3">
-                <animate attributeName="stroke-dashoffset" from="12" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
-              </path>
-            )}
+          {/* 4 Dial Cycle Step Markings */}
+          {/* 1. Top (0°): SERVICE */}
+          <g transform="rotate(0 30 30)">
+            <polygon points="30,16.5 28,18.8 32,18.8" fill="#FACC15" />
           </g>
-        )}
 
-        {/* 4 Dial Cycle Step Markings */}
-        {/* 1. Top (0°): SERVICE */}
-        <g transform="rotate(0 30 30)">
-          <polygon points="30,16.5 28,18.8 32,18.8" fill="#FACC15" />
-        </g>
+          {/* 2. Right (90°): DRAIN */}
+          <g transform="rotate(90 30 30)">
+            <polygon points="30,16.5 28,18.8 32,18.8" fill="#FACC15" />
+          </g>
 
-        {/* 2. Right (90°): DRAIN */}
-        <g transform="rotate(90 30 30)">
-          <polygon points="30,16.5 28,18.8 32,18.8" fill="#FACC15" />
-        </g>
+          {/* 3. Bottom (180°): BACKWASH */}
+          <g transform="rotate(180 30 30)">
+            <polygon points="30,16.5 28,18.8 32,18.8" fill="#FACC15" />
+          </g>
 
-        {/* 3. Bottom (180°): BACKWASH */}
-        <g transform="rotate(180 30 30)">
-          <polygon points="30,16.5 28,18.8 32,18.8" fill="#FACC15" />
-        </g>
+          {/* 4. Left (270°): RINSE */}
+          <g transform="rotate(270 30 30)">
+            <polygon points="30,16.5 28,18.8 32,18.8" fill="#FACC15" />
+          </g>
 
-        {/* 4. Left (270°): RINSE */}
-        <g transform="rotate(270 30 30)">
-          <polygon points="30,16.5 28,18.8 32,18.8" fill="#FACC15" />
-        </g>
+          {/* Central Rotor Boss */}
+          <circle cx="30" cy="30" r="7" fill="#18181B" stroke="#09090B" strokeWidth="1" />
 
-        {/* Central Rotor Boss */}
-        <circle cx="30" cy="30" r="7" fill="#18181B" stroke="#09090B" strokeWidth="1" />
-
-        {/* Rotary Selector Handle Lever with Smooth CSS Transition */}
-        <g
-          transform={`rotate(${angle} 30 30)`}
-          style={{ transition: "transform 0.45s cubic-bezier(0.4, 0, 0.2, 1)" }}
-        >
-          <path
-            d="M 28 30 L 27.5 22 L 25 12 C 25 8.5 35 8.5 35 12 L 32.5 22 L 32 30 Z"
-            fill="url(#mpvHandleGrad)"
-            stroke="#09090B"
-            strokeWidth="0.8"
-          />
-          <line x1="30" y1="11" x2="30" y2="24" stroke="#52525B" strokeWidth="0.7" strokeLinecap="round" />
-          <polygon points="30,8.5 28.8,11 31.2,11" fill="#FACC15" />
-          <circle cx="30" cy="30" r="3.6" fill="#18181B" stroke="#3F3F46" strokeWidth="0.7" />
-          <circle cx="30" cy="30" r="1.8" fill="url(#mpvBoltGrad)" stroke="#475569" strokeWidth="0.3" />
-          <circle cx="29.5" cy="29.5" r="0.5" fill="#FFFFFF" />
+          {/* Rotary Selector Handle Lever with Smooth CSS Transition */}
+          <g
+            transform={`rotate(${angle} 30 30)`}
+            style={{ transition: "transform 0.45s cubic-bezier(0.4, 0, 0.2, 1)" }}
+          >
+            <path
+              d="M 28 30 L 27.5 22 L 25 12 C 25 8.5 35 8.5 35 12 L 32.5 22 L 32 30 Z"
+              fill="url(#mpvHandleGrad)"
+              stroke="#09090B"
+              strokeWidth="0.8"
+            />
+            <line x1="30" y1="11" x2="30" y2="24" stroke="#52525B" strokeWidth="0.7" strokeLinecap="round" />
+            <polygon points="30,8.5 28.8,11 31.2,11" fill="#FACC15" />
+            <circle cx="30" cy="30" r="3.6" fill="#18181B" stroke="#3F3F46" strokeWidth="0.7" />
+            <circle cx="30" cy="30" r="1.8" fill="url(#mpvBoltGrad)" stroke="#475569" strokeWidth="0.3" />
+            <circle cx="29.5" cy="29.5" r="0.5" fill="#FFFFFF" />
+          </g>
         </g>
       </g>
     )
   }
-  const renderTelemetryBadge = (
+  interface TelemetryParam {
+    label: string
+    value: string | number
+    unit?: string
+  }
+
+  // Dual-Parameter Telemetry Card Renderer (Enhanced Readability SCADA Pill)
+  const renderTelemetryCard = (
     x: number,
     y: number,
     _tag: string,
+    params: TelemetryParam[],
+    status: "RUNNING" | "STANDBY" | "STOPPED" | "NORMAL" = "NORMAL",
+    width: number = 88,
+    height?: number
+  ) => {
+    const isOk = status === "RUNNING" || status === "NORMAL"
+    const isStandby = status === "STANDBY"
+    const borderColor = isOk ? "#4ADE80" : isStandby ? "#FBBF24" : "#F87171"
+    const finalWidth = width ?? 88
+    const cardHeight = height ?? (params.length > 1 ? 25 : 16)
+
+    return (
+      <g
+        transform={`translate(${x}, ${y})`}
+        className="pointer-events-none select-none"
+        style={{ filter: "drop-shadow(0px 2px 3px rgba(15, 23, 42, 0.20))" }}
+      >
+        {/* Crisp solid white container with state-colored border */}
+        <rect
+          x="0"
+          y="0"
+          width={finalWidth}
+          height={cardHeight}
+          rx="5"
+          fill="#FFFFFF"
+          stroke={borderColor}
+          strokeWidth="1.4"
+        />
+
+        {params.map((p, idx) => {
+          const yPos = params.length === 1 ? 11.5 : 10.5 + idx * 11.5
+          return (
+            <g key={idx}>
+              {idx > 0 && (
+                <line x1="4" y1={yPos - 7.5} x2={finalWidth - 4} y2={yPos - 7.5} stroke="#E2E8F0" strokeWidth="0.8" />
+              )}
+              <text x="6" y={yPos} fill="#334155" fontSize="8.4" fontFamily="monospace" fontWeight="700">
+                {p.label}:
+              </text>
+              <text x={finalWidth - 6} y={yPos} textAnchor="end" fill="#0F172A" fontSize="9.2" fontWeight="bold" fontFamily="monospace">
+                {p.value}{p.unit ? <tspan fill="#64748B" fontSize="7.4" fontWeight="600"> {p.unit}</tspan> : ""}
+              </text>
+            </g>
+          )
+        })}
+      </g>
+    )
+  }
+
+  const renderTelemetryBadge = (
+    x: number,
+    y: number,
+    tag: string,
     paramLabel: string,
     paramValue: string | number,
     unit: string,
@@ -681,43 +809,13 @@ export function ScadaSchematicSimulation() {
     width: number = 68,
     height: number = 16
   ) => {
-    const isOk = status === "RUNNING" || status === "NORMAL"
-    const isStandby = status === "STANDBY"
-    const borderColor = isOk ? "#86EFAC" : isStandby ? "#FDE68A" : "#FECACA"
-
-    return (
-      <g
-        transform={`translate(${x}, ${y})`}
-        className="pointer-events-none select-none"
-        style={{ filter: "drop-shadow(0px 1.5px 2px rgba(15, 23, 42, 0.16))" }}
-      >
-        {/* Compact pill container with crisp solid white background */}
-        <rect
-          x="0"
-          y="0"
-          width={width}
-          height={height}
-          rx="3.5"
-          fill="#FFFFFF"
-          stroke={borderColor}
-          strokeWidth="1.2"
-        />
-
-        {/* Parameter Label & Value */}
-        <text x="6" y="10.8" fill="#334155" fontSize="6.5" fontFamily="monospace" fontWeight="600">
-          {paramLabel}:
-        </text>
-        <text x={width - 5} y="10.8" textAnchor="end" fill="#0F172A" fontSize="7" fontWeight="bold" fontFamily="monospace">
-          {paramValue}{unit ? <tspan fill="#64748B" fontSize="5.8" fontWeight="500"> {unit}</tspan> : ""}
-        </text>
-      </g>
-    )
+    return renderTelemetryCard(x, y, tag, [{ label: paramLabel, value: paramValue, unit }], status, width, height)
   }
 
   return (
-    <div className="w-full flex flex-col bg-white rounded-2xl overflow-hidden border border-sky-200/90 shadow-xl shadow-sky-950/5 font-sans select-none text-slate-900">
+    <div className="w-full h-full flex-1 min-h-0 flex flex-col bg-white rounded-xl sm:rounded-2xl overflow-hidden border border-sky-200/90 shadow-xl shadow-sky-950/5 font-sans select-none text-slate-900">
       {/* 1. SCADA Header / Control Deck */}
-      <div className="px-4 py-2.5 bg-sky-50/70 border-b border-sky-100 flex flex-wrap items-center justify-between gap-3">
+      <div className="shrink-0 px-3 sm:px-4 py-1 sm:py-1.5 bg-sky-50/70 border-b border-sky-100 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <span className="relative flex h-3 w-3">
@@ -789,47 +887,8 @@ export function ScadaSchematicSimulation() {
         </div>
       </div>
 
-      {/* Water Quality & Treatment Progression Ribbon */}
-      <div className="px-4 py-1.5 bg-gradient-to-r from-stone-100 via-amber-50/70 to-cyan-50/70 border-b border-sky-100 flex items-center justify-between gap-2 overflow-x-auto text-[11px] font-mono">
-        <span className="font-bold text-slate-700 whitespace-nowrap flex items-center gap-1.5">
-          <Droplets className="w-3.5 h-3.5 text-sky-600" />
-          WATER CLARITY PROGRESSION:
-        </span>
-        <div className="flex items-center gap-2 flex-nowrap">
-          <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-[#5D4037]/15 border border-[#5D4037]/40 text-[#4E342E] font-semibold" title="Raw untreated sewage (dark influent sludge)">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#5D4037]" />
-            1. Raw Sewage (15%)
-          </span>
-          <span className="text-slate-400">→</span>
-          <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-[#8D6E63]/15 border border-[#8D6E63]/40 text-[#5D4037] font-semibold" title="MBBR biological digestion mixed liquor (Bio-Mix)">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#8D6E63]" />
-            2. Aeration Bio-Mix (35%)
-          </span>
-          <span className="text-slate-400">→</span>
-          <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-[#B8AA7B]/25 border border-[#B8AA7B]/60 text-[#786940] font-semibold" title="Clarifier solid-liquid settling supernatant">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#D2C59D] border border-[#8C7C4E]" />
-            3. Clarifier Settling (55%)
-          </span>
-          <span className="text-slate-400">→</span>
-          <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-[#80CBC4]/20 border border-[#80CBC4]/50 text-[#00695C] font-semibold" title="Pre-filtered secondary effluent">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#80CBC4]" />
-            4. Pre-Filter (75%)
-          </span>
-          <span className="text-slate-400">→</span>
-          <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-sky-100 border border-sky-300 text-sky-800 font-semibold" title="Filtered & disinfected clean treated water">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#38BDF8]" />
-            5. Treated Clean (95%)
-          </span>
-          <span className="text-slate-400">→</span>
-          <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-cyan-100 border border-cyan-300 text-cyan-900 font-semibold" title="Polished zero-hardness soft water">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#00E5FF] shadow-xs" />
-            6. Pristine Soft (99.9%)
-          </span>
-        </div>
-      </div>
-
       {/* 2. Main SCADA SVG Canvas (1200 x 780 viewbox space) */}
-      <div className="relative w-full aspect-[1200/780] bg-gradient-to-b from-white via-sky-50/25 to-white overflow-hidden">
+      <div className="relative w-full flex-1 min-h-0 flex items-center justify-center bg-gradient-to-b from-white via-sky-50/25 to-white overflow-hidden">
         {/* Subtle Blueprint Dot Grid */}
         <div
           className="absolute inset-0 pointer-events-none opacity-35"
@@ -839,10 +898,35 @@ export function ScadaSchematicSimulation() {
           }}
         />
 
+        {/* Top-Right Partner Logos Badge Inside Schematic Canvas */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-5 z-20 flex items-center gap-3 sm:gap-4 bg-white/95 backdrop-blur-xs px-3 py-2 sm:px-4 sm:py-2.5 rounded-2xl border border-sky-200/90 shadow-md shadow-sky-950/10 pointer-events-auto">
+          <div className="relative h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20 flex items-center justify-center">
+            <Image
+              src="/images/prestige-group-logo.png"
+              alt="Prestige Group Logo"
+              width={80}
+              height={80}
+              className="h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20 object-contain"
+              priority
+            />
+          </div>
+          <div className="h-8 sm:h-12 md:h-14 w-px bg-slate-200" aria-hidden="true" />
+          <div className="relative h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20 flex items-center justify-center">
+            <Image
+              src="/images/ppms-logo.jpg"
+              alt="PPMS Logo"
+              width={80}
+              height={80}
+              className="h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20 object-contain rounded-full"
+              priority
+            />
+          </div>
+        </div>
+
         <svg
-          viewBox="0 0 1200 780"
-          className="w-full h-full object-contain"
-          preserveAspectRatio="xMidYMid meet"
+          viewBox="-65 0 1405 710"
+          className="w-full h-full max-h-full max-w-full block"
+          preserveAspectRatio="xMinYMid meet"
         >
           <defs>
             {/* 1. Raw Sewage / Influent & Collection Tank Water (Dark Sludge Brown Influent) */}
@@ -885,7 +969,7 @@ export function ScadaSchematicSimulation() {
               <path d="M 2 16 Q 70 24 138 16 L 138 76 Q 70 93 2 76 Z" />
             </clipPath>
 
-            {/* 4. Clarifier Tank with Arm (Phase Separation: Slightly Bad/Murky Amber Supernatant on top, Settling Sludge at bottom) */}
+            {/* 4. Clarifier Tank with Arm (Phase Separation: Settling Supernatant Water) */}
             <linearGradient id="clarifierWaterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#D2C59D" stopOpacity="0.88" />
               <stop offset="35%" stopColor="#B8AA7B" stopOpacity="0.86" />
@@ -902,7 +986,7 @@ export function ScadaSchematicSimulation() {
               <stop offset="100%" stopColor="#8C7C4E" stopOpacity="0.88" />
             </linearGradient>
             <clipPath id="clarifierWaterClip">
-              <path d="M 2 16 Q 70 24 138 16 L 138 54 L 2 54 Z" />
+              <path d="M 2 16 Q 70 24 138 16 L 138 54 L 119 67 L 21 67 L 2 54 Z" />
             </clipPath>
 
             {/* 5. Sludge Holding Tank (Dense Thickened Waste Activated Sludge) */}
@@ -1000,15 +1084,15 @@ export function ScadaSchematicSimulation() {
 
             {/* Architectural Building Facade & Glass Gradients (Light Theme) */}
             <linearGradient id="buildingFacadeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#FFFFFF" />
-              <stop offset="25%" stopColor="#F8FAFC" />
-              <stop offset="70%" stopColor="#F1F5F9" />
-              <stop offset="100%" stopColor="#E2E8F0" />
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.45" />
+              <stop offset="25%" stopColor="#F0F9FF" stopOpacity="0.40" />
+              <stop offset="70%" stopColor="#E0F2FE" stopOpacity="0.45" />
+              <stop offset="100%" stopColor="#BAE6FD" stopOpacity="0.55" />
             </linearGradient>
             <linearGradient id="buildingGlassGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#E0F2FE" stopOpacity="0.95" />
-              <stop offset="50%" stopColor="#BAE6FD" stopOpacity="0.90" />
-              <stop offset="100%" stopColor="#7DD3FC" stopOpacity="0.95" />
+              <stop offset="0%" stopColor="#E0F2FE" stopOpacity="0.55" />
+              <stop offset="50%" stopColor="#BAE6FD" stopOpacity="0.50" />
+              <stop offset="100%" stopColor="#7DD3FC" stopOpacity="0.60" />
             </linearGradient>
 
             {/* 10. 2.5D Cylindrical Glass Vessel Walls (Specular Highlight & Fresnel Backlight) */}
@@ -1101,1376 +1185,1521 @@ export function ScadaSchematicSimulation() {
             </linearGradient>
           </defs>
 
-          {/* ====================================================================== */}
-          {/* PIPELINE NETWORK (100% FAITHFUL TO THE REFERENCE PHOTO)                */}
-          {/* ====================================================================== */}
+          {/* Master Schematic Canvas Group - Shifted to balanced left margin */}
+          <g id="scada-schematic-canvas" transform="translate(110, 0)">
 
-          {/* ====================================================================== */}
-          {/* 2.5D FACILITY / BUILDING INFLUENT SOURCE (LIGHT ARCHITECTURAL THEME)   */}
-          {/* ====================================================================== */}
-          <g id="facility-building" transform="translate(8, 30)">
-            {/* 1. 3D Grounding Soft Contact Shadow */}
-            <ellipse cx="26" cy="80" rx="26" ry="5.5" fill="#64748B" opacity="0.25" />
-            <ellipse cx="26" cy="80" rx="18" ry="3.2" fill="#334155" opacity="0.30" />
+            {/* ====================================================================== */}
+            {/* PIPELINE NETWORK (100% FAITHFUL TO THE REFERENCE PHOTO)                */}
+            {/* ====================================================================== */}
 
-            {/* 2. Architectural Concrete Foundation Pedestal */}
-            <rect x="0" y="74" width="52" height="6" rx="1.5" fill="#E2E8F0" stroke="#CBD5E1" strokeWidth="1" />
-            <line x1="1" y1="75" x2="51" y2="75" stroke="#FFFFFF" strokeWidth="0.8" opacity="0.9" />
+            {/* ====================================================================== */}
+            {/* 2.5D FACILITY / BUILDING INFLUENT SOURCE (LIGHT ARCHITECTURAL THEME)   */}
+            {/* 2x WIDTH (104px) & 3x HEIGHT (240px) TRANSPARENT CORPORATE TOWER       */}
+            {/* ====================================================================== */}
+            <g id="facility-building" transform="translate(-76, 10)">
+              {/* 1. 3D Grounding Soft Contact Shadow */}
+              <ellipse cx="52" cy="244" rx="52" ry="7" fill="#64748B" opacity="0.18" />
+              <ellipse cx="52" cy="244" rx="36" ry="4.2" fill="#334155" opacity="0.22" />
 
-            {/* 3. Main Architectural Tower Body (2.5D Stepped Light Monolith) */}
-            <rect x="4" y="14" width="44" height="60" rx="2" fill="url(#buildingFacadeGrad)" stroke="#94A3B8" strokeWidth="1.2" />
+              {/* 2. Architectural Concrete Foundation Pedestal (Translucent) */}
+              <rect x="0" y="234" width="104" height="8" rx="2" fill="#E2E8F0" fillOpacity="0.55" stroke="#CBD5E1" strokeWidth="1" strokeOpacity="0.75" />
+              <line x1="1" y1="235" x2="103" y2="235" stroke="#FFFFFF" strokeWidth="1" opacity="0.7" />
 
-            {/* 4. Rooftop Parapet, Terrace & Perimeter Railing */}
-            <rect x="2" y="10" width="48" height="4.5" rx="1" fill="#F1F5F9" stroke="#CBD5E1" strokeWidth="0.8" />
-            <line x1="5" y1="8" x2="47" y2="8" stroke="#38BDF8" strokeWidth="1" strokeDasharray="3 1.5" opacity="0.85" />
+              {/* 3. Main Architectural Skyscraper Body (Transparent 2.5D Glass Monolith - 2x Width) */}
+              <rect x="6" y="26" width="92" height="208" rx="3" fill="url(#buildingFacadeGrad)" stroke="#38BDF8" strokeWidth="1.2" strokeOpacity="0.8" />
 
-            {/* Rooftop HVAC Mechanical Penthouse */}
-            <rect x="8" y="3.5" width="16" height="7" rx="1" fill="#F8FAFC" stroke="#CBD5E1" strokeWidth="0.8" />
-            <line x1="10" y1="5.5" x2="22" y2="5.5" stroke="#94A3B8" strokeWidth="0.7" />
-            <line x1="10" y1="7.5" x2="22" y2="7.5" stroke="#94A3B8" strokeWidth="0.7" />
+              {/* 4. Rooftop Parapet, Terrace & Perimeter Railing (Translucent) */}
+              <rect x="3" y="20" width="98" height="6.5" rx="1.5" fill="#F1F5F9" fillOpacity="0.55" stroke="#CBD5E1" strokeWidth="0.8" strokeOpacity="0.75" />
+              <line x1="7" y1="17" x2="97" y2="17" stroke="#38BDF8" strokeWidth="1" strokeDasharray="3 1.5" opacity="0.85" />
 
-            {/* Telecommunications Mast & Active Beacon */}
-            <line x1="38" y1="10" x2="38" y2="0" stroke="#64748B" strokeWidth="1.2" />
-            <circle cx="38" cy="0" r="1.6" fill="#0284C7">
-              <animate attributeName="opacity" values="1; 0.3; 1" dur="1.2s" repeatCount="indefinite" />
-            </circle>
+              {/* Rooftop HVAC Mechanical Penthouse */}
+              <rect x="16" y="10" width="32" height="10" rx="1.5" fill="#F8FAFC" fillOpacity="0.5" stroke="#CBD5E1" strokeWidth="0.8" strokeOpacity="0.7" />
+              <line x1="20" y1="13" x2="44" y2="13" stroke="#94A3B8" strokeWidth="0.7" opacity="0.7" />
+              <line x1="20" y1="16" x2="44" y2="16" stroke="#94A3B8" strokeWidth="0.7" opacity="0.7" />
 
-            {/* 5. Curtain-Wall Panoramic Window Bays & Architectural Spandrels */}
-            {/* Floor 4 (Top Floor) */}
-            <rect x="7" y="16" width="16" height="9.5" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" />
-            <rect x="25" y="16" width="16" height="9.5" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" />
-            <line x1="15" y1="16" x2="15" y2="25.5" stroke="#0284C7" strokeWidth="0.5" opacity="0.5" />
-            <line x1="33" y1="16" x2="33" y2="25.5" stroke="#0284C7" strokeWidth="0.5" opacity="0.5" />
-
-            {/* Floor 4-3 Titanium Spandrel Band */}
-            <line x1="4" y1="27.5" x2="48" y2="27.5" stroke="#CBD5E1" strokeWidth="1.4" />
-
-            {/* Floor 3 */}
-            <rect x="7" y="29.5" width="16" height="9.5" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" />
-            <rect x="25" y="29.5" width="16" height="9.5" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" />
-            <line x1="15" y1="29.5" x2="15" y2="39" stroke="#0284C7" strokeWidth="0.5" opacity="0.5" />
-            <line x1="33" y1="29.5" x2="33" y2="39" stroke="#0284C7" strokeWidth="0.5" opacity="0.5" />
-
-            {/* Floor 3-2 Titanium Spandrel Band */}
-            <line x1="4" y1="41" x2="48" y2="41" stroke="#CBD5E1" strokeWidth="1.4" />
-
-            {/* Floor 2 */}
-            <rect x="7" y="43" width="16" height="9.5" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" />
-            <rect x="25" y="43" width="16" height="9.5" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" />
-            <line x1="15" y1="43" x2="15" y2="52.5" stroke="#0284C7" strokeWidth="0.5" opacity="0.5" />
-            <line x1="33" y1="43" x2="33" y2="52.5" stroke="#0284C7" strokeWidth="0.5" opacity="0.5" />
-
-            {/* Floor 2-1 Titanium Spandrel Band */}
-            <line x1="4" y1="54.5" x2="48" y2="54.5" stroke="#CBD5E1" strokeWidth="1.4" />
-
-            {/* Ground Floor Entrance Lobby & Canopy */}
-            <rect x="14" y="58" width="20" height="16" rx="1" fill="#FFFFFF" stroke="#0284C7" strokeWidth="0.8" />
-            {/* Modern Entrance Canopy */}
-            <rect x="11" y="56.5" width="26" height="2.5" rx="0.5" fill="#0284C7" opacity="0.9" />
-            {/* Double Glass Lobby Doors */}
-            <rect x="16" y="60" width="7.5" height="14" fill="#E0F2FE" stroke="#38BDF8" strokeWidth="0.5" />
-            <rect x="24.5" y="60" width="7.5" height="14" fill="#E0F2FE" stroke="#38BDF8" strokeWidth="0.5" />
-            <line x1="24" y1="60" x2="24" y2="74" stroke="#0284C7" strokeWidth="0.6" />
-
-            {/* 6. Cylindrical Glass Specular Reflection Glare (Matches Tanks & Vessels) */}
-            <rect x="6" y="15" width="8" height="58" rx="2" fill="url(#specularSheen)" opacity="0.8" />
-
-            {/* 7. Industrial Sewer Discharge Manifold (ANSI Flange at y=30, matches pipeline y=60) */}
-            <g id="building-sewer-discharge-manifold" transform="translate(45, 26)">
-              {/* Stainless Steel Flange Ring */}
-              <rect x="0" y="0" width="5.5" height="8" rx="1" fill="url(#metalRingGrad)" stroke="#64748B" strokeWidth="0.8" />
-              {/* Flange Bolts */}
-              <circle cx="2.7" cy="1.6" r="0.65" fill="#334155" />
-              <circle cx="2.7" cy="6.4" r="0.65" fill="#334155" />
-            </g>
-
-            {/* 8. Precision SCADA Identification Badge (Light Mode) */}
-            <g transform="translate(26, -6)">
-              <rect x="-24" y="-7" width="48" height="14" rx="3" fill="#FFFFFF" stroke="#0284C7" strokeWidth="1" />
-              <circle cx="-18" cy="0" r="1.8" fill="#16A34A">
-                <animate attributeName="opacity" values="1; 0.4; 1" dur="2s" repeatCount="indefinite" />
+              {/* Telecommunications Mast & Active Beacon */}
+              <line x1="82" y1="20" x2="82" y2="4" stroke="#64748B" strokeWidth="1.4" />
+              <circle cx="82" cy="4" r="2.2" fill="#0284C7">
+                <animate attributeName="opacity" values="1; 0.3; 1" dur="1.2s" repeatCount="indefinite" />
               </circle>
-              <text x="3" y="-1.5" fill="#0369A1" fontSize="4.6" fontWeight="bold" textAnchor="middle" fontFamily="monospace">BUILDING</text>
-              <text x="3" y="3.5" fill="#64748B" fontSize="3" fontWeight="bold" textAnchor="middle" fontFamily="monospace">SEWER SOURCE</text>
-            </g>
-          </g>
 
-          {/* 1. RAW INFLUENT INLET FROM BUILDING (MURKY SEWAGE WATER) */}
-          <g id="raw-influent-from-building">
-            {/* Pipe from Building (56, 60) across to Collection Tank top inlet at (152, 60), then elbows down to (152, 68) */}
-            <path d="M 56 60 L 152 60 L 152 68" stroke="#8D6E63" strokeWidth="5" fill="none" strokeLinejoin="round" />
-            <polygon points="98,56 108,60 98,64" fill="#8D6E63" />
-            {isPlaying && (
-              <path d="M 56 60 L 152 60 L 152 68" stroke="#D7CCC8" strokeWidth="2.5" strokeDasharray="5 7" fill="none" strokeLinejoin="round">
-                <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
-              </path>
-            )}
-            {/* Discharge Nozzle Flange at Pipe Mouth */}
-            <rect x="148" y="66" width="8" height="3" rx="1" fill="#5D4037" stroke="#3E2723" strokeWidth="0.8" />
-          </g>
-
-          {/* 2. RED DRAIN & BACKWASH RETURN PIPELINE */}
-          <g id="red-drain-pipeline">
-            {/* Common Drain Manifold connecting ACF Valve (390, 480) and PSF Valve (870, 480) directly into Central Riser (545, 480) */}
-            {/* From ACF Valve DRAIN port at (390, 480) going right to central tee */}
-            <path d="M 390 480 L 545 480" stroke="#DC2626" strokeWidth="4.5" fill="none" />
-            <polygon points="465,476 475,480 465,484" fill="#DC2626" />
-
-            {/* From PSF Valve DRAIN port at (870, 480) going left to central tee (100% connected, zero gaps) */}
-            <path d="M 870 480 L 545 480" stroke="#DC2626" strokeWidth="4.5" fill="none" />
-            <polygon points="625,476 615,480 625,484" fill="#DC2626" />
-
-            {/* Central vertical red riser from y=480 up to y=390 */}
-            <path d="M 545 480 L 545 390" stroke="#DC2626" strokeWidth="4.5" fill="none" />
-            <polygon points="541,435 545,425 549,435" fill="#DC2626" />
-
-            {/* Header running across above ACF to far left margin and cleanly into Collection Tank left side (y=76) */}
-            <path d="M 545 390 L 75 390 L 75 76 L 135 76" stroke="#DC2626" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
-            <polygon points="260,386 250,390 260,394" fill="#DC2626" />
-            <polygon points="71,210 75,200 79,210" fill="#DC2626" />
-            <polygon points="127,72 135,76 127,80" fill="#DC2626" />
-
-            {/* Animated backwash/rinse flow */}
-            {isPlaying && (
-              <>
-                {/* Active Backwash/Rinse Flow from ACF Multiport Valve */}
-                {(acfValveMode === "BACKWASH" || acfValveMode === "RINSE") && (
-                  <path
-                    d="M 390 480 L 545 480 L 545 390 L 75 390 L 75 76 L 135 76"
-                    stroke="#FCA5A5"
-                    strokeWidth="2.5"
-                    strokeDasharray="6 8"
-                    fill="none"
-                    strokeLinejoin="round"
-                  >
-                    <animate attributeName="stroke-dashoffset" from="56" to="0" dur={`${1.4 / simSpeed}s`} repeatCount="indefinite" />
-                  </path>
-                )}
-
-                {/* Active Backwash/Rinse Flow from PSF Multiport Valve */}
-                {(psfValveMode === "BACKWASH" || psfValveMode === "RINSE") && (
-                  <path
-                    d="M 870 480 L 545 480 L 545 390 L 75 390 L 75 76 L 135 76"
-                    stroke="#FCA5A5"
-                    strokeWidth="2.5"
-                    strokeDasharray="6 8"
-                    fill="none"
-                    strokeLinejoin="round"
-                  >
-                    <animate attributeName="stroke-dashoffset" from="56" to="0" dur={`${1.4 / simSpeed}s`} repeatCount="indefinite" />
-                  </path>
-                )}
-
-                {/* Subtle Standby Connectivity Flow when neither valve is actively backwashing */}
-                {acfValveMode !== "BACKWASH" && acfValveMode !== "RINSE" && psfValveMode !== "BACKWASH" && psfValveMode !== "RINSE" && (
-                  <path
-                    d="M 390 480 L 545 480 L 545 390 L 75 390 L 75 76 L 135 76"
-                    stroke="#FCA5A5"
-                    strokeWidth="1.8"
-                    strokeDasharray="4 10"
-                    opacity="0.4"
-                    fill="none"
-                    strokeLinejoin="round"
-                  >
-                    <animate attributeName="stroke-dashoffset" from="56" to="0" dur={`${2.2 / simSpeed}s`} repeatCount="indefinite" />
-                  </path>
-                )}
-              </>
-            )}
-          </g>
-
-          {/* 3. COLLECTION TANK TO MBBR AERATION TANK (VIA M1 / M2) */}
-          <g id="collection-to-mbbr-lines">
-            {/* Wall Flange Nozzle on Collection Tank */}
-            <rect x="307" y="88" width="6" height="8" rx="1.5" fill="#64748B" stroke="#0284C7" strokeWidth="1" />
-            {/* Stainless Steel Outer Casing */}
-            <path d="M 308 92 L 340 92 L 340 75 L 420 75 L 420 92 L 440 92" stroke="url(#ssPipeH)" strokeWidth="6.5" fill="none" strokeLinejoin="round" />
-            <path d="M 340 92 L 340 115 L 420 115 L 420 92" stroke="url(#ssPipeH)" strokeWidth="6.5" fill="none" strokeLinejoin="round" />
-            {/* Inner Fluid Core */}
-            <path d="M 308 92 L 340 92 L 340 75 L 420 75 L 420 92 L 440 92" stroke="#0284C7" strokeWidth="4" fill="none" strokeLinejoin="round" />
-            <path d="M 340 92 L 340 115 L 420 115 L 420 92" stroke="#0284C7" strokeWidth="4" fill="none" strokeLinejoin="round" />
-            <polygon points="430,88 440,92 430,96" fill="#0284C7" />
-            {isPlaying && pumps.M1.status === "RUNNING" && (
-              <path d="M 312 92 L 340 92 L 340 75 L 420 75 L 420 92 L 440 92" stroke="#D7CCC8" strokeWidth="2.5" strokeDasharray="5 7" fill="none" strokeLinejoin="round">
-                <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${0.9 / simSpeed}s`} repeatCount="indefinite" />
-              </path>
-            )}
-          </g>
-
-          {/* 4. MBBR AERATION OVERFLOW TO CLARIFIER TANK (RUNS ACROSS THE TOP AT Y=65 - BIO-MIX LIQUOR) */}
-          <g id="mbbr-to-clarifier-line">
-            <path d="M 570 65 L 740 65" stroke="url(#ssPipeH)" strokeWidth="6.5" fill="none" />
-            <path d="M 570 65 L 740 65" stroke="#8D6E63" strokeWidth="4" fill="none" />
-            <polygon points="728,61 738,65 728,69" fill="#8D6E63" />
-            {isPlaying && (
-              <path d="M 570 65 L 740 65" stroke="#D7CCC8" strokeWidth="2.5" strokeDasharray="5 7" fill="none">
-                <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
-              </path>
-            )}
-          </g>
-
-          {/* 5. CLARIFIER THROUGH CLARIFIER VALVE STRAIGHT DOWN INTO FILTER FEED TANK (SETTLED SUPERNATANT) */}
-          <g id="clarifier-to-filter-feed-line">
-            <path d="M 810 138 L 810 252" stroke="url(#ssPipeV)" strokeWidth="6.5" fill="none" />
-            <path d="M 810 138 L 810 252" stroke="#B8AA7B" strokeWidth="4" fill="none" />
-            <polygon points="806,242 810,252 814,242" fill="#B8AA7B" />
-            {isPlaying && clarifierValveOpen && (
-              <path d="M 810 138 L 810 252" stroke="#EFE8D0" strokeWidth="2.5" strokeDasharray="5 7" fill="none">
-                <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
-              </path>
-            )}
-          </g>
-
-          {/* 6. CLARIFIER SLUDGE UNDERFLOW -> M3/M4 -> MBBR AERATION TANK & SLUDGE HOLDING TANK */}
-          <g id="clarifier-to-sludge-lines">
-            {/* Feeds from Clarifier bottom/left into M3 & M4 suction */}
-            <path d="M 781 128 L 705 128 L 705 95 L 675 95" stroke="#D97706" strokeWidth="3.5" fill="none" strokeLinejoin="round" />
-            <path d="M 705 128 L 675 128" stroke="#D97706" strokeWidth="3.5" fill="none" strokeLinejoin="round" />
-
-            {/* From M3/M4 discharge to manifold at x=600 */}
-            <path d="M 635 95 L 600 95" stroke="#D97706" strokeWidth="3.5" fill="none" strokeLinejoin="round" />
-            <path d="M 635 128 L 600 128" stroke="#D97706" strokeWidth="3.5" fill="none" strokeLinejoin="round" />
-
-            {/* 1. Downward branch into SLUDGE HOLDING TANK */}
-            <path d="M 600 95 L 600 177" stroke="#D97706" strokeWidth="3.5" fill="none" strokeLinejoin="round" />
-            <polygon points="596,168 600,177 604,168" fill="#D97706" />
-
-            {/* 2. Feed branch from MBBR AERATION TANK (x=570, y=95) to manifold (x=600) */}
-            <path d="M 570 95 L 600 95" stroke="#D97706" strokeWidth="3.5" fill="none" strokeLinejoin="round" />
-            <polygon points="587,91 595,95 587,99" fill="#D97706" />
-
-            {/* Arrow entering Clarifier underflow at x=781, y=128 */}
-            <polygon points="773,124 781,128 773,132" fill="#D97706" />
-
-            {isPlaying && pumps.M4.status === "RUNNING" && (
-              <>
-                <path d="M 570 95 L 600 95 L 600 128 L 781 128" stroke="#FDE68A" strokeWidth="2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
-                  <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${1.0 / simSpeed}s`} repeatCount="indefinite" />
-                </path>
-                <path d="M 600 95 L 600 177" stroke="#FDE68A" strokeWidth="2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
-                  <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
-                </path>
-              </>
-            )}
-
-            {isPlaying && pumps.M3.status === "RUNNING" && (
-              <>
-                <path d="M 570 95 L 705 95 L 705 128 L 781 128" stroke="#FDE68A" strokeWidth="2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
-                  <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.9 / simSpeed}s`} repeatCount="indefinite" />
-                </path>
-                <path d="M 600 95 L 600 177" stroke="#FDE68A" strokeWidth="2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
-                  <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${1.0 / simSpeed}s`} repeatCount="indefinite" />
-                </path>
-              </>
-            )}
-          </g>
-
-          {/* 7. BLOWERS & COMPRESSED AIR PIPING NETWORK (YELLOW AIR DISTRIBUTED TO MBBR & COLLECTION TANK) */}
-          <g id="yellow-air-network">
-            {/* Main Blower output headers connecting BL1 (y=180) and BL2 (y=240) */}
-            <path d="M 495 180 L 460 180 L 460 240 L 495 240" stroke="#D97706" strokeWidth="4" fill="none" strokeLinejoin="round" />
-
-            {/* Branch 1: UP into MBBR Aeration Tank Diffuser Grid */}
-            <path d="M 460 180 L 460 122" stroke="#D97706" strokeWidth="4" fill="none" />
-            <polygon points="456,130 460,122 464,130" fill="#D97706" />
-
-            {/* Branch 2: UP into COLLECTION TANK Diffuser Line (Zero Gap) */}
-            <path d="M 460 195 L 295 195 L 295 122" stroke="#D97706" strokeWidth="4" fill="none" strokeLinejoin="round" />
-            <polygon points="291,130 295,122 299,130" fill="#D97706" />
-
-            {isPlaying && (pumps.BL1.status === "RUNNING" || pumps.BL2.status === "RUNNING") && (
-              <>
-                {/* Air to MBBR */}
-                <path d="M 460 240 L 460 122" stroke="#FDE047" strokeWidth="2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
-                  <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
-                </path>
-                {/* Air to Collection Tank */}
-                <path d="M 460 195 L 295 195 L 295 122" stroke="#FDE047" strokeWidth="2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
-                  <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
-                </path>
-              </>
-            )}
-          </g>
-
-          {/* 10. FILTER FEED PUMPS (M10 & M11) DOWN TO INLET PRESSURE & PSF VALVE INLET (AQUAMARINE SECONDARY EFFLUENT) */}
-          <g id="filter-feed-to-psf-lines">
-            <path d="M 780 321 L 780 350" stroke="#0D9488" strokeWidth="3.5" fill="none" />
-            <path d="M 840 321 L 840 350" stroke="#0D9488" strokeWidth="3.5" fill="none" />
-            <path d="M 780 380 L 780 405 L 810 405" stroke="#0D9488" strokeWidth="3.5" fill="none" strokeLinejoin="round" />
-            <path d="M 840 380 L 840 405 L 810 405" stroke="#0D9488" strokeWidth="3.5" fill="none" strokeLinejoin="round" />
-            {/* Feed line drops to y=420, passes horizontally right through 0.35 Bar, enters INLET at top of PSF Valve at (900, 450) */}
-            <path d="M 810 405 L 810 420 L 900 420 L 900 450" stroke="#0D9488" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
-            <polygon points="896,442 900,450 904,442" fill="#0D9488" />
-            {isPlaying && (pumps.M10.status === "RUNNING" || pumps.M11.status === "RUNNING") && (
-              <path
-                d="M 810 405 L 810 420 L 900 420 L 900 450"
-                stroke="#99F6E4"
-                strokeWidth="2.5"
-                strokeDasharray="5 7"
-                fill="none"
-                strokeLinejoin="round"
-              >
-                <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${0.9 / simSpeed}s`} repeatCount="indefinite" />
-              </path>
-            )}
-          </g>
-
-          {/* 11. PSF VALVE TO/FROM PSF VESSEL (100% CONNECTED ZERO GAPS DUAL MANIFOLD) */}
-          <g id="psf-valve-to-vessel">
-            {/* Trunk from PSF Valve Right Nozzle (930, 480) into Manifold Tee at (950, 480) */}
-            <path d="M 930 480 L 950 480" stroke="#0284C7" strokeWidth="4.5" fill="none" />
-
-            {/* Upper Branch: Tee (950, 480) up to (950, 465) and into Top Distributor at (970, 465) */}
-            <path d="M 950 480 L 950 465 L 970 465" stroke="#0284C7" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
-            <polygon points="962,462 970,465 962,468" fill="#0284C7" />
-            <line x1="970" y1="460" x2="970" y2="470" stroke="#0369A1" strokeWidth="2.5" />
-
-            {/* Lower Branch: Tee (950, 480) down to (950, 495) and into Bottom Collector at (970, 495) */}
-            <path d="M 950 480 L 950 495 L 970 495" stroke="#0284C7" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
-            <polygon points="960,492 952,495 960,498" fill="#0284C7" />
-            <line x1="970" y1="490" x2="970" y2="500" stroke="#0369A1" strokeWidth="2.5" />
-
-            {/* Manifold Tee Junction Fitting */}
-            <circle cx="950" cy="480" r="3.5" fill="#0284C7" stroke="#0369A1" strokeWidth="1" />
-
-            {/* Animated fluid flow pulses */}
-            {isPlaying && (
-              <>
-                <path d="M 930 480 L 950 480 L 950 465 L 970 465" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
-                  <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
-                </path>
-                <path d="M 970 495 L 950 495 L 950 480 L 930 480" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
-                  <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
-                </path>
-              </>
-            )}
-          </g>
-
-          {/* 12. PSF VALVE OUTLET THROUGH 0.15 Bar OUTLET PRESSURE, ACROSS TO ACF VALVE INLET */}
-          <g id="psf-to-acf-line">
-            {/* Exits bottom of PSF valve at (900, 510), drops to y=535, runs across left to x=360, turns UP into ACF VALVE INLET at (360, 510) */}
-            <path d="M 900 510 L 900 535 L 360 535 L 360 510" stroke="#0284C7" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
-            <polygon points="760,531 750,535 760,539" fill="#0284C7" />
-            <polygon points="560,531 550,535 560,539" fill="#0284C7" />
-            <polygon points="356,518 360,510 364,518" fill="#0284C7" />
-            {isPlaying && (
-              <path d="M 900 510 L 900 535 L 360 535 L 360 510" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="5 7" fill="none" strokeLinejoin="round">
-                <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${1.2 / simSpeed}s`} repeatCount="indefinite" />
-              </path>
-            )}
-          </g>
-
-          {/* 13. ACF VALVE TO/FROM ACF VESSEL (100% CONNECTED ZERO GAPS DUAL MANIFOLD) */}
-          <g id="acf-valve-to-vessel">
-            {/* Trunk from ACF Valve Left Nozzle (330, 480) into Manifold Tee at (305, 480) */}
-            <path d="M 330 480 L 305 480" stroke="#0284C7" strokeWidth="4.5" fill="none" />
-
-            {/* Upper Branch: Tee (305, 480) up to (305, 465) and into Top Distributor at (275, 465) */}
-            <path d="M 305 480 L 305 465 L 275 465" stroke="#0284C7" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
-            <polygon points="283,462 275,465 283,468" fill="#0284C7" />
-            <line x1="275" y1="460" x2="275" y2="470" stroke="#0369A1" strokeWidth="2.5" />
-
-            {/* Lower Branch: Tee (305, 480) down to (305, 495) and into Bottom Collector at (275, 495) */}
-            <path d="M 305 480 L 305 495 L 275 495" stroke="#0284C7" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
-            <polygon points="285,492 293,495 285,498" fill="#0284C7" />
-            <line x1="275" y1="490" x2="275" y2="500" stroke="#0369A1" strokeWidth="2.5" />
-
-            {/* Manifold Tee Junction Fitting */}
-            <circle cx="305" cy="480" r="3.5" fill="#0284C7" stroke="#0369A1" strokeWidth="1" />
-
-            {/* Animated fluid flow pulses */}
-            {isPlaying && (
-              <>
-                <path d="M 330 480 L 305 480 L 305 465 L 275 465" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
-                  <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
-                </path>
-                <path d="M 275 495 L 305 495 L 305 480 L 330 480" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
-                  <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
-                </path>
-              </>
-            )}
-          </g>
-
-          {/* 14. ACF VALVE OUTLET UP, LEFT ACROSS TOP OF ACF, DOWN INTO UV LIGHT */}
-          <g id="acf-to-uv-line">
-            {/* Exits OUTLET at top of ACF Valve (360, 450) with arrow UP ^, runs across above ACF at y=430, drops down at x=135 into UV Light at (135, 620) */}
-            <path d="M 360 450 L 360 430 L 135 430 L 135 620" stroke="#0284C7" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
-            <polygon points="356,442 360,432 364,442" fill="#0284C7" />
-            <polygon points="230,426 220,430 230,434" fill="#0284C7" />
-            <polygon points="131,540 135,550 139,540" fill="#0284C7" />
-            {isPlaying && (
-              <path d="M 360 450 L 360 430 L 135 430 L 135 620" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="5 7" fill="none" strokeLinejoin="round">
-                <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${1.0 / simSpeed}s`} repeatCount="indefinite" />
-              </path>
-            )}
-          </g>
-
-          {/* 15. UV LIGHT THROUGH DOSING PUMP INTO TREATED WATER TANK */}
-          <g id="uv-to-treated-water-line">
-            <path d="M 170 645 L 320 645" stroke="#0284C7" strokeWidth="4.5" fill="none" />
-            <polygon points="195,641 205,645 195,649" fill="#0284C7" />
-            <polygon points="305,641 315,645 305,649" fill="#0284C7" />
-            {isPlaying && (
-              <path d="M 170 645 L 320 645" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="5 7" fill="none">
-                <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
-              </path>
-            )}
-          </g>
-
-          {/* 16. TREATED WATER TANK OUT THROUGH M12, TO FLUSH, TO GARDENING & INTO SOFTENER */}
-          <g id="treated-to-softener-line">
-            <path d="M 460 645 L 675 645" stroke="#0284C7" strokeWidth="4.5" fill="none" />
-
-            {/* Feeder Pipe 1: TO FLUSH */}
-            <path d="M 550 645 L 550 590" stroke="#0284C7" strokeWidth="3.5" fill="none" />
-            <polygon points="546,595 550,585 554,595" fill="#0284C7" />
-
-            {/* Feeder Pipe 2: TO GARDENING */}
-            <path d="M 595 645 L 595 590" stroke="#16A34A" strokeWidth="3.5" fill="none" />
-            <polygon points="591,595 595,585 599,595" fill="#16A34A" />
-
-            <polygon points="660,641 670,645 660,649" fill="#0284C7" />
-
-            {/* Animated flow when M12 is running */}
-            {isPlaying && pumps.M12.status === "RUNNING" && (
-              <>
-                <path d="M 515 645 L 675 645" stroke="#BAE6FD" strokeWidth="2" strokeDasharray="3 5" fill="none">
-                  <animate attributeName="stroke-dashoffset" from="16" to="0" dur={`${0.6 / simSpeed}s`} repeatCount="indefinite" />
-                </path>
-                <path d="M 550 645 L 550 590" stroke="#BAE6FD" strokeWidth="2" strokeDasharray="3 5" fill="none">
-                  <animate attributeName="stroke-dashoffset" from="16" to="0" dur={`${0.6 / simSpeed}s`} repeatCount="indefinite" />
-                </path>
-                <path d="M 595 645 L 595 590" stroke="#BBF7D0" strokeWidth="2" strokeDasharray="3 5" fill="none">
-                  <animate attributeName="stroke-dashoffset" from="16" to="0" dur={`${0.6 / simSpeed}s`} repeatCount="indefinite" />
-                </path>
-              </>
-            )}
-          </g>
-
-          {/* 17. SOFTENER OUT INTO SOFT WATER TANK (PRISTINE POLISHED CYAN WATER) */}
-          <g id="softener-to-soft-water-line">
-            <path d="M 755 645 L 840 645" stroke="#06B6D4" strokeWidth="4.5" fill="none" />
-            <polygon points="830,641 840,645 830,649" fill="#06B6D4" />
-            {isPlaying && (
-              <path d="M 755 645 L 840 645" stroke="#A5F3FC" strokeWidth="2.5" strokeDasharray="4 6" fill="none">
-                <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.7 / simSpeed}s`} repeatCount="indefinite" />
-              </path>
-            )}
-          </g>
-
-          {/* ====================================================================== */}
-          {/* TANKS & VESSELS (2.5D ISOMETRIC / GLASSMORPHIC HIGH-FIDELITY MODELS)   */}
-          {/* ====================================================================== */}
-
-          {/* TANK 1: COLLECTION TANK (2.5D GLASS CYLINDER WITH RAW SEWAGE & 3D FLUID MENISCUS) */}
-          <g id="tank-collection" transform="translate(135, 48)">
-            {renderMiniTag(87.5, 6, "TK-01")}
-            {/* 2.5D Glass Cylinder Body & Dish Bottom */}
-            <path
-              d="M 0 76 Q 87.5 94 175 76 L 175 14 Q 87.5 30 0 14 Z"
-              fill="url(#glassCylinderGrad)"
-              stroke="#0284C7"
-              strokeWidth="2"
-            />
-
-            {/* Raw Sewage Fluid Body (Volume below Meniscus with Dynamic Waves) */}
-            {(() => {
-              const rawY = Math.round(76 - (62 * collectionLevel) / 100)
-              return (
-                <g clipPath="url(#collectionTankFluidClip)">
-                  {/* Baseline Fluid Body Fill */}
-                  <path
-                    d={`M 2 ${rawY} Q 87.5 ${rawY + 12} 173 ${rawY} L 173 76 Q 87.5 93 2 76 Z`}
-                    fill="url(#rawSewageGrad)"
-                  />
-
-                  {/* Wave Layer 1: Back secondary wave moving left to right (Amplitude 5.5px) */}
-                  <path
-                    d={`M -60 ${rawY} q 15 -5.5, 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 L 240 95 L -60 95 Z`}
-                    fill="url(#rawSewageWaveBack)"
-                  >
-                    {isPlaying && (
-                      <animateTransform
-                        attributeName="transform"
-                        type="translate"
-                        from="-60 0"
-                        to="0 0"
-                        dur={`${3.2 / simSpeed}s`}
-                        repeatCount="indefinite"
-                      />
-                    )}
-                  </path>
-
-                  {/* Wave Layer 2: Primary undulating wave moving right to left (Amplitude 6.5px) */}
-                  <path
-                    d={`M -88 ${rawY} q 22 -6.5, 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 L 264 95 L -88 95 Z`}
-                    fill="url(#rawSewageWaveFront)"
-                  >
-                    {isPlaying && (
-                      <animateTransform
-                        attributeName="transform"
-                        type="translate"
-                        from="0 0"
-                        to="-88 0"
-                        dur={`${2.2 / simSpeed}s`}
-                        repeatCount="indefinite"
-                      />
-                    )}
-                  </path>
-
-                  {/* 3D Liquid Meniscus (Top Surface Soft Fluid Blend - Dark Sludge) */}
-                  <ellipse cx="87.5" cy={rawY} rx="85.5" ry="6.5" fill="#5D4037" opacity="0.35" />
-
-                  {/* Dynamic Water Dropping Effect from Inlet Pipe Mouth (x=17, y=20 down to rawY) */}
-                  {isPlaying && (
-                    <g id="collection-tank-water-drops">
-                      {/* Cascading wastewater stream */}
-                      <line x1="17" y1="20" x2="17" y2={rawY} stroke="#8D6E63" strokeWidth="1.6" strokeDasharray="3 3" opacity="0.6">
-                        <animate attributeName="stroke-dashoffset" from="12" to="0" dur={`${0.5 / simSpeed}s`} repeatCount="indefinite" />
-                      </line>
-
-                      {/* Droplet 1 */}
-                      <ellipse cx="17" cy="22" rx="1.6" ry="2.2" fill="#8D6E63">
-                        <animate
-                          attributeName="cy"
-                          values={`20; ${rawY}`}
-                          dur={`${0.65 / simSpeed}s`}
-                          repeatCount="indefinite"
-                        />
-                        <animate
-                          attributeName="opacity"
-                          values="0.9; 1; 0.2"
-                          dur={`${0.65 / simSpeed}s`}
-                          repeatCount="indefinite"
-                        />
-                      </ellipse>
-
-                      {/* Droplet 2 (offset) */}
-                      <ellipse cx="17" cy="22" rx="1.3" ry="1.9" fill="#A1887F">
-                        <animate
-                          attributeName="cy"
-                          values={`20; ${rawY}`}
-                          begin={`${0.22 / simSpeed}s`}
-                          dur={`${0.65 / simSpeed}s`}
-                          repeatCount="indefinite"
-                        />
-                        <animate
-                          attributeName="opacity"
-                          values="0.9; 1; 0.2"
-                          begin={`${0.22 / simSpeed}s`}
-                          dur={`${0.65 / simSpeed}s`}
-                          repeatCount="indefinite"
-                        />
-                      </ellipse>
-
-                      {/* Droplet 3 (offset) */}
-                      <ellipse cx="17" cy="22" rx="1.5" ry="2.0" fill="#6D4C41">
-                        <animate
-                          attributeName="cy"
-                          values={`20; ${rawY}`}
-                          begin={`${0.44 / simSpeed}s`}
-                          dur={`${0.65 / simSpeed}s`}
-                          repeatCount="indefinite"
-                        />
-                        <animate
-                          attributeName="opacity"
-                          values="0.9; 1; 0.2"
-                          begin={`${0.44 / simSpeed}s`}
-                          dur={`${0.65 / simSpeed}s`}
-                          repeatCount="indefinite"
-                        />
-                      </ellipse>
-
-                      {/* Impact Splashing / Expanding Surface Ripples */}
-                      <ellipse cx="17" cy={rawY} rx="2" ry="0.8" fill="none" stroke="#D7CCC8" strokeWidth="0.8">
-                        <animate attributeName="rx" values="1.5; 8" dur={`${0.65 / simSpeed}s`} repeatCount="indefinite" />
-                        <animate attributeName="ry" values="0.6; 2.2" dur={`${0.65 / simSpeed}s`} repeatCount="indefinite" />
-                        <animate attributeName="opacity" values="0.9; 0" dur={`${0.65 / simSpeed}s`} repeatCount="indefinite" />
-                      </ellipse>
-                      <ellipse cx="17" cy={rawY} rx="2" ry="0.8" fill="none" stroke="#D7CCC8" strokeWidth="0.8">
-                        <animate attributeName="rx" values="1.5; 8" begin={`${0.32 / simSpeed}s`} dur={`${0.65 / simSpeed}s`} repeatCount="indefinite" />
-                        <animate attributeName="ry" values="0.6; 2.2" begin={`${0.32 / simSpeed}s`} dur={`${0.65 / simSpeed}s`} repeatCount="indefinite" />
-                        <animate attributeName="opacity" values="0.9; 0" begin={`${0.32 / simSpeed}s`} dur={`${0.65 / simSpeed}s`} repeatCount="indefinite" />
-                      </ellipse>
-                    </g>
-                  )}
-                </g>
-              )
-            })()}
-
-            {/* Cylindrical Specular Light Glare (Left Bright Streak) */}
-            <rect x="6" y="16" width="16" height="58" rx="3" fill="url(#specularSheen)" />
-
-            {/* 3D Top Glass Vessel Flange & Rim Opening */}
-            <ellipse cx="87.5" cy="14" rx="87.5" ry="8" fill="url(#glassRimGrad)" stroke="#0284C7" strokeWidth="1.5" />
-            <ellipse cx="87.5" cy="14" rx="82" ry="5.5" fill="none" stroke="#CBD5E1" strokeWidth="1" strokeDasharray="3 3" opacity="0.6" />
-          </g>
-
-          {/* DOTTED BOUNDING BOX FOR MBBR RSTP PUMPS */}
-          <rect x="340" y="50" width="90" height="92" rx="4" fill="none" stroke="#93C5FD" strokeWidth="1" strokeDasharray="3 3" />
-
-          {/* PUMPS M1 & M2 (COLLECTION -> MBBR) */}
-          {renderPump("M1", 385, 75, "right", "MBBR RSTP 1", undefined, "top")}
-          {renderPump("M2", 385, 115, "right", "MBBR RSTP 2", undefined, "bottom")}
-
-          {/* TANK 3: MBBR AERATION TANK (2.5D GLASS CYLINDER WITH K1 BIO-MEDIA & 3D FLUID MENISCUS) */}
-          <g id="tank-mbbr" transform="translate(430, 48)">
-            {renderMiniTag(70, 6, "MBBR")}
-            {/* 2.5D Glass Cylinder Body & Dish Bottom */}
-            <path
-              d="M 0 76 Q 70 94 140 76 L 140 14 Q 70 30 0 14 Z"
-              fill="url(#glassCylinderGrad)"
-              stroke="#0284C7"
-              strokeWidth="2"
-            />
-
-            {/* Aerated Mixed Liquor Fluid Volume with Active Aeration Waves (50% Level matching Filter Feed Tank) */}
-            <g clipPath="url(#mbbrTankFluidClip)">
-              <path d="M 2 45 Q 70 59 138 45 L 138 76 Q 70 93 2 76 Z" fill="url(#mbbrWaterGrad)" />
-
-              {/* MBBR Wave Layer 1: Back secondary wave moving left to right (Amplitude 5.5px) */}
-              <path
-                d="M -60 45 q 15 -5.5, 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 L 210 95 L -60 95 Z"
-                fill="url(#mbbrWaveBack)"
-              >
-                {isPlaying && (
-                  <animateTransform
-                    attributeName="transform"
-                    type="translate"
-                    from="-60 0"
-                    to="0 0"
-                    dur={`${3.2 / simSpeed}s`}
-                    repeatCount="indefinite"
-                  />
-                )}
-              </path>
-
-              {/* MBBR Wave Layer 2: Primary undulating wave moving right to left (Amplitude 6.5px) */}
-              <path
-                d="M -88 45 q 22 -6.5, 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 L 264 95 L -88 95 Z"
-                fill="url(#mbbrWaveFront)"
-              >
-                {isPlaying && (
-                  <animateTransform
-                    attributeName="transform"
-                    type="translate"
-                    from="0 0"
-                    to="-88 0"
-                    dur={`${2.2 / simSpeed}s`}
-                    repeatCount="indefinite"
-                  />
-                )}
-              </path>
-
-              {/* Soft Meniscus Blend at 50% Waterline (Bio-Mix) */}
-              <ellipse cx="70" cy="45" rx="68" ry="6.5" fill="#A1887F" opacity="0.35" />
-            </g>
-
-            {/* Rising Aeration Micro-Bubbles (Bottom to 50% Water Surface) */}
-            <g>
-              {[
-                { cx: 24, r: 1.8, dur: 3.4, delay: 0.0, sway: 2.0 },
-                { cx: 32, r: 2.4, dur: 2.8, delay: 0.8, sway: -2.5 },
-                { cx: 42, r: 1.5, dur: 3.8, delay: 1.6, sway: 1.8 },
-                { cx: 50, r: 2.2, dur: 3.0, delay: 0.4, sway: -1.5 },
-                { cx: 60, r: 1.6, dur: 3.6, delay: 2.0, sway: 2.2 },
-                { cx: 68, r: 2.5, dur: 2.7, delay: 1.1, sway: -2.0 },
-                { cx: 78, r: 1.7, dur: 3.5, delay: 0.2, sway: 1.6 },
-                { cx: 86, r: 2.3, dur: 2.9, delay: 1.9, sway: -2.4 },
-                { cx: 96, r: 1.5, dur: 3.9, delay: 0.6, sway: 1.5 },
-                { cx: 104, r: 2.2, dur: 3.1, delay: 2.3, sway: -1.8 },
-                { cx: 114, r: 1.8, dur: 3.3, delay: 1.4, sway: 2.0 },
-                { cx: 28, r: 1.4, dur: 4.1, delay: 2.7, sway: -1.2 },
-                { cx: 56, r: 2.0, dur: 3.2, delay: 1.0, sway: 1.7 },
-                { cx: 74, r: 1.6, dur: 3.7, delay: 2.5, sway: -1.9 },
-                { cx: 92, r: 2.1, dur: 3.0, delay: 0.9, sway: 2.1 },
-                { cx: 110, r: 1.5, dur: 4.0, delay: 1.7, sway: -1.4 },
-              ].map((b, i) => (
-                <circle
-                  key={`aeration-bubble-${i}`}
-                  cx={b.cx}
-                  cy={78}
-                  r={b.r}
-                  fill="#FFFFFF"
-                  stroke="#7DD3FC"
-                  strokeWidth="0.5"
-                  opacity="0.85"
-                >
-                  {isPlaying && (
-                    <>
-                      <animate
-                        attributeName="cy"
-                        values="78; 67; 56; 46"
-                        keyTimes="0; 0.35; 0.75; 1"
-                        dur={`${b.dur / simSpeed}s`}
-                        begin={`${b.delay / simSpeed}s`}
-                        repeatCount="indefinite"
-                      />
-                      <animate
-                        attributeName="cx"
-                        values={`${b.cx}; ${b.cx + b.sway}; ${b.cx - b.sway}; ${b.cx}`}
-                        keyTimes="0; 0.33; 0.66; 1"
-                        dur={`${b.dur / simSpeed}s`}
-                        begin={`${b.delay / simSpeed}s`}
-                        repeatCount="indefinite"
-                      />
-                      <animate
-                        attributeName="opacity"
-                        values="0.1; 0.85; 0.9; 0"
-                        keyTimes="0; 0.15; 0.85; 1"
-                        dur={`${b.dur / simSpeed}s`}
-                        begin={`${b.delay / simSpeed}s`}
-                        repeatCount="indefinite"
-                      />
-                    </>
-                  )}
-                </circle>
-              ))}
-            </g>
-
-            {/* Cylindrical Specular Glare */}
-            <rect x="5" y="16" width="14" height="58" rx="3" fill="url(#specularSheen)" />
-
-            {/* 3D Top Glass Vessel Flange & Rim */}
-            <ellipse cx="70" cy="14" rx="70" ry="7.5" fill="url(#glassRimGrad)" stroke="#0284C7" strokeWidth="1.5" />
-            <ellipse cx="70" cy="14" rx="65" ry="5.0" fill="none" stroke="#93C5FD" strokeWidth="1" strokeDasharray="2 2" />
-          </g>
-
-          {/* DOTTED BOUNDING BOX FOR SLUDGE RECIRCULATION PUMPS M3 & M4 */}
-          <rect x="615" y="70" width="85" height="84" rx="4" fill="none" stroke="#93C5FD" strokeWidth="1" strokeDasharray="3 3" />
-
-          {/* SLUDGE PUMPS M3 & M4 (POINTING RIGHT, MBBR TO CLARIFIER & WASTING TO SLUDGE TANK) */}
-          {renderPump("M3", 655, 95, "right", "MBBR RCP 1", undefined, "top")}
-          {renderPump("M4", 655, 128, "right", "MBBR RCP 2", undefined, "bottom")}
-
-          {/* TANK 4: CLARIFIER TANK WITH CONICAL HOPPER & ROTATING SCRAPER ARM (2.5D CUTAWAY) */}
-          <g id="tank-clarifier" transform="translate(740, 48)">
-            {renderMiniTag(70, 6, "CLR-01")}
-            {/* 2.5D Conical Hopper Tank Hull (Cylindrical Upper + 60° Conical Funnel Bottom) */}
-            <path
-              d="M 0 14 L 0 54 L 54 88 Q 70 93 86 88 L 140 54 L 140 14 Z"
-              fill="url(#glassCylinderGrad)"
-              stroke="#0284C7"
-              strokeWidth="2"
-            />
-
-            {/* Supernatant Clarified Water Zone (Upper Section) with Animated Dual-Layer Waves */}
-            <g clipPath="url(#clarifierWaterClip)">
-              <path d="M 2 45 L 2 54 L 138 54 L 138 45 Z" fill="url(#clarifierWaterGrad)" opacity="0.88" />
-
-              {/* Clarifier Wave 1: Back secondary wave moving left to right (Amplitude 5.5px) */}
-              <path
-                d="M -60 45 q 15 -5.5, 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 L 210 54 L -60 54 Z"
-                fill="url(#clarifierWaveBack)"
-              >
-                {isPlaying && (
-                  <animateTransform
-                    attributeName="transform"
-                    type="translate"
-                    from="-60 0"
-                    to="0 0"
-                    dur={`${3.2 / simSpeed}s`}
-                    repeatCount="indefinite"
-                  />
-                )}
-              </path>
-
-              {/* Clarifier Wave 2: Primary undulating wave moving right to left (Amplitude 6.5px) */}
-              <path
-                d="M -88 45 q 22 -6.5, 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 L 264 54 L -88 54 Z"
-                fill="url(#clarifierWaveFront)"
-              >
-                {isPlaying && (
-                  <animateTransform
-                    attributeName="transform"
-                    type="translate"
-                    from="0 0"
-                    to="-88 0"
-                    dur={`${2.2 / simSpeed}s`}
-                    repeatCount="indefinite"
-                  />
-                )}
-              </path>
-
-              {/* 3D Liquid Meniscus Soft Blend at 50% Waterline (Amber Settling Supernatant) */}
-              <ellipse cx="70" cy="45" rx="68" ry="6.5" fill="#D2C59D" opacity="0.35" />
-            </g>
-
-            {/* Settled Biological Sludge Blanket in Conical Hopper Apex */}
-            <path d="M 2 54 L 54 88 Q 70 93 86 88 L 138 54 Z" fill="url(#sludgeWaterGrad)" />
-
-            {/* Peripheral V-Notch Overflow Weir Trough */}
-            <path d="M 4 20 L 136 20" stroke="#38BDF8" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.75" />
-
-            {/* Submerged Rotating Clarifier Bridge & Scraper Rake Arm */}
-            <g transform="translate(70, 52)" className="cursor-pointer" onClick={() => handleTogglePump("ARM")}>
-              <circle cx="0" cy="0" r="16" fill="url(#metalRingGrad)" stroke="#16A34A" strokeWidth="1.5" />
-              <circle cx="0" cy="0" r="12" fill="#DCFCE7" stroke="#16A34A" strokeWidth="1.2" />
-              <g>
-                {isPlaying && pumps.ARM.status === "RUNNING" && (
-                  <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur={`${2.5 / simSpeed}s`} repeatCount="indefinite" />
-                )}
-                <line x1="-12" y1="0" x2="12" y2="0" stroke="#15803D" strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="0" y1="-12" x2="0" y2="12" stroke="#15803D" strokeWidth="2.5" strokeLinecap="round" />
-                {/* Rake Teeth Sweepers */}
-                <line x1="-8" y1="-3" x2="-8" y2="3" stroke="#15803D" strokeWidth="1.2" />
-                <line x1="8" y1="-3" x2="8" y2="3" stroke="#15803D" strokeWidth="1.2" />
-                <line x1="-3" y1="-8" x2="3" y2="-8" stroke="#15803D" strokeWidth="1.2" />
-                <line x1="-3" y1="8" x2="3" y2="8" stroke="#15803D" strokeWidth="1.2" />
+              {/* 5. Triple-Bay Curtain-Wall Panoramic Window Bays & Spandrels (Transparent Crystal Glass) */}
+              {/* Floor 8 */}
+              <rect x="11" y="30" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <rect x="40" y="30" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <rect x="69" y="30" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <line x1="23" y1="30" x2="23" y2="43" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="52" y1="30" x2="52" y2="43" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="81" y1="30" x2="81" y2="43" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="6" y1="46" x2="98" y2="46" stroke="#CBD5E1" strokeWidth="1.2" strokeOpacity="0.6" />
+
+              {/* Floor 7 (Manifold Level at y=50) */}
+              <rect x="11" y="50" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <rect x="40" y="50" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <rect x="69" y="50" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <line x1="23" y1="50" x2="23" y2="63" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="52" y1="50" x2="52" y2="63" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="81" y1="50" x2="81" y2="63" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="6" y1="66" x2="98" y2="66" stroke="#CBD5E1" strokeWidth="1.2" strokeOpacity="0.6" />
+
+              {/* Floor 6 */}
+              <rect x="11" y="70" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <rect x="40" y="70" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <rect x="69" y="70" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <line x1="23" y1="70" x2="23" y2="83" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="52" y1="70" x2="52" y2="83" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="81" y1="70" x2="81" y2="83" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="6" y1="86" x2="98" y2="86" stroke="#CBD5E1" strokeWidth="1.2" strokeOpacity="0.6" />
+
+              {/* Floor 5 */}
+              <rect x="11" y="90" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <rect x="40" y="90" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <rect x="69" y="90" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <line x1="23" y1="90" x2="23" y2="103" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="52" y1="90" x2="52" y2="103" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="81" y1="90" x2="81" y2="103" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="6" y1="106" x2="98" y2="106" stroke="#CBD5E1" strokeWidth="1.2" strokeOpacity="0.6" />
+
+              {/* Floor 4 */}
+              <rect x="11" y="110" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <rect x="40" y="110" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <rect x="69" y="110" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <line x1="23" y1="110" x2="23" y2="123" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="52" y1="110" x2="52" y2="123" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="81" y1="110" x2="81" y2="123" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="6" y1="126" x2="98" y2="126" stroke="#CBD5E1" strokeWidth="1.2" strokeOpacity="0.6" />
+
+              {/* Floor 3 */}
+              <rect x="11" y="130" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <rect x="40" y="130" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <rect x="69" y="130" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <line x1="23" y1="130" x2="23" y2="143" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="52" y1="130" x2="52" y2="143" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="81" y1="130" x2="81" y2="143" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="6" y1="146" x2="98" y2="146" stroke="#CBD5E1" strokeWidth="1.2" strokeOpacity="0.6" />
+
+              {/* Floor 2 */}
+              <rect x="11" y="150" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <rect x="40" y="150" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <rect x="69" y="150" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <line x1="23" y1="150" x2="23" y2="163" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="52" y1="150" x2="52" y2="163" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="81" y1="150" x2="81" y2="163" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="6" y1="166" x2="98" y2="166" stroke="#CBD5E1" strokeWidth="1.2" strokeOpacity="0.6" />
+
+              {/* Floor 1 */}
+              <rect x="11" y="170" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <rect x="40" y="170" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <rect x="69" y="170" width="24" height="13" rx="1" fill="url(#buildingGlassGrad)" stroke="#38BDF8" strokeWidth="0.6" strokeOpacity="0.8" />
+              <line x1="23" y1="170" x2="23" y2="183" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="52" y1="170" x2="52" y2="183" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="81" y1="170" x2="81" y2="183" stroke="#0284C7" strokeWidth="0.5" opacity="0.35" />
+              <line x1="6" y1="186" x2="98" y2="186" stroke="#CBD5E1" strokeWidth="1.2" strokeOpacity="0.6" />
+
+              {/* Ground Floor Entrance Lobby & Canopy (Transparent Glass) */}
+              <rect x="28" y="196" width="48" height="38" rx="1.5" fill="#FFFFFF" fillOpacity="0.45" stroke="#0284C7" strokeWidth="0.9" strokeOpacity="0.8" />
+              {/* Modern Entrance Canopy */}
+              <rect x="24" y="193" width="56" height="3" rx="0.8" fill="#0284C7" opacity="0.75" />
+              {/* Double Glass Lobby Doors */}
+              <rect x="34" y="200" width="17" height="34" fill="#E0F2FE" fillOpacity="0.5" stroke="#38BDF8" strokeWidth="0.5" />
+              <rect x="53" y="200" width="17" height="34" fill="#E0F2FE" fillOpacity="0.5" stroke="#38BDF8" strokeWidth="0.5" />
+              <line x1="52" y1="200" x2="52" y2="234" stroke="#0284C7" strokeWidth="0.6" opacity="0.6" />
+
+              {/* 6. Cylindrical Glass Specular Reflection Glare (Matches Tanks & Vessels) */}
+              <rect x="9" y="28" width="14" height="200" rx="2" fill="url(#specularSheen)" opacity="0.45" />
+
+              {/* 7. Industrial Sewer Discharge Manifold (ANSI Flange at Ground Floor Yellow Marker, local y=208 / canvas y=218) */}
+              <g id="building-sewer-discharge-manifold" transform="translate(94, 204)">
+                {/* Stainless Steel Flange Ring */}
+                <rect x="0" y="0" width="9" height="8" rx="1" fill="url(#metalRingGrad)" stroke="#64748B" strokeWidth="0.8" />
+                {/* Flange Bolts */}
+                <circle cx="4.5" cy="1.6" r="0.75" fill="#334155" />
+                <circle cx="4.5" cy="6.4" r="0.75" fill="#334155" />
               </g>
-              <circle cx="0" cy="0" r="3.5" fill="#15803D" />
+
+              {/* 8. Precision SCADA Identification Badge (Light Mode) */}
+              <g transform="translate(52, 2)">
+                <rect x="-32" y="-8" width="64" height="15" rx="3" fill="#FFFFFF" fillOpacity="0.92" stroke="#0284C7" strokeWidth="1" />
+                <circle cx="-25" cy="-0.5" r="2" fill="#16A34A">
+                  <animate attributeName="opacity" values="1; 0.4; 1" dur="2s" repeatCount="indefinite" />
+                </circle>
+                <text x="3" y="-2" fill="#0369A1" fontSize="5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">BUILDING</text>
+                <text x="3" y="3.5" fill="#64748B" fontSize="3.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">SEWER SOURCE</text>
+              </g>
             </g>
 
-            {/* Specular Glare */}
-            <rect x="5" y="16" width="14" height="42" rx="3" fill="url(#specularSheen)" />
-
-            {/* 3D Top Glass Vessel Flange & Rim Opening */}
-            <ellipse cx="70" cy="14" rx="70" ry="7.5" fill="url(#glassRimGrad)" stroke="#0284C7" strokeWidth="1.5" />
-            <ellipse cx="70" cy="14" rx="65" ry="5.0" fill="none" stroke="#93C5FD" strokeWidth="1" strokeDasharray="2 2" />
-          </g>
-
-          {/* TANK 5: SLUDGE HOLDING TANK (2.5D CONICAL VESSEL WITH DENSE ACTIVATED SLUDGE) */}
-          <g id="tank-sludge" transform="translate(595, 165)">
-            {renderMiniTag(57.5, 4, "SLUDGE")}
-            {/* Conical Hopper Vessel Hull */}
-            <path
-              d="M 0 12 L 0 46 L 42 68 Q 57.5 73 73 68 L 115 46 L 115 12 Z"
-              fill="url(#glassCylinderGrad)"
-              stroke="#94A3B8"
-              strokeWidth="1.5"
-            />
-
-            {/* Thickened Sludge Body (50% Waterline) */}
-            <path d="M 2 39 L 2 46 L 42 68 Q 57.5 73 73 68 L 113 46 L 113 39 Z" fill="url(#sludgeWaterGrad)" />
-            {/* 3D Sludge Meniscus at 50% */}
-            <ellipse cx="57.5" cy="39" rx="55.5" ry="5.5" fill="#5D4037" stroke="#8D6E63" strokeWidth="0.8" opacity="0.95" />
-            {/* Thickened Sludge Body with Dynamic Dual-Layer Waves */}
-            {(() => {
-              const sldLevel = sludgeLevel > 0 ? sludgeLevel : 50
-              const sldY = Math.round(52 - (26 * sldLevel) / 100)
-              return (
-                <g clipPath="url(#sludgeTankFluidClip)">
-                  {/* Thickened Sludge Baseline Fill */}
-                  <path d={`M 2 ${sldY} L 2 46 L 42 68 Q 57.5 73 73 68 L 113 46 L 113 ${sldY} Z`} fill="url(#sludgeWaterGrad)" />
-
-                  {/* Sludge Wave 1: Back secondary wave moving left to right (Amplitude 4.5px) */}
-                  <path
-                    d={`M -50 ${sldY} q 12.5 -4.5, 25 0 t 25 0 t 25 0 t 25 0 t 25 0 t 25 0 t 25 0 L 165 75 L -50 75 Z`}
-                    fill="url(#sludgeWaveBack)"
-                  >
-                    {isPlaying && (
-                      <animateTransform
-                        attributeName="transform"
-                        type="translate"
-                        from="-50 0"
-                        to="0 0"
-                        dur={`${3.4 / simSpeed}s`}
-                        repeatCount="indefinite"
-                      />
-                    )}
-                  </path>
-
-                  {/* Sludge Wave 2: Primary undulating wave moving right to left (Amplitude 5.5px) */}
-                  <path
-                    d={`M -72 ${sldY} q 18 -5.5, 36 0 t 36 0 t 36 0 t 36 0 t 36 0 t 36 0 L 180 75 L -72 75 Z`}
-                    fill="url(#sludgeWaveFront)"
-                  >
-                    {isPlaying && (
-                      <animateTransform
-                        attributeName="transform"
-                        type="translate"
-                        from="0 0"
-                        to="-72 0"
-                        dur={`${2.4 / simSpeed}s`}
-                        repeatCount="indefinite"
-                      />
-                    )}
-                  </path>
-
-                  {/* 3D Sludge Meniscus */}
-                  <ellipse cx="57.5" cy={sldY} rx="55.5" ry="5.5" fill="#8D6E63" opacity="0.3" />
-                </g>
-              )
-            })()}
-
-            {/* Specular Highlight Glare */}
-            <rect x="4" y="14" width="12" height="32" rx="2" fill="url(#specularSheen)" />
-
-            {/* 3D Top Glass Vessel Flange & Rim */}
-            <ellipse cx="57.5" cy="12" rx="57.5" ry="6.5" fill="url(#glassRimGrad)" stroke="#94A3B8" strokeWidth="1.5" />
-          </g>
-
-          {/* CLARIFIER VALVE (Industrial 2-Way In-Line Vertical Valve) */}
-          <g
-            id="valve-clarifier"
-            transform="translate(810, 185)"
-            className="cursor-pointer"
-            onClick={() => setClarifierValveOpen(!clarifierValveOpen)}
-          >
-            <title>{`Clarifier Isolation Valve (V-CLR): ${clarifierValveOpen ? "OPEN (Click to Close)" : "CLOSED (Click to Open)"}`}</title>
-            {renderMiniTag(0, -22, "V-CLR")}
-
-            {/* Vertical In-Line Pipe Connection Flanges */}
-            <rect x="-7" y="-17" width="14" height="3" rx="0.8" fill="url(#metalRingGrad)" stroke="#64748B" strokeWidth="0.8" />
-            <rect x="-7" y="14" width="14" height="3" rx="0.8" fill="url(#metalRingGrad)" stroke="#64748B" strokeWidth="0.8" />
-
-            {/* ASME Twin Triangular Valve Body */}
-            <polygon points="-7,-14 0,0 7,-14" fill="#334155" stroke="#0F172A" strokeWidth="1.2" />
-            <polygon points="-7,14 0,0 7,14" fill="#334155" stroke="#0F172A" strokeWidth="1.2" />
-
-            {/* Center Valve Seat & Stem Boss */}
-            <circle cx="0" cy="0" r="6.5" fill={clarifierValveOpen ? "#DCFCE7" : "#FEE2E2"} stroke={clarifierValveOpen ? "#16A34A" : "#DC2626"} strokeWidth="1.3" />
-            <circle cx="0" cy="0" r="2.2" fill={clarifierValveOpen ? "#16A34A" : "#DC2626"} />
-
-            {/* Side Solenoid / Electric Actuator Head */}
-            <line x1="0" y1="0" x2="-10" y2="0" stroke="#64748B" strokeWidth="2" />
-            <rect x="-19" y="-6" width="9" height="12" rx="1.5" fill="#1E293B" stroke={clarifierValveOpen ? "#16A34A" : "#DC2626"} strokeWidth="1" />
-            <circle cx="-14.5" cy="0" r="1.5" fill={clarifierValveOpen ? "#22C55E" : "#EF4444"} />
-          </g>
-
-          {/* TANK 6: FILTER FEED TANK (2.5D CYLINDRICAL GLASS VESSEL WITH CALIBRATED SIGHT-SCALE) */}
-          <g id="tank-filter-feed" transform="translate(740, 238)">
-            {renderMiniTag(70, 6, "FF-TK")}
-            {/* 2.5D Glass Cylinder Body & Dish Bottom */}
-            <path
-              d="M 0 76 Q 70 94 140 76 L 140 14 Q 70 30 0 14 Z"
-              fill="url(#glassCylinderGrad)"
-              stroke="#0284C7"
-              strokeWidth="2"
-            />
-
-            {/* Secondary Settled Effluent Fluid Body with Dynamic Dual-Layer Waves */}
-            {(() => {
-              const ffY = Math.round(76 - (62 * filterFeedLevel) / 100)
-              return (
-                <g clipPath="url(#filterFeedTankFluidClip)">
-                  {/* Baseline Fluid Fill */}
-                  <path
-                    d={`M 2 ${ffY} Q 70 ${ffY + 12} 138 ${ffY} L 138 76 Q 70 93 2 76 Z`}
-                    fill="url(#filterFeedGrad)"
-                  />
-
-                  {/* Filter Feed Wave 1: Back secondary wave moving left to right (Amplitude 5.5px) */}
-                  <path
-                    d={`M -60 ${ffY} q 15 -5.5, 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 L 210 95 L -60 95 Z`}
-                    fill="url(#filterFeedWaveBack)"
-                  >
-                    {isPlaying && (
-                      <animateTransform
-                        attributeName="transform"
-                        type="translate"
-                        from="-60 0"
-                        to="0 0"
-                        dur={`${3.2 / simSpeed}s`}
-                        repeatCount="indefinite"
-                      />
-                    )}
-                  </path>
-
-                  {/* Filter Feed Wave 2: Primary undulating wave moving right to left (Amplitude 6.5px) */}
-                  <path
-                    d={`M -88 ${ffY} q 22 -6.5, 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 L 264 95 L -88 95 Z`}
-                    fill="url(#filterFeedWaveFront)"
-                  >
-                    {isPlaying && (
-                      <animateTransform
-                        attributeName="transform"
-                        type="translate"
-                        from="0 0"
-                        to="-88 0"
-                        dur={`${2.2 / simSpeed}s`}
-                        repeatCount="indefinite"
-                      />
-                    )}
-                  </path>
-
-                  {/* 3D Liquid Meniscus Blend (Translucent Pre-Filter Aquamarine) */}
-                  <ellipse cx="70" cy={ffY} rx="68" ry="6.5" fill="#80CBC4" opacity="0.35" />
-                </g>
-              )
-            })()}
-
-            {/* Cylindrical Glare Streak */}
-            <rect x="5" y="16" width="14" height="58" rx="3" fill="url(#specularSheen)" />
-
-            {/* 3D Top Glass Vessel Flange & Rim Opening */}
-            <ellipse cx="70" cy="14" rx="70" ry="7.5" fill="url(#glassRimGrad)" stroke="#0284C7" strokeWidth="1.5" />
-            <ellipse cx="70" cy="14" rx="65" ry="5.0" fill="none" stroke="#93C5FD" strokeWidth="1" strokeDasharray="2 2" />
-          </g>
-
-          {/* BLOWERS 1 & 2 (CLEAR VERTICAL STACK AT X=510, NO OVERLAP) */}
-          <g id="blower-1" transform="translate(510, 180)" className="cursor-pointer" onClick={() => handleTogglePump("BL1")}>
-            {renderMiniTag(0, -18, "BL1")}
-            <circle cx="0" cy="0" r="14" fill="url(#metalRingGrad)" stroke="#F43F5E" strokeWidth="1" />
-            <circle cx="0" cy="0" r="11" fill="#FCE7F3" stroke="#F43F5E" strokeWidth="1.8" />
-            <g>
-              <path d="M -5 0 L 5 0 M 0 -5 L 0 5 M -3.5 -3.5 L 3.5 3.5 M -3.5 3.5 L 3.5 -3.5" stroke="#BE123C" strokeWidth="1.6" strokeLinecap="round" />
-            </g>
-          </g>
-
-          <g id="blower-2" transform="translate(510, 240)" className="cursor-pointer" onClick={() => handleTogglePump("BL2")}>
-            {renderMiniTag(0, -18, "BL2")}
-            <circle cx="0" cy="0" r="14" fill="url(#metalRingGrad)" stroke="#16A34A" strokeWidth="1" />
-            <circle cx="0" cy="0" r="11" fill="#DCFCE7" stroke="#16A34A" strokeWidth="1.8" />
-            <g>
-              {isPlaying && pumps.BL2.status === "RUNNING" && (
-                <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur={`${0.4 / simSpeed}s`} repeatCount="indefinite" />
+            {/* 1. RAW INFLUENT INLET FROM BUILDING (MURKY SEWAGE WATER) */}
+            <g id="raw-influent-from-building">
+              {/* Pipe from Building Ground Floor (27, 218) across to x=70, rises to y=60, then across to Collection Tank top inlet at (152, 60), down to (152, 68) */}
+              <path d="M 27 218 L 70 218 L 70 60 L 152 60 L 152 68" stroke="#8D6E63" strokeWidth="5" fill="none" strokeLinejoin="round" />
+              {/* Flow Arrows along the route */}
+              <polygon points="46,214 54,218 46,222" fill="#8D6E63" />
+              <polygon points="66,142 70,134 74,142" fill="#8D6E63" />
+              <polygon points="107,56 115,60 107,64" fill="#8D6E63" />
+              {isPlaying && (
+                <path d="M 27 218 L 70 218 L 70 60 L 152 60 L 152 68" stroke="#D7CCC8" strokeWidth="2.5" strokeDasharray="5 7" fill="none" strokeLinejoin="round">
+                  <animate attributeName="stroke-dashoffset" from="32" to="0" dur={`${1.2 / simSpeed}s`} repeatCount="indefinite" />
+                </path>
               )}
-              <path d="M -6 0 L 6 0 M 0 -6 L 0 6 M -4 -4 L 4 4 M -4 4 L 4 -4" stroke="#15803D" strokeWidth="1.8" strokeLinecap="round" />
+              {/* Discharge Nozzle Flange at Pipe Mouth */}
+              <rect x="148" y="66" width="8" height="3" rx="1" fill="#5D4037" stroke="#3E2723" strokeWidth="0.8" />
             </g>
-          </g>
 
-          {/* FILTER FEED PUMPS: M10 & M11 */}
-          {renderPump("M10", 780, 365, "down", "FF PUMP 1", undefined, "top")}
-          {renderPump("M11", 840, 365, "down", "FF PUMP 2", undefined, "top")}
+            {/* 2. RED DRAIN & BACKWASH RETURN PIPELINE */}
+            <g id="red-drain-pipeline">
+              {/* Backwash Drain Line from PSF Valve (610, 480) to Central Riser (545, 480) */}
+              <path d="M 610 480 L 545 480" stroke="#DC2626" strokeWidth="4.5" fill="none" />
+              <polygon points="582,476 572,480 582,484" fill="#DC2626" />
 
-          {/* ====================================================================== */}
-          {/* BOTTOM SECTION: PSF, ACF, UV, DOSING, TREATED & SOFT WATER             */}
-          {/* ====================================================================== */}
+              {/* Central vertical red riser from y=480 up to y=270 (Cleanly above ACF unit) */}
+              <path d="M 545 480 L 545 270" stroke="#DC2626" strokeWidth="4.5" fill="none" />
+              <polygon points="541,380 545,370 549,380" fill="#DC2626" />
 
-          {/* GREY DASHED BORDER AROUND ACF AREA */}
-          <rect x="110" y="415" width="285" height="185" rx="6" fill="none" stroke="#CBD5E1" strokeWidth="1.5" strokeDasharray="4 4" />
+              {/* Header running across completely ABOVE ACF and outside dashed boundary into Collection Tank left side (y=76) */}
+              <path d="M 545 270 L 105 270 L 105 76 L 135 76" stroke="#DC2626" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
+              <polygon points="265,266 255,270 265,274" fill="#DC2626" />
+              <polygon points="101,165 105,155 109,165" fill="#DC2626" />
+              <polygon points="126,72 134,76 126,80" fill="#DC2626" />
 
-          {/* PSF VALVE MULTIPORT BLOCK (Industrial 4-Port Multiport Valve) */}
-          <g id="psf-valve-block" transform="translate(870, 450)">
-            {renderMultiportValve("PSF", psfValveMode, () => {
-              const nextModes: Record<MultiportValveMode, MultiportValveMode> = {
-                SERVICE: "BACKWASH",
-                BACKWASH: "RINSE",
-                RINSE: "DRAIN",
-                DRAIN: "SERVICE",
-              }
-              setPsfValveMode(prev => nextModes[prev] ?? "SERVICE")
-            })}
-          </g>
-
-          {/* PSF VESSEL (970, 425) - Dynamic 4-Option Filter Vessel */}
-          <g transform="translate(970, 425)">
-            {renderFilterVessel("PSF", filterVesselOption)}
-          </g>
-
-          {/* ACF VALVE MULTIPORT BLOCK (Industrial 4-Port Multiport Valve) */}
-          <g id="acf-valve-block" transform="translate(330, 450)">
-            {renderMultiportValve("ACF", acfValveMode, () => {
-              const nextModes: Record<MultiportValveMode, MultiportValveMode> = {
-                SERVICE: "BACKWASH",
-                BACKWASH: "RINSE",
-                RINSE: "DRAIN",
-                DRAIN: "SERVICE",
-              }
-              setAcfValveMode(prev => nextModes[prev] ?? "SERVICE")
-            })}
-          </g>
-
-          {/* ACF VESSEL (195, 425) - Dynamic 4-Option Filter Vessel */}
-          <g transform="translate(195, 425)">
-            {renderFilterVessel("ACF", filterVesselOption)}
-          </g>
-
-          {/* DOSING PUMP (Precision Solenoid Diaphragm Metering Pump) */}
-          <g id="dosing-pump" transform="translate(225, 595)">
-            {renderMiniTag(20, -7, "DOSING")}
-            {/* Base Mounting Foot Bracket */}
-            <rect x="22" y="34" width="18" height="4" rx="1" fill="#334155" stroke="#0F172A" strokeWidth="0.8" />
-            <circle cx="25" cy="36" r="0.9" fill="#94A3B8" />
-            <circle cx="37" cy="36" r="0.9" fill="#94A3B8" />
-
-            {/* Heavy-Duty Chemical-Resistant Solenoid Drive Enclosure */}
-            <rect x="22" y="14" width="18" height="20" rx="3" fill="#1E293B" stroke="#64748B" strokeWidth="1" />
-            
-            {/* Rear Motor Heat Dissipation Fins */}
-            <line x1="33" y1="17" x2="33" y2="31" stroke="#334155" strokeWidth="1.2" />
-            <line x1="36" y1="17" x2="36" y2="31" stroke="#334155" strokeWidth="1.2" />
-
-            {/* Electronic Stroke Control Dial / Knob */}
-            <circle cx="27" cy="24" r="3.2" fill="#0F172A" stroke="#94A3B8" strokeWidth="0.8" />
-            <circle cx="27" cy="24" r="1.4" fill="#16A34A" />
-
-            {/* Top Discharge Valve Union Nut & Chemical Injection Line */}
-            <rect x="12" y="5" width="6" height="8" rx="1" fill="#475569" stroke="#94A3B8" strokeWidth="0.8" />
-            <rect x="11" y="9" width="8" height="4" rx="0.5" fill="#334155" stroke="#64748B" strokeWidth="0.8" />
-            <polygon points="15,4 12,8 18,8" fill="#16A34A" />
-
-            {/* Bottom Suction Valve Union Nut & Chemical Feed Line Downward Injection */}
-            <rect x="12" y="35" width="6" height="8" rx="1" fill="#475569" stroke="#94A3B8" strokeWidth="0.8" />
-            <rect x="11" y="35" width="8" height="4" rx="0.5" fill="#334155" stroke="#64748B" strokeWidth="0.8" />
-            <line x1="15" y1="43" x2="15" y2="50" stroke="#16A34A" strokeWidth="2" />
-            <polygon points="12,50 15,55 18,50" fill="#16A34A" />
-
-            {/* Manual Degassing / Priming Relief Valve Knob */}
-            <rect x="6" y="9" width="4" height="4" rx="1" fill="#D97706" stroke="#B45309" strokeWidth="0.6" />
-
-            {/* PVDF Transparent Chemical Liquid-End Dosing Head Block */}
-            <rect x="8" y="13" width="14" height="22" rx="2.5" fill="url(#metalRingGrad)" stroke="#0284C7" strokeWidth="1.2" />
-
-            {/* Optical Diaphragm Stroke Sight Chamber */}
-            <circle cx="15" cy="24" r="7" fill="#064E3B" stroke="#22C55E" strokeWidth="1.2" />
-            
-            {/* Reciprocating Diaphragm Stroke Core */}
-            <circle cx="15" cy="24" r="4.2" fill="#16A34A" stroke="#FFFFFF" strokeWidth="0.6">
+              {/* Animated backwash/rinse flow */}
               {isPlaying && (
                 <>
-                  <animate attributeName="r" values="3.2; 5.2; 3.2" dur={`${0.75 / simSpeed}s`} repeatCount="indefinite" />
-                  <animate attributeName="opacity" values="0.7; 1; 0.7" dur={`${0.75 / simSpeed}s`} repeatCount="indefinite" />
+                  {/* Active Backwash/Rinse Flow from PSF Multiport Valve */}
+                  {(psfValveMode === "BACKWASH" || psfValveMode === "RINSE") && (
+                    <path
+                      d="M 610 480 L 545 480 L 545 270 L 105 270 L 105 76 L 135 76"
+                      stroke="#FCA5A5"
+                      strokeWidth="2.5"
+                      strokeDasharray="6 8"
+                      fill="none"
+                      strokeLinejoin="round"
+                    >
+                      <animate attributeName="stroke-dashoffset" from="56" to="0" dur={`${1.4 / simSpeed}s`} repeatCount="indefinite" />
+                    </path>
+                  )}
+
+                  {/* Subtle Standby Connectivity Flow when PSF valve is in service mode */}
+                  {psfValveMode !== "BACKWASH" && psfValveMode !== "RINSE" && (
+                    <path
+                      d="M 610 480 L 545 480 L 545 270 L 105 270 L 105 76 L 135 76"
+                      stroke="#FCA5A5"
+                      strokeWidth="1.8"
+                      strokeDasharray="4 10"
+                      opacity="0.4"
+                      fill="none"
+                      strokeLinejoin="round"
+                    >
+                      <animate attributeName="stroke-dashoffset" from="56" to="0" dur={`${2.2 / simSpeed}s`} repeatCount="indefinite" />
+                    </path>
+                  )}
                 </>
               )}
-            </circle>
-
-            {/* Specular Sheen Glare Arc */}
-            <path d="M 10 21 A 5.5 5.5 0 0 1 20 21" stroke="#FFFFFF" strokeWidth="1" fill="none" opacity="0.6" strokeLinecap="round" />
-          </g>
-
-          {/* UV LIGHT */}
-          <g id="uv-light" transform="translate(105, 620)">
-            {renderMiniTag(32.5, -7, "UV")}
-            <rect x="0" y="0" width="65" height="38" rx="6" fill="#FAF5FF" stroke="#9333EA" strokeWidth="1.5" />
-            {/* Animated UV Radiation Rays */}
-            {isPlaying && (
-              <rect x="4" y="4" width="57" height="30" rx="4" fill="#C084FC" opacity="0.15">
-                <animate attributeName="opacity" values="0.1;0.35;0.1" dur={`${1.2 / simSpeed}s`} repeatCount="indefinite" />
-              </rect>
-            )}
-            <line x1="8" y1="9" x2="57" y2="9" stroke="#A855F7" strokeWidth="3" strokeLinecap="round" />
-            <line x1="8" y1="19" x2="57" y2="19" stroke="#16A34A" strokeWidth="3" strokeLinecap="round" />
-            <line x1="8" y1="29" x2="57" y2="29" stroke="#A855F7" strokeWidth="3" strokeLinecap="round" />
-          </g>
-
-          {/* TANK 7: TREATED WATER TANK (2.5D PURE WATER CYLINDER WITH 3D CRYSTAL MENISCUS) */}
-          <g id="tank-treated" transform="translate(320, 603)">
-            {renderMiniTag(70, 6, "TREATED")}
-            {/* 2.5D Glass Cylinder Body & Dish Bottom */}
-            <path
-              d="M 0 74 Q 70 90 140 74 L 140 14 Q 70 28 0 14 Z"
-              fill="url(#glassCylinderGrad)"
-              stroke="#0284C7"
-              strokeWidth="2"
-            />
-
-            {/* Treated Pure Water Volume Body with Crystal Dynamic Dual-Layer Waves */}
-            {(() => {
-              const trY = Math.round(74 - (52 * treatedLevel) / 100)
-              return (
-                <g clipPath="url(#treatedWaterTankFluidClip)">
-                  {/* Baseline Fluid Fill */}
-                  <path
-                    d={`M 2 ${trY} Q 70 ${trY + 11} 138 ${trY} L 138 74 Q 70 89 2 74 Z`}
-                    fill="url(#treatedWaterGrad)"
-                  />
-
-                  {/* Treated Water Wave 1: Back secondary wave moving left to right (Amplitude 5.5px) */}
-                  <path
-                    d={`M -60 ${trY} q 15 -5.5, 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 L 210 95 L -60 95 Z`}
-                    fill="url(#treatedWaveBack)"
-                  >
-                    {isPlaying && (
-                      <animateTransform
-                        attributeName="transform"
-                        type="translate"
-                        from="-60 0"
-                        to="0 0"
-                        dur={`${3.2 / simSpeed}s`}
-                        repeatCount="indefinite"
-                      />
-                    )}
-                  </path>
-
-                  {/* Treated Water Wave 2: Primary undulating wave moving right to left (Amplitude 6.5px) */}
-                  <path
-                    d={`M -88 ${trY} q 22 -6.5, 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 L 264 95 L -88 95 Z`}
-                    fill="url(#treatedWaveFront)"
-                  >
-                    {isPlaying && (
-                      <animateTransform
-                        attributeName="transform"
-                        type="translate"
-                        from="0 0"
-                        to="-88 0"
-                        dur={`${2.2 / simSpeed}s`}
-                        repeatCount="indefinite"
-                      />
-                    )}
-                  </path>
-
-                  {/* 3D Liquid Meniscus Soft Blend */}
-                  <ellipse cx="70" cy={trY} rx="68" ry="6.0" fill="#E0F2FE" opacity="0.3" />
-                </g>
-              )
-            })()}
-
-            {/* Cylindrical Glare Streak */}
-            <rect x="5" y="16" width="14" height="54" rx="3" fill="url(#specularSheen)" />
-
-            {/* 3D Top Glass Vessel Flange & Rim */}
-            <ellipse cx="70" cy="14" rx="70" ry="7.0" fill="url(#glassRimGrad)" stroke="#0284C7" strokeWidth="1.5" />
-          </g>
-
-          {/* M12: FLUSHING PUMP */}
-          {renderPump("M12", 515, 645, "right", "FLUSHING PUMP", undefined, "bottom")}
-
-          {/* WATER SOLENOID VALVE (Industrial 2-Way In-Line Horizontal Solenoid Valve) */}
-          <g
-            id="valve-water-solenoid"
-            transform="translate(615, 645)"
-            className="cursor-pointer"
-            onClick={() => setWaterSolenoidOpen(!waterSolenoidOpen)}
-          >
-            <title>{`Treated Water Solenoid Valve (V-SOL): ${waterSolenoidOpen ? "OPEN (Click to Close)" : "CLOSED (Click to Open)"}`}</title>
-            {renderMiniTag(0, -25, "V-SOL")}
-
-            {/* Horizontal In-Line Pipe Connection Flanges */}
-            <rect x="-17" y="-7" width="3" height="14" rx="0.8" fill="url(#metalRingGrad)" stroke="#64748B" strokeWidth="0.8" />
-            <rect x="14" y="-7" width="3" height="14" rx="0.8" fill="url(#metalRingGrad)" stroke="#64748B" strokeWidth="0.8" />
-
-            {/* ASME Twin Triangular Valve Body */}
-            <polygon points="-14,-7 0,0 -14,7" fill="#334155" stroke="#0F172A" strokeWidth="1.2" />
-            <polygon points="14,-7 0,0 14,7" fill="#334155" stroke="#0F172A" strokeWidth="1.2" />
-
-            {/* Center Valve Seat & Stem Boss */}
-            <circle cx="0" cy="0" r="6.5" fill={waterSolenoidOpen ? "#DCFCE7" : "#FEE2E2"} stroke={waterSolenoidOpen ? "#16A34A" : "#DC2626"} strokeWidth="1.3" />
-            <circle cx="0" cy="0" r="2.2" fill={waterSolenoidOpen ? "#16A34A" : "#DC2626"} />
-
-            {/* Top Solenoid Electrical Actuator Coil Head */}
-            <line x1="0" y1="0" x2="0" y2="-10" stroke="#64748B" strokeWidth="2" />
-            <rect x="-6" y="-19" width="12" height="9" rx="1.5" fill="#1E293B" stroke={waterSolenoidOpen ? "#16A34A" : "#DC2626"} strokeWidth="1" />
-            <circle cx="0" cy="-14.5" r="1.5" fill={waterSolenoidOpen ? "#22C55E" : "#EF4444"} />
-          </g>
-
-          {/* SOFTENER VESSEL (675, 595) - Dynamic 4-Option Filter Vessel */}
-          <g id="vessel-softener" transform="translate(675, 595)">
-            {renderFilterVessel("SOFTENER", filterVesselOption)}
-          </g>
-
-          {/* TANK 8: SOFT WATER TANK (840, 603) - 2.5D PRISTINE POLISHED WATER CYLINDER */}
-          <g id="tank-soft-water" transform="translate(840, 603)">
-            {renderMiniTag(70, 6, "SOFT-TK")}
-            {/* 2.5D Glass Cylinder Body & Dish Bottom */}
-            <path
-              d="M 0 74 Q 70 90 140 74 L 140 14 Q 70 28 0 14 Z"
-              fill="url(#glassCylinderGrad)"
-              stroke="#0284C7"
-              strokeWidth="2"
-            />
-
-            {/* Polished Soft Water Volume Body with Pristine Dynamic Dual-Layer Waves */}
-            {(() => {
-              const swY = Math.round(74 - (52 * softWaterLevel) / 100)
-              return (
-                <g clipPath="url(#softWaterTankFluidClip)">
-                  {/* Baseline Fluid Fill */}
-                  <path
-                    d={`M 2 ${swY} Q 70 ${swY + 11} 138 ${swY} L 138 74 Q 70 89 2 74 Z`}
-                    fill="url(#softWaterGrad)"
-                  />
-
-                  {/* Soft Water Wave 1: Back secondary wave moving left to right (Amplitude 5.5px) */}
-                  <path
-                    d={`M -60 ${swY} q 15 -5.5, 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 L 210 95 L -60 95 Z`}
-                    fill="url(#softWaterWaveBack)"
-                  >
-                    {isPlaying && (
-                      <animateTransform
-                        attributeName="transform"
-                        type="translate"
-                        from="-60 0"
-                        to="0 0"
-                        dur={`${3.2 / simSpeed}s`}
-                        repeatCount="indefinite"
-                      />
-                    )}
-                  </path>
-
-                  {/* Soft Water Wave 2: Primary undulating wave moving right to left (Amplitude 6.5px) */}
-                  <path
-                    d={`M -88 ${swY} q 22 -6.5, 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 L 264 95 L -88 95 Z`}
-                    fill="url(#softWaterWaveFront)"
-                  >
-                    {isPlaying && (
-                      <animateTransform
-                        attributeName="transform"
-                        type="translate"
-                        from="0 0"
-                        to="-88 0"
-                        dur={`${2.2 / simSpeed}s`}
-                        repeatCount="indefinite"
-                      />
-                    )}
-                  </path>
-
-                  {/* 3D Liquid Meniscus Soft Blend */}
-                  <ellipse cx="70" cy={swY} rx="68" ry="6.0" fill="#F0F9FF" opacity="0.35" />
-                </g>
-              )
-            })()}
-
-            {/* Cylindrical Glare Streak */}
-            <rect x="5" y="16" width="14" height="54" rx="3" fill="url(#specularSheen)" />
-
-            {/* 3D Top Glass Vessel Flange & Rim */}
-            <ellipse cx="70" cy="14" rx="70" ry="7.0" fill="url(#glassRimGrad)" stroke="#0284C7" strokeWidth="1.5" />
-          </g>
-
-          {/* ====================================================================== */}
-          {/* TELEMETRY OVERLAY LAYER (ALL BADGES POSITIONED DIRECTLY ON ELEMENT TOP)*/}
-          {/* ====================================================================== */}
-          {showTelemetryBadges && (
-            <g id="telemetry-details-overlay">
-              {/* 1. Collection Tank (Top Center) */}
-              {renderTelemetryBadge(188, 20, "TK-01", "Level", `${collectionLevel}`, "%", "NORMAL")}
-
-              {/* 2. Feed Pumps M1 & M2 (M1 above upper pipe, M2 below lower pipe - Zero Pipe Collisions) */}
-              {renderTelemetryBadge(351, 46, "M1", "Flow", pumps.M1.flowRate.toFixed(1), "m³/h", pumps.M1.status)}
-              {renderTelemetryBadge(351, 138, "M2", "Flow", pumps.M2.flowRate.toFixed(1), "m³/h", pumps.M2.status)}
-
-              {/* 3. MBBR Aeration Tank (Top Center) */}
-              {renderTelemetryBadge(466, 20, "MBBR", "Level", `${mbbrLevel}`, "%", "NORMAL")}
-
-              {/* 4. Aeration Blowers BL1 & BL2 (Shifted cleanly to the right of blowers at x=535, clear of orange vertical header) */}
-              {renderTelemetryBadge(535, 172, "BL1", "Flow", `${pumps.BL1.flowRate.toFixed(0)}`, "m³/h", pumps.BL1.status)}
-              {renderTelemetryBadge(535, 232, "BL2", "Flow", `${pumps.BL2.flowRate.toFixed(0)}`, "m³/h", pumps.BL2.status)}
-
-              {/* 5. Sludge Recirculation Pumps M3 & M4 (Shifted right of vertical drop at x=600, with clean vertical spacing) */}
-              {renderTelemetryBadge(621, 56, "M3", "Flow", pumps.M3.flowRate.toFixed(1), "m³/h", pumps.M3.status)}
-              {renderTelemetryBadge(621, 102, "M4", "Flow", pumps.M4.flowRate.toFixed(1), "m³/h", pumps.M4.status)}
-
-              {/* 6. Sludge Holding Tank (Top Center, clean margin above conical rim) */}
-              {renderTelemetryBadge(621, 142, "SLUDGE", "Level", `${sludgeLevel}`, "%", "NORMAL")}
-
-              {/* 7. Clarifier Tank (Top Center) */}
-              {renderTelemetryBadge(776, 20, "CLR-01", "Level", `${clarifierLevel}`, "%", "NORMAL")}
-
-              {/* 8. Filter Feed Tank (Top Center) */}
-              {renderTelemetryBadge(776, 214, "FF-TK", "Level", `${filterFeedLevel}`, "%", "NORMAL")}
-
-              {/* 9. Filter Feed Pumps M10 & M11 (Flanking the pumps: M10 on the left, M11 on the right to eliminate mutual collision & pipe overlap) */}
-              {renderTelemetryBadge(695, 357, "M10", "Flow", pumps.M10.flowRate.toFixed(1), "m³/h", pumps.M10.status)}
-              {renderTelemetryBadge(875, 357, "M11", "Flow", pumps.M11.flowRate.toFixed(1), "m³/h", pumps.M11.status)}
-
-              {/* 10. Media Filter Vessels PSF & ACF (Upper clean margins) */}
-              {renderTelemetryBadge(966, 396, "PSF", "ΔP", (inletPressure - outletPressure).toFixed(2), "Bar", "NORMAL")}
-              {renderTelemetryBadge(200, 394, "ACF", "Time", formatTime(acfSeconds), "", "NORMAL", 78)}
-
-              {/* 10b. PSF & ACF Multiport Valves (Cleanly placed directly underneath valves at y=520, clear of feed pipes above) */}
-              {renderTelemetryBadge(864, 520, "PSF-MPV", "Mode", psfValveMode, "", psfValveMode === "SERVICE" ? "NORMAL" : "STANDBY", 72)}
-              {renderTelemetryBadge(324, 520, "ACF-MPV", "Mode", acfValveMode, "", acfValveMode === "SERVICE" ? "NORMAL" : "STANDBY", 72)}
-
-              {/* 11. Treated Water Tank (Top Center) */}
-              {renderTelemetryBadge(356, 574, "TREATED", "Level", `${treatedLevel}`, "%", "NORMAL")}
-
-              {/* 12. Flushing Pump M12 (Centered above pump, clear of vertical risers) */}
-              {renderTelemetryBadge(481, 610, "M12", "Flow", pumps.M12.flowRate.toFixed(1), "m³/h", pumps.M12.status)}
-
-              {/* 13. Soft Water Tank (Top Center) */}
-              {renderTelemetryBadge(876, 574, "SOFT-TK", "Level", `${softWaterLevel}`, "%", "NORMAL")}
-
-              {/* 14. Softener Vessel (Top Center) */}
-              {renderTelemetryBadge(675, 560, "SOFTENER", "Hardness", softwaterHardness.toFixed(2), "mg/L", "NORMAL", 80)}
             </g>
-          )}
+
+            {/* 3. COLLECTION TANK TO MBBR AERATION TANK (VIA M1 / M2) */}
+            <g id="collection-to-mbbr-lines">
+              {/* Wall Flange Nozzle on Collection Tank */}
+              <rect x="307" y="88" width="6" height="8" rx="1.5" fill="#64748B" stroke="#0284C7" strokeWidth="1" />
+              {/* Stainless Steel Outer Casing */}
+              <path d="M 308 92 L 360 92 L 360 75 L 470 75 L 470 92 L 510 92" stroke="url(#ssPipeH)" strokeWidth="6.5" fill="none" strokeLinejoin="round" />
+              <path d="M 360 92 L 360 115 L 470 115 L 470 92" stroke="url(#ssPipeH)" strokeWidth="6.5" fill="none" strokeLinejoin="round" />
+              {/* Inner Fluid Core */}
+              <path d="M 308 92 L 360 92 L 360 75 L 470 75 L 470 92 L 510 92" stroke="#0284C7" strokeWidth="4" fill="none" strokeLinejoin="round" />
+              <path d="M 360 92 L 360 115 L 470 115 L 470 92" stroke="#0284C7" strokeWidth="4" fill="none" strokeLinejoin="round" />
+              <polygon points="500,88 510,92 500,96" fill="#0284C7" />
+              {isPlaying && pumps.M1.status === "RUNNING" && (
+                <path d="M 312 92 L 360 92 L 360 75 L 470 75 L 470 92 L 510 92" stroke="#D7CCC8" strokeWidth="2.5" strokeDasharray="5 7" fill="none" strokeLinejoin="round">
+                  <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${0.9 / simSpeed}s`} repeatCount="indefinite" />
+                </path>
+              )}
+            </g>
+
+            {/* 4. MBBR AERATION OVERFLOW TO CLARIFIER TANK (RUNS ACROSS THE TOP AT Y=65 - BIO-MIX LIQUOR) */}
+            <g id="mbbr-to-clarifier-line">
+              <path d="M 640 65 L 960 65" stroke="url(#ssPipeH)" strokeWidth="6.5" fill="none" />
+              <path d="M 640 65 L 960 65" stroke="#8D6E63" strokeWidth="4" fill="none" />
+              <polygon points="948,61 958,65 948,69" fill="#8D6E63" />
+              {isPlaying && (
+                <path d="M 640 65 L 960 65" stroke="#D7CCC8" strokeWidth="2.5" strokeDasharray="5 7" fill="none">
+                  <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
+                </path>
+              )}
+            </g>
+
+            {/* 5. CLARIFIER THROUGH CLARIFIER VALVE STRAIGHT DOWN INTO FILTER FEED TANK (SETTLED SUPERNATANT) */}
+            <g id="clarifier-to-filter-feed-line">
+              <path d="M 1030 138 L 1030 252" stroke="url(#ssPipeV)" strokeWidth="6.5" fill="none" />
+              <path d="M 1030 138 L 1030 252" stroke="#B8AA7B" strokeWidth="4" fill="none" />
+              <polygon points="1026,242 1030,252 1034,242" fill="#B8AA7B" />
+              {isPlaying && clarifierValveOpen && (
+                <path d="M 1030 138 L 1030 252" stroke="#EFE8D0" strokeWidth="2.5" strokeDasharray="5 7" fill="none">
+                  <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
+                </path>
+              )}
+            </g>
+
+            {/* 6. CLARIFIER SLUDGE UNDERFLOW -> M3/M4 -> SLUDGE HOLDING TANK & MBBR RECIRCULATION */}
+            <g id="clarifier-to-sludge-lines">
+              {/* Feeds from Clarifier bottom underflow (781, 128) moving LEFT into M3 & M4 suction */}
+              <path d="M 1001 128 L 880 128 L 880 95 L 850 95" stroke="#D97706" strokeWidth="3.5" fill="none" strokeLinejoin="round" />
+              <path d="M 880 128 L 850 128" stroke="#D97706" strokeWidth="3.5" fill="none" strokeLinejoin="round" />
+
+              {/* Suction flow arrow pointing LEFT leaving Clarifier underflow */}
+              <polygon points="985,124 975,128 985,132" fill="#D97706" />
+
+              {/* From M3/M4 discharge moving LEFT to manifold at x=600 */}
+              <path d="M 810 95 L 685 95" stroke="#D97706" strokeWidth="3.5" fill="none" strokeLinejoin="round" />
+              <path d="M 810 128 L 685 128" stroke="#D97706" strokeWidth="3.5" fill="none" strokeLinejoin="round" />
+
+              {/* 1. Primary Sludge Discharge: Downward branch into SLUDGE HOLDING TANK */}
+              <path d="M 685 95 L 685 177" stroke="#D97706" strokeWidth="3.5" fill="none" strokeLinejoin="round" />
+              <polygon points="681,168 685,177 689,168" fill="#D97706" />
+
+              {/* 2. Secondary Sludge Feed from MBBR AERATION TANK into manifold */}
+              <path d="M 640 95 L 685 95" stroke="#D97706" strokeWidth="3.5" fill="none" strokeLinejoin="round" />
+              <polygon points="672,91 680,95 672,99" fill="#D97706" />
+
+              {/* Active Dual-Feed Sludge Fluid Animation when M4 is RUNNING */}
+              {isPlaying && pumps.M4.status === "RUNNING" && (
+                <>
+                  {/* Feed 1 (Major): Clarifier Underflow -> M4 -> Sludge Holding Tank */}
+                  <path d="M 1001 128 L 685 128 L 685 177" stroke="#FDE68A" strokeWidth="2.2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
+                    <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${0.85 / simSpeed}s`} repeatCount="indefinite" />
+                  </path>
+                  {/* Feed 2 (Secondary): MBBR Aeration Tank -> Manifold -> Sludge Holding Tank */}
+                  <path d="M 640 95 L 685 95 L 685 177" stroke="#FDE68A" strokeWidth="2.0" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
+                    <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${1.0 / simSpeed}s`} repeatCount="indefinite" />
+                  </path>
+                </>
+              )}
+
+              {/* Active Dual-Feed Sludge Fluid Animation when M3 is RUNNING */}
+              {isPlaying && pumps.M3.status === "RUNNING" && (
+                <>
+                  {/* Feed 1 (Major): Clarifier Underflow -> M3 -> Sludge Holding Tank */}
+                  <path d="M 1001 128 L 880 128 L 880 95 L 685 95 L 685 177" stroke="#FDE68A" strokeWidth="2.2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
+                    <animate attributeName="stroke-dashoffset" from="28" to="0" dur={`${0.95 / simSpeed}s`} repeatCount="indefinite" />
+                  </path>
+                  {/* Feed 2 (Secondary): MBBR Aeration Tank -> Manifold -> Sludge Holding Tank */}
+                  <path d="M 640 95 L 670 95 L 670 177" stroke="#FDE68A" strokeWidth="2.0" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
+                    <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${1.0 / simSpeed}s`} repeatCount="indefinite" />
+                  </path>
+                </>
+              )}
+            </g>
+
+            {/* 7. BLOWERS & COMPRESSED AIR PIPING NETWORK (YELLOW AIR DISTRIBUTED TO MBBR & COLLECTION TANK) */}
+            <g id="yellow-air-network">
+              {/* Main Blower output headers connecting BL1 (y=180) and BL2 (y=240) */}
+              <path d="M 551 180 L 525 180 L 525 238 L 551 238" stroke="#D97706" strokeWidth="4" fill="none" strokeLinejoin="round" />
+
+              {/* Branch 1: UP into MBBR Aeration Tank Diffuser Grid */}
+              <path d="M 525 180 L 525 122" stroke="#D97706" strokeWidth="4" fill="none" />
+              <polygon points="521,130 525,122 529,130" fill="#D97706" />
+
+              {/* Branch 2: UP into COLLECTION TANK Diffuser Line (Zero Gap) */}
+              <path d="M 525 195 L 295 195 L 295 122" stroke="#D97706" strokeWidth="4" fill="none" strokeLinejoin="round" />
+              <polygon points="291,130 295,122 299,130" fill="#D97706" />
+
+              {isPlaying && (pumps.BL1.status === "RUNNING" || pumps.BL2.status === "RUNNING") && (
+                <>
+                  {/* Active Blower 1 (BL1) Horizontal Discharge into Header */}
+                  {pumps.BL1.status === "RUNNING" && (
+                    <path d="M 551 180 L 525 180" stroke="#FDE047" strokeWidth="2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
+                      <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
+                    </path>
+                  )}
+
+                  {/* Active Blower 2 (BL2) Horizontal Discharge into Header */}
+                  {pumps.BL2.status === "RUNNING" && (
+                    <path d="M 551 238 L 525 238" stroke="#FDE047" strokeWidth="2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
+                      <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
+                    </path>
+                  )}
+
+                  {/* Vertical Manifold Air Distribution to MBBR Diffusers */}
+                  <path d={`M 525 ${pumps.BL2.status === "RUNNING" ? 238 : 180} L 525 122`} stroke="#FDE047" strokeWidth="2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
+                    <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
+                  </path>
+
+                  {/* Air Branch to Collection Tank Diffuser Line */}
+                  <path d="M 525 195 L 295 195 L 295 122" stroke="#FDE047" strokeWidth="2" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
+                    <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
+                  </path>
+                </>
+              )}
+            </g>
+
+            {/* 10. FILTER FEED PUMPS (M10 & M11) DOWN TO INLET PRESSURE & PSF VALVE INLET (AQUAMARINE SECONDARY EFFLUENT) */}
+            <g id="filter-feed-to-psf-lines">
+              <path d="M 1000 321 L 1000 350" stroke="#0D9488" strokeWidth="3.5" fill="none" />
+              <path d="M 1060 321 L 1060 350" stroke="#0D9488" strokeWidth="3.5" fill="none" />
+              <path d="M 1000 380 L 1000 405 L 1030 405" stroke="#0D9488" strokeWidth="3.5" fill="none" strokeLinejoin="round" />
+              <path d="M 1060 380 L 1060 405 L 1030 405" stroke="#0D9488" strokeWidth="3.5" fill="none" strokeLinejoin="round" />
+              {/* Feed line drops to y=405, runs left into top nozzle of PSF Valve at (630, 460) */}
+              <path d="M 1030 405 L 630 405 L 630 460" stroke="#0D9488" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
+              <polygon points="830,401 820,405 830,409" fill="#0D9488" />
+              <polygon points="626,452 630,460 634,452" fill="#0D9488" />
+              {isPlaying && (pumps.M10.status === "RUNNING" || pumps.M11.status === "RUNNING") && (
+                <path
+                  d="M 1060 380 L 1060 405 L 630 405 L 630 460"
+                  stroke="#99F6E4"
+                  strokeWidth="2.5"
+                  strokeDasharray="5 7"
+                  fill="none"
+                  strokeLinejoin="round"
+                >
+                  <animate attributeName="stroke-dashoffset" from="28" to="0" dur={`${0.9 / simSpeed}s`} repeatCount="indefinite" />
+                </path>
+              )}
+            </g>
+
+            {/* 11. PSF VALVE TO/FROM PSF VESSEL (100% CONNECTED COMPACT DUAL MANIFOLD) */}
+            <g id="psf-valve-to-vessel">
+              {/* Trunk from PSF Valve Right Nozzle (650, 480) into Manifold Tee at (665, 480) */}
+              <path d="M 650 480 L 665 480" stroke="#0284C7" strokeWidth="4.5" fill="none" />
+
+              {/* Upper Branch: Tee (665, 480) up to (665, 465) and into Top Distributor at (680, 465) */}
+              <path d="M 665 480 L 665 465 L 680 465" stroke="#0284C7" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
+              <polygon points="672,462 680,465 672,468" fill="#0284C7" />
+              <line x1="680" y1="460" x2="680" y2="470" stroke="#0369A1" strokeWidth="2.5" />
+
+              {/* Lower Branch: Tee (665, 480) down to (665, 495) and into Bottom Collector at (680, 495) */}
+              <path d="M 665 480 L 665 495 L 680 495" stroke="#0284C7" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
+              <polygon points="670,492 662,495 670,498" fill="#0284C7" />
+              <line x1="680" y1="490" x2="680" y2="500" stroke="#0369A1" strokeWidth="2.5" />
+
+              {/* Manifold Tee Junction Fitting */}
+              <circle cx="665" cy="480" r="3.5" fill="#0284C7" stroke="#0369A1" strokeWidth="1" />
+
+              {/* Animated fluid flow pulses */}
+              {isPlaying && (
+                <>
+                  <path d="M 650 480 L 665 480 L 665 465 L 680 465" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
+                    <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
+                  </path>
+                  <path d="M 680 495 L 665 495 L 665 480 L 650 480" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
+                    <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
+                  </path>
+                </>
+              )}
+            </g>
+
+            {/* 12. PSF VALVE OUTLET THROUGH 0.15 Bar OUTLET PRESSURE, ACROSS TO ACF VALVE INLET */}
+            <g id="psf-to-acf-line">
+              {/* Exits bottom of PSF valve at (630, 500), drops to y=535, runs across left to x=360, turns UP into ACF VALVE INLET at (360, 380) */}
+              <path d="M 630 500 L 630 535 L 360 535 L 360 380" stroke="#0284C7" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
+              <polygon points="495,531 485,535 495,539" fill="#0284C7" />
+              <polygon points="356,388 360,380 364,388" fill="#0284C7" />
+              {isPlaying && (
+                <path d="M 630 500 L 630 535 L 360 535 L 360 380" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="5 7" fill="none" strokeLinejoin="round">
+                  <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${1.2 / simSpeed}s`} repeatCount="indefinite" />
+                </path>
+              )}
+            </g>
+
+            {/* 13. ACF VALVE TO/FROM ACF VESSEL (100% CONNECTED ZERO GAPS DUAL MANIFOLD) */}
+            <g id="acf-valve-to-vessel">
+              {/* Trunk from ACF Valve Left Nozzle (340, 360) into Manifold Tee at (305, 360) */}
+              <path d="M 340 360 L 305 360" stroke="#0284C7" strokeWidth="4.5" fill="none" />
+
+              {/* Upper Branch: Tee (305, 360) up to (305, 345) and into Top Distributor at (275, 345) */}
+              <path d="M 305 360 L 305 345 L 275 345" stroke="#0284C7" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
+              <polygon points="283,342 275,345 283,348" fill="#0284C7" />
+              <line x1="275" y1="340" x2="275" y2="350" stroke="#0369A1" strokeWidth="2.5" />
+
+              {/* Lower Branch: Tee (305, 360) down to (305, 375) and into Bottom Collector at (275, 375) */}
+              <path d="M 305 360 L 305 375 L 275 375" stroke="#0284C7" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
+              <polygon points="285,372 293,375 285,378" fill="#0284C7" />
+              <line x1="275" y1="370" x2="275" y2="380" stroke="#0369A1" strokeWidth="2.5" />
+
+              {/* Manifold Tee Junction Fitting */}
+              <circle cx="305" cy="360" r="3.5" fill="#0284C7" stroke="#0369A1" strokeWidth="1" />
+
+              {/* Animated fluid flow pulses */}
+              {isPlaying && (
+                <>
+                  <path d="M 340 360 L 305 360 L 305 345 L 275 345" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
+                    <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
+                  </path>
+                  <path d="M 275 375 L 305 375 L 305 360 L 340 360" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="4 6" fill="none" strokeLinejoin="round">
+                    <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
+                  </path>
+                </>
+              )}
+            </g>
+
+            {/* 14. ACF VALVE OUTLET UP, LEFT ACROSS TOP OF ACF, DOWN INTO UV LIGHT */}
+            <g id="acf-to-uv-line">
+              {/* Exits OUTLET at top of ACF Valve (360, 340) with arrow UP ^, runs across above ACF at y=310, drops down at x=135 into UV Light at (135, 620) */}
+              <path d="M 360 340 L 360 310 L 135 310 L 135 620" stroke="#0284C7" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
+              <polygon points="356,330 360,320 364,330" fill="#0284C7" />
+              <polygon points="230,306 220,310 230,314" fill="#0284C7" />
+              <polygon points="131,540 135,550 139,540" fill="#0284C7" />
+              {isPlaying && (
+                <path d="M 360 340 L 360 310 L 135 310 L 135 620" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="5 7" fill="none" strokeLinejoin="round">
+                  <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${1.0 / simSpeed}s`} repeatCount="indefinite" />
+                </path>
+              )}
+            </g>
+
+            {/* 15. UV LIGHT THROUGH DOSING PUMP INTO TREATED WATER TANK */}
+            <g id="uv-to-treated-water-line">
+              <path d="M 170 645 L 320 645" stroke="#0284C7" strokeWidth="4.5" fill="none" />
+              <polygon points="195,641 205,645 195,649" fill="#0284C7" />
+              <polygon points="305,641 315,645 305,649" fill="#0284C7" />
+              {isPlaying && (
+                <path d="M 170 645 L 320 645" stroke="#BAE6FD" strokeWidth="2.5" strokeDasharray="5 7" fill="none">
+                  <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${0.8 / simSpeed}s`} repeatCount="indefinite" />
+                </path>
+              )}
+            </g>
+
+            {/* 16. TREATED WATER TANK OUT THROUGH M12, TO FLUSH, TO GARDENING & INTO SOFTENER */}
+            <g id="treated-to-softener-line">
+              <path d="M 460 645 L 860 645" stroke="#0284C7" strokeWidth="4.5" fill="none" />
+
+              {/* Feeder Pipe 1: TO FLUSH */}
+              <path d="M 640 645 L 640 590" stroke="#0284C7" strokeWidth="3.5" fill="none" />
+              <polygon points="636,595 640,585 644,595" fill="#0284C7" />
+
+              {/* Feeder Pipe 2: TO GARDENING */}
+              <path d="M 720 645 L 720 590" stroke="#16A34A" strokeWidth="3.5" fill="none" />
+              <polygon points="716,595 720,585 724,595" fill="#16A34A" />
+
+              <polygon points="845,641 855,645 845,649" fill="#0284C7" />
+
+              {/* Animated flow when M12 is running */}
+              {isPlaying && pumps.M12.status === "RUNNING" && (
+                <>
+                  <path d="M 515 645 L 860 645" stroke="#BAE6FD" strokeWidth="2" strokeDasharray="3 5" fill="none">
+                    <animate attributeName="stroke-dashoffset" from="16" to="0" dur={`${0.6 / simSpeed}s`} repeatCount="indefinite" />
+                  </path>
+                  <path d="M 640 645 L 640 590" stroke="#BAE6FD" strokeWidth="2" strokeDasharray="3 5" fill="none">
+                    <animate attributeName="stroke-dashoffset" from="16" to="0" dur={`${0.6 / simSpeed}s`} repeatCount="indefinite" />
+                  </path>
+                  <path d="M 720 645 L 720 590" stroke="#BBF7D0" strokeWidth="2" strokeDasharray="3 5" fill="none">
+                    <animate attributeName="stroke-dashoffset" from="16" to="0" dur={`${0.6 / simSpeed}s`} repeatCount="indefinite" />
+                  </path>
+                </>
+              )}
+            </g>
+
+            {/* 17. SOFTENER OUT INTO SOFT WATER TANK (PRISTINE POLISHED CYAN WATER) */}
+            <g id="softener-to-soft-water-line">
+              <path d="M 940 645 L 1080 645" stroke="#06B6D4" strokeWidth="4.5" fill="none" />
+              <polygon points="1070,641 1080,645 1070,649" fill="#06B6D4" />
+              {isPlaying && (
+                <path d="M 940 645 L 1080 645" stroke="#A5F3FC" strokeWidth="2.5" strokeDasharray="4 6" fill="none">
+                  <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.7 / simSpeed}s`} repeatCount="indefinite" />
+                </path>
+              )}
+            </g>
+
+            {/* ====================================================================== */}
+            {/* TANKS & VESSELS (2.5D ISOMETRIC / GLASSMORPHIC HIGH-FIDELITY MODELS)   */}
+            {/* ====================================================================== */}
+
+            {/* TANK 1: COLLECTION TANK (2.5D GLASS CYLINDER WITH RAW SEWAGE & 3D FLUID MENISCUS) */}
+            <g id="tank-collection" transform="translate(135, 48)">
+              {/* 2.5D Glass Cylinder Body & Dish Bottom */}
+              <path
+                d="M 0 76 Q 87.5 94 175 76 L 175 14 Q 87.5 30 0 14 Z"
+                fill="url(#glassCylinderGrad)"
+                stroke="#0284C7"
+                strokeWidth="2"
+              />
+
+              {/* Raw Sewage Fluid Body (Volume below Meniscus with Dynamic Waves) */}
+              {(() => {
+                const rawY = Math.round(76 - (62 * collectionLevel) / 100)
+                return (
+                  <g clipPath="url(#collectionTankFluidClip)">
+                    {/* Baseline Fluid Body Fill */}
+                    <path
+                      d={`M 2 ${rawY} Q 87.5 ${rawY + 12} 173 ${rawY} L 173 76 Q 87.5 93 2 76 Z`}
+                      fill="url(#rawSewageGrad)"
+                    />
+
+                    {/* Wave Layer 1: Back secondary wave moving left to right (Amplitude 5.5px) */}
+                    <path
+                      d={`M -60 ${rawY} q 15 -5.5, 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 L 240 95 L -60 95 Z`}
+                      fill="url(#rawSewageWaveBack)"
+                    >
+                      {isPlaying && (
+                        <animateTransform
+                          attributeName="transform"
+                          type="translate"
+                          from="-60 0"
+                          to="0 0"
+                          dur={`${3.2 / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                      )}
+                    </path>
+
+                    {/* Wave Layer 2: Primary undulating wave moving right to left (Amplitude 6.5px) */}
+                    <path
+                      d={`M -88 ${rawY} q 22 -6.5, 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 L 264 95 L -88 95 Z`}
+                      fill="url(#rawSewageWaveFront)"
+                    >
+                      {isPlaying && (
+                        <animateTransform
+                          attributeName="transform"
+                          type="translate"
+                          from="0 0"
+                          to="-88 0"
+                          dur={`${2.2 / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                      )}
+                    </path>
+
+                    {/* 3D Liquid Meniscus (Top Surface Soft Fluid Blend - Dark Sludge) */}
+                    <ellipse cx="87.5" cy={rawY} rx="85.5" ry="6.5" fill="#5D4037" opacity="0.35" />
+
+                    {/* Dynamic Water Dropping Effect from Inlet Pipe Mouth (x=17, y=20 down to rawY) */}
+                    {isPlaying && (
+                      <g id="collection-tank-water-drops">
+                        {/* Cascading wastewater stream */}
+                        <line x1="17" y1="20" x2="17" y2={rawY} stroke="#8D6E63" strokeWidth="1.6" strokeDasharray="3 3" opacity="0.6">
+                          <animate attributeName="stroke-dashoffset" from="12" to="0" dur={`${0.5 / simSpeed}s`} repeatCount="indefinite" />
+                        </line>
+
+                        {/* Droplet 1 */}
+                        <ellipse cx="17" cy="22" rx="1.6" ry="2.2" fill="#8D6E63">
+                          <animate
+                            attributeName="cy"
+                            values={`20; ${rawY}`}
+                            dur={`${0.65 / simSpeed}s`}
+                            repeatCount="indefinite"
+                          />
+                          <animate
+                            attributeName="opacity"
+                            values="0.9; 1; 0.2"
+                            dur={`${0.65 / simSpeed}s`}
+                            repeatCount="indefinite"
+                          />
+                        </ellipse>
+
+                        {/* Droplet 2 (offset) */}
+                        <ellipse cx="17" cy="22" rx="1.3" ry="1.9" fill="#A1887F">
+                          <animate
+                            attributeName="cy"
+                            values={`20; ${rawY}`}
+                            begin={`${0.22 / simSpeed}s`}
+                            dur={`${0.65 / simSpeed}s`}
+                            repeatCount="indefinite"
+                          />
+                          <animate
+                            attributeName="opacity"
+                            values="0.9; 1; 0.2"
+                            begin={`${0.22 / simSpeed}s`}
+                            dur={`${0.65 / simSpeed}s`}
+                            repeatCount="indefinite"
+                          />
+                        </ellipse>
+
+                        {/* Droplet 3 (offset) */}
+                        <ellipse cx="17" cy="22" rx="1.5" ry="2.0" fill="#6D4C41">
+                          <animate
+                            attributeName="cy"
+                            values={`20; ${rawY}`}
+                            begin={`${0.44 / simSpeed}s`}
+                            dur={`${0.65 / simSpeed}s`}
+                            repeatCount="indefinite"
+                          />
+                          <animate
+                            attributeName="opacity"
+                            values="0.9; 1; 0.2"
+                            begin={`${0.44 / simSpeed}s`}
+                            dur={`${0.65 / simSpeed}s`}
+                            repeatCount="indefinite"
+                          />
+                        </ellipse>
+
+                        {/* Impact Splashing / Expanding Surface Ripples */}
+                        <ellipse cx="17" cy={rawY} rx="2" ry="0.8" fill="none" stroke="#D7CCC8" strokeWidth="0.8">
+                          <animate attributeName="rx" values="1.5; 8" dur={`${0.65 / simSpeed}s`} repeatCount="indefinite" />
+                          <animate attributeName="ry" values="0.6; 2.2" dur={`${0.65 / simSpeed}s`} repeatCount="indefinite" />
+                          <animate attributeName="opacity" values="0.9; 0" dur={`${0.65 / simSpeed}s`} repeatCount="indefinite" />
+                        </ellipse>
+                        <ellipse cx="17" cy={rawY} rx="2" ry="0.8" fill="none" stroke="#D7CCC8" strokeWidth="0.8">
+                          <animate attributeName="rx" values="1.5; 8" begin={`${0.32 / simSpeed}s`} dur={`${0.65 / simSpeed}s`} repeatCount="indefinite" />
+                          <animate attributeName="ry" values="0.6; 2.2" begin={`${0.32 / simSpeed}s`} dur={`${0.65 / simSpeed}s`} repeatCount="indefinite" />
+                          <animate attributeName="opacity" values="0.9; 0" begin={`${0.32 / simSpeed}s`} dur={`${0.65 / simSpeed}s`} repeatCount="indefinite" />
+                        </ellipse>
+                      </g>
+                    )}
+                  </g>
+                )
+              })()}
+
+              {/* Cylindrical Specular Light Glare (Left Bright Streak) */}
+              <rect x="6" y="16" width="16" height="58" rx="3" fill="url(#specularSheen)" />
+
+              {/* 3D Top Glass Vessel Flange & Rim Opening */}
+              <ellipse cx="87.5" cy="14" rx="87.5" ry="8" fill="url(#glassRimGrad)" stroke="#0284C7" strokeWidth="1.5" />
+              <ellipse cx="87.5" cy="14" rx="82" ry="5.5" fill="none" stroke="#CBD5E1" strokeWidth="1" strokeDasharray="3 3" opacity="0.6" />
+
+              {/* Tank Identifier Name Tag - Centered in Tank Body */}
+              {renderMiniTag(87.5, 62, "COLLECTION TANK", 125)}
+            </g>
+
+            {/* DOTTED BOUNDING BOX FOR MBBR PUMPS */}
+            <rect x="340" y="50" width="90" height="92" rx="4" fill="none" stroke="#93C5FD" strokeWidth="1" strokeDasharray="3 3" />
+
+            {/* PUMPS M1 & M2 (COLLECTION -> MBBR) */}
+            {renderPump("M1", 385, 75, "right", "MBBR PUMP 1", undefined, "top")}
+            {renderPump("M2", 385, 115, "right", "MBBR PUMP 2", undefined, "bottom")}
+
+            {/* TANK 3: MBBR AERATION TANK (2.5D GLASS CYLINDER WITH K1 BIO-MEDIA & 3D FLUID MENISCUS) */}
+            <g id="tank-mbbr" transform="translate(500, 48)">
+              {/* 2.5D Glass Cylinder Body & Dish Bottom */}
+              <path
+                d="M 0 76 Q 70 94 140 76 L 140 14 Q 70 30 0 14 Z"
+                fill="url(#glassCylinderGrad)"
+                stroke="#0284C7"
+                strokeWidth="2"
+              />
+
+              {/* Aerated Mixed Liquor Fluid Volume with Active Aeration Waves (50% Level matching Filter Feed Tank) */}
+              <g clipPath="url(#mbbrTankFluidClip)">
+                <path d="M 2 45 Q 70 59 138 45 L 138 76 Q 70 93 2 76 Z" fill="url(#mbbrWaterGrad)" />
+
+                {/* MBBR Wave Layer 1: Back secondary wave moving left to right (Amplitude 5.5px) */}
+                <path
+                  d="M -60 45 q 15 -5.5, 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 L 210 95 L -60 95 Z"
+                  fill="url(#mbbrWaveBack)"
+                >
+                  {isPlaying && (
+                    <animateTransform
+                      attributeName="transform"
+                      type="translate"
+                      from="-60 0"
+                      to="0 0"
+                      dur={`${3.2 / simSpeed}s`}
+                      repeatCount="indefinite"
+                    />
+                  )}
+                </path>
+
+                {/* MBBR Wave Layer 2: Primary undulating wave moving right to left (Amplitude 6.5px) */}
+                <path
+                  d="M -88 45 q 22 -6.5, 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 L 264 95 L -88 95 Z"
+                  fill="url(#mbbrWaveFront)"
+                >
+                  {isPlaying && (
+                    <animateTransform
+                      attributeName="transform"
+                      type="translate"
+                      from="0 0"
+                      to="-88 0"
+                      dur={`${2.2 / simSpeed}s`}
+                      repeatCount="indefinite"
+                    />
+                  )}
+                </path>
+
+                {/* Soft Meniscus Blend at 50% Waterline (Bio-Mix) */}
+                <ellipse cx="70" cy="45" rx="68" ry="6.5" fill="#A1887F" opacity="0.35" />
+              </g>
+
+              {/* Rising Aeration Micro-Bubbles (Bottom to 50% Water Surface) */}
+              <g>
+                {[
+                  { cx: 24, r: 1.8, dur: 3.4, delay: 0.0, sway: 2.0 },
+                  { cx: 32, r: 2.4, dur: 2.8, delay: 0.8, sway: -2.5 },
+                  { cx: 42, r: 1.5, dur: 3.8, delay: 1.6, sway: 1.8 },
+                  { cx: 50, r: 2.2, dur: 3.0, delay: 0.4, sway: -1.5 },
+                  { cx: 60, r: 1.6, dur: 3.6, delay: 2.0, sway: 2.2 },
+                  { cx: 68, r: 2.5, dur: 2.7, delay: 1.1, sway: -2.0 },
+                  { cx: 78, r: 1.7, dur: 3.5, delay: 0.2, sway: 1.6 },
+                  { cx: 86, r: 2.3, dur: 2.9, delay: 1.9, sway: -2.4 },
+                  { cx: 96, r: 1.5, dur: 3.9, delay: 0.6, sway: 1.5 },
+                  { cx: 104, r: 2.2, dur: 3.1, delay: 2.3, sway: -1.8 },
+                  { cx: 114, r: 1.8, dur: 3.3, delay: 1.4, sway: 2.0 },
+                  { cx: 28, r: 1.4, dur: 4.1, delay: 2.7, sway: -1.2 },
+                  { cx: 56, r: 2.0, dur: 3.2, delay: 1.0, sway: 1.7 },
+                  { cx: 74, r: 1.6, dur: 3.7, delay: 2.5, sway: -1.9 },
+                  { cx: 92, r: 2.1, dur: 3.0, delay: 0.9, sway: 2.1 },
+                  { cx: 110, r: 1.5, dur: 4.0, delay: 1.7, sway: -1.4 },
+                ].map((b, i) => (
+                  <circle
+                    key={`aeration-bubble-${i}`}
+                    cx={b.cx}
+                    cy={78}
+                    r={b.r}
+                    fill="#FFFFFF"
+                    stroke="#7DD3FC"
+                    strokeWidth="0.5"
+                    opacity="0.85"
+                  >
+                    {isPlaying && (
+                      <>
+                        <animate
+                          attributeName="cy"
+                          values="78; 67; 56; 46"
+                          keyTimes="0; 0.35; 0.75; 1"
+                          dur={`${b.dur / simSpeed}s`}
+                          begin={`${b.delay / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                        <animate
+                          attributeName="cx"
+                          values={`${b.cx}; ${b.cx + b.sway}; ${b.cx - b.sway}; ${b.cx}`}
+                          keyTimes="0; 0.33; 0.66; 1"
+                          dur={`${b.dur / simSpeed}s`}
+                          begin={`${b.delay / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                        <animate
+                          attributeName="opacity"
+                          values="0.1; 0.85; 0.9; 0"
+                          keyTimes="0; 0.15; 0.85; 1"
+                          dur={`${b.dur / simSpeed}s`}
+                          begin={`${b.delay / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                      </>
+                    )}
+                  </circle>
+                ))}
+              </g>
+
+              {/* Cylindrical Specular Glare */}
+              <rect x="5" y="16" width="14" height="58" rx="3" fill="url(#specularSheen)" />
+
+              {/* 3D Top Glass Vessel Flange & Rim */}
+              <ellipse cx="70" cy="14" rx="70" ry="7.5" fill="url(#glassRimGrad)" stroke="#0284C7" strokeWidth="1.5" />
+              <ellipse cx="70" cy="14" rx="65" ry="5.0" fill="none" stroke="#93C5FD" strokeWidth="1" strokeDasharray="2 2" />
+
+              {/* Tank Identifier Name Tag - Centered in Tank Body */}
+              {renderMiniTag(70, 62, "MBBR AERATION", 110)}
+            </g>
+
+            {/* DOTTED BOUNDING BOX FOR SLUDGE RECIRCULATION PUMPS M3 & M4 */}
+            <rect x="615" y="70" width="85" height="84" rx="4" fill="none" stroke="#93C5FD" strokeWidth="1" strokeDasharray="3 3" />
+
+            {/* SLUDGE PUMPS M3 & M4 (POINTING LEFT: CLARIFIER UNDERFLOW TO SLUDGE HOLDING TANK) */}
+            {renderPump("M3", 830, 95, "left", "MBBR PUMP 3", undefined, "top")}
+            {renderPump("M4", 830, 128, "left", "MBBR PUMP 4", undefined, "bottom")}
+
+            {/* TANK 4: CLARIFIER TANK WITH CONICAL HOPPER & ROTATING SCRAPER ARM (2.5D CUTAWAY) */}
+            <g id="tank-clarifier" transform="translate(960, 48)">
+              {/* 2.5D Conical Hopper Tank Hull (Cylindrical Upper + 60° Conical Funnel Bottom) */}
+              <path
+                d="M 0 14 L 0 54 L 54 88 Q 70 93 86 88 L 140 54 L 140 14 Z"
+                fill="url(#glassCylinderGrad)"
+                stroke="#0284C7"
+                strokeWidth="2"
+              />
+
+              {/* Supernatant Clarified Water Zone (Water level matches other tanks at y=45; Sludge occupies half the balance space from y=67 to y=88) */}
+              {(() => {
+                const clrY = Math.round(76 - (62 * clarifierLevel) / 100)
+                return (
+                  <g clipPath="url(#clarifierWaterClip)">
+                    {/* Baseline Supernatant Water Fill down to Sludge Interface at y=67 */}
+                    <path
+                      d={`M 2 ${clrY} L 2 54 L 21 67 L 119 67 L 138 54 L 138 ${clrY} Z`}
+                      fill="url(#clarifierWaterGrad)"
+                      opacity="0.90"
+                    />
+
+                    {/* Clarifier Wave 1: Back secondary wave moving left to right (Amplitude 5.5px) */}
+                    <path
+                      d={`M -60 ${clrY} q 15 -5.5, 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 L 210 68 L -60 68 Z`}
+                      fill="url(#clarifierWaveBack)"
+                    >
+                      {isPlaying && (
+                        <animateTransform
+                          attributeName="transform"
+                          type="translate"
+                          from="-60 0"
+                          to="0 0"
+                          dur={`${3.2 / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                      )}
+                    </path>
+
+                    {/* Clarifier Wave 2: Primary undulating wave moving right to left (Amplitude 6.5px) */}
+                    <path
+                      d={`M -88 ${clrY} q 22 -6.5, 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 L 264 68 L -88 68 Z`}
+                      fill="url(#clarifierWaveFront)"
+                    >
+                      {isPlaying && (
+                        <animateTransform
+                          attributeName="transform"
+                          type="translate"
+                          from="0 0"
+                          to="-88 0"
+                          dur={`${2.2 / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                      )}
+                    </path>
+
+                    {/* 3D Liquid Meniscus Soft Blend at Waterline (Previous Version Settling Amber Supernatant) */}
+                    <ellipse cx="70" cy={clrY} rx="68" ry="6.5" fill="#D2C59D" opacity="0.35" />
+                  </g>
+                )
+              })()}
+
+              {/* Settled Biological Sludge Blanket in Conical Hopper Apex (Occupies half the balance space from y=67 to y=88) */}
+              <path d="M 21 67 L 54 88 Q 70 93 86 88 L 119 67 Z" fill="url(#sludgeWaterGrad)" />
+              {/* Sludge-Water Settling Interface Meniscus */}
+              <ellipse cx="70" cy="67" rx="49" ry="4" fill="#3E2723" opacity="0.45" />
+
+              {/* Peripheral V-Notch Overflow Weir Trough */}
+              <path d="M 4 20 L 136 20" stroke="#38BDF8" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.75" />
+
+              {/* Submerged Rotating Clarifier Bridge & Scraper Rake Arm */}
+              <g transform="translate(70, 58)" className="cursor-pointer" onClick={() => handleTogglePump("ARM")}>
+                <circle cx="0" cy="0" r="16" fill="url(#metalRingGrad)" stroke="#16A34A" strokeWidth="1.5" />
+                <circle cx="0" cy="0" r="12" fill="#DCFCE7" stroke="#16A34A" strokeWidth="1.2" />
+                <g>
+                  {isPlaying && pumps.ARM.status === "RUNNING" && (
+                    <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur={`${2.5 / simSpeed}s`} repeatCount="indefinite" />
+                  )}
+                  <line x1="-12" y1="0" x2="12" y2="0" stroke="#15803D" strokeWidth="2.5" strokeLinecap="round" />
+                  <line x1="0" y1="-12" x2="0" y2="12" stroke="#15803D" strokeWidth="2.5" strokeLinecap="round" />
+                  {/* Rake Teeth Sweepers */}
+                  <line x1="-8" y1="-3" x2="-8" y2="3" stroke="#15803D" strokeWidth="1.2" />
+                  <line x1="8" y1="-3" x2="8" y2="3" stroke="#15803D" strokeWidth="1.2" />
+                  <line x1="-3" y1="-8" x2="3" y2="-8" stroke="#15803D" strokeWidth="1.2" />
+                  <line x1="-3" y1="8" x2="3" y2="8" stroke="#15803D" strokeWidth="1.2" />
+                </g>
+                <circle cx="0" cy="0" r="3.5" fill="#15803D" />
+              </g>
+
+              {/* Specular Glare */}
+              <rect x="5" y="16" width="14" height="42" rx="3" fill="url(#specularSheen)" />
+
+              {/* 3D Top Glass Vessel Flange & Rim Opening */}
+              <ellipse cx="70" cy="14" rx="70" ry="7.5" fill="url(#glassRimGrad)" stroke="#0284C7" strokeWidth="1.5" />
+              <ellipse cx="70" cy="14" rx="65" ry="5.0" fill="none" stroke="#93C5FD" strokeWidth="1" strokeDasharray="2 2" />
+
+              {/* Tank Identifier Name Tag - Centered in Tank Body */}
+              {renderMiniTag(70, 30, "CLARIFIER TANK", 110)}
+            </g>
+
+            {/* TANK 5: SLUDGE HOLDING TANK (2.5D CONICAL VESSEL WITH DENSE ACTIVATED SLUDGE) */}
+            <g id="tank-sludge" transform="translate(680, 165)">
+              {/* Conical Hopper Vessel Hull */}
+              <path
+                d="M 0 12 L 0 46 L 42 68 Q 57.5 73 73 68 L 115 46 L 115 12 Z"
+                fill="url(#glassCylinderGrad)"
+                stroke="#94A3B8"
+                strokeWidth="1.5"
+              />
+
+              {/* Thickened Sludge Body (50% Waterline) */}
+              <path d="M 2 39 L 2 46 L 42 68 Q 57.5 73 73 68 L 113 46 L 113 39 Z" fill="url(#sludgeWaterGrad)" />
+              {/* 3D Sludge Meniscus at 50% */}
+              <ellipse cx="57.5" cy="39" rx="55.5" ry="5.5" fill="#5D4037" stroke="#8D6E63" strokeWidth="0.8" opacity="0.95" />
+              {/* Thickened Sludge Body with Dynamic Dual-Layer Waves */}
+              {(() => {
+                const sldLevel = sludgeLevel > 0 ? sludgeLevel : 50
+                const sldY = Math.round(52 - (26 * sldLevel) / 100)
+                return (
+                  <g clipPath="url(#sludgeTankFluidClip)">
+                    {/* Thickened Sludge Baseline Fill */}
+                    <path d={`M 2 ${sldY} L 2 46 L 42 68 Q 57.5 73 73 68 L 113 46 L 113 ${sldY} Z`} fill="url(#sludgeWaterGrad)" />
+
+                    {/* Sludge Wave 1: Back secondary wave moving left to right (Amplitude 4.5px) */}
+                    <path
+                      d={`M -50 ${sldY} q 12.5 -4.5, 25 0 t 25 0 t 25 0 t 25 0 t 25 0 t 25 0 t 25 0 L 165 75 L -50 75 Z`}
+                      fill="url(#sludgeWaveBack)"
+                    >
+                      {isPlaying && (
+                        <animateTransform
+                          attributeName="transform"
+                          type="translate"
+                          from="-50 0"
+                          to="0 0"
+                          dur={`${3.4 / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                      )}
+                    </path>
+
+                    {/* Sludge Wave 2: Primary undulating wave moving right to left (Amplitude 5.5px) */}
+                    <path
+                      d={`M -72 ${sldY} q 18 -5.5, 36 0 t 36 0 t 36 0 t 36 0 t 36 0 t 36 0 L 180 75 L -72 75 Z`}
+                      fill="url(#sludgeWaveFront)"
+                    >
+                      {isPlaying && (
+                        <animateTransform
+                          attributeName="transform"
+                          type="translate"
+                          from="0 0"
+                          to="-72 0"
+                          dur={`${2.4 / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                      )}
+                    </path>
+
+                    {/* 3D Sludge Meniscus */}
+                    <ellipse cx="57.5" cy={sldY} rx="55.5" ry="5.5" fill="#8D6E63" opacity="0.3" />
+                  </g>
+                )
+              })()}
+
+              {/* Specular Highlight Glare */}
+              <rect x="4" y="14" width="12" height="32" rx="2" fill="url(#specularSheen)" />
+
+              {/* 3D Top Glass Vessel Flange & Rim */}
+              <ellipse cx="57.5" cy="12" rx="57.5" ry="6.5" fill="url(#glassRimGrad)" stroke="#94A3B8" strokeWidth="1.5" />
+
+              {/* Tank Identifier Name Tag - Centered in Tank Body */}
+              {renderMiniTag(57.5, 26, "SLUDGE TANK", 80)}
+            </g>
+
+            {/* CLARIFIER VALVE (Industrial 2-Way In-Line Vertical Valve on Downcomer at x=1030) */}
+            <g
+              id="valve-clarifier"
+              transform="translate(1030, 195)"
+              className="cursor-pointer"
+              onClick={() => setClarifierValveOpen(!clarifierValveOpen)}
+            >
+              <title>{`Clarifier Isolation Valve (V-CLR): ${clarifierValveOpen ? "OPEN (Click to Close)" : "CLOSED (Click to Open)"}`}</title>
+              {renderMiniTag(54, 0, "CLARIFIER VALVE", 92)}
+
+              {/* Vertical In-Line Pipe Connection Flanges */}
+              <rect x="-7" y="-17" width="14" height="3" rx="0.8" fill="url(#metalRingGrad)" stroke="#64748B" strokeWidth="0.8" />
+              <rect x="-7" y="14" width="14" height="3" rx="0.8" fill="url(#metalRingGrad)" stroke="#64748B" strokeWidth="0.8" />
+
+              {/* ASME Twin Triangular Valve Body */}
+              <polygon points="-7,-14 0,0 7,-14" fill="#334155" stroke="#0F172A" strokeWidth="1.2" />
+              <polygon points="-7,14 0,0 7,14" fill="#334155" stroke="#0F172A" strokeWidth="1.2" />
+
+              {/* Center Valve Seat & Stem Boss */}
+              <circle cx="0" cy="0" r="6.5" fill={clarifierValveOpen ? "#DCFCE7" : "#FEE2E2"} stroke={clarifierValveOpen ? "#16A34A" : "#DC2626"} strokeWidth="1.3" />
+              <circle cx="0" cy="0" r="2.2" fill={clarifierValveOpen ? "#16A34A" : "#DC2626"} />
+
+              {/* Side Solenoid / Electric Actuator Head */}
+              <line x1="0" y1="0" x2="-10" y2="0" stroke="#64748B" strokeWidth="2" />
+              <rect x="-19" y="-6" width="9" height="12" rx="1.5" fill="#1E293B" stroke={clarifierValveOpen ? "#16A34A" : "#DC2626"} strokeWidth="1" />
+              <circle cx="-14.5" cy="0" r="1.5" fill={clarifierValveOpen ? "#22C55E" : "#EF4444"} />
+            </g>
+
+            {/* TANK 6: FILTER FEED TANK (2.5D CYLINDRICAL GLASS VESSEL WITH CALIBRATED SIGHT-SCALE) */}
+            <g id="tank-filter-feed" transform="translate(960, 238)">
+              {/* 2.5D Glass Cylinder Body & Dish Bottom */}
+              <path
+                d="M 0 76 Q 70 94 140 76 L 140 14 Q 70 30 0 14 Z"
+                fill="url(#glassCylinderGrad)"
+                stroke="#0284C7"
+                strokeWidth="2"
+              />
+
+              {/* Secondary Settled Effluent Fluid Body with Dynamic Dual-Layer Waves */}
+              {(() => {
+                const ffY = Math.round(76 - (62 * filterFeedLevel) / 100)
+                return (
+                  <g clipPath="url(#filterFeedTankFluidClip)">
+                    {/* Baseline Fluid Fill */}
+                    <path
+                      d={`M 2 ${ffY} Q 70 ${ffY + 12} 138 ${ffY} L 138 76 Q 70 93 2 76 Z`}
+                      fill="url(#filterFeedGrad)"
+                    />
+
+                    {/* Filter Feed Wave 1: Back secondary wave moving left to right (Amplitude 5.5px) */}
+                    <path
+                      d={`M -60 ${ffY} q 15 -5.5, 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 L 210 95 L -60 95 Z`}
+                      fill="url(#filterFeedWaveBack)"
+                    >
+                      {isPlaying && (
+                        <animateTransform
+                          attributeName="transform"
+                          type="translate"
+                          from="-60 0"
+                          to="0 0"
+                          dur={`${3.2 / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                      )}
+                    </path>
+
+                    {/* Filter Feed Wave 2: Primary undulating wave moving right to left (Amplitude 6.5px) */}
+                    <path
+                      d={`M -88 ${ffY} q 22 -6.5, 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 L 264 95 L -88 95 Z`}
+                      fill="url(#filterFeedWaveFront)"
+                    >
+                      {isPlaying && (
+                        <animateTransform
+                          attributeName="transform"
+                          type="translate"
+                          from="0 0"
+                          to="-88 0"
+                          dur={`${2.2 / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                      )}
+                    </path>
+
+                    {/* 3D Liquid Meniscus Blend (Translucent Pre-Filter Aquamarine) */}
+                    <ellipse cx="70" cy={ffY} rx="68" ry="6.5" fill="#80CBC4" opacity="0.35" />
+                  </g>
+                )
+              })()}
+
+              {/* Cylindrical Glare Streak */}
+              <rect x="5" y="16" width="14" height="58" rx="3" fill="url(#specularSheen)" />
+
+              {/* 3D Top Glass Vessel Flange & Rim Opening */}
+              <ellipse cx="70" cy="14" rx="70" ry="7.5" fill="url(#glassRimGrad)" stroke="#0284C7" strokeWidth="1.5" />
+              <ellipse cx="70" cy="14" rx="65" ry="5.0" fill="none" stroke="#93C5FD" strokeWidth="1" strokeDasharray="2 2" />
+
+              {/* Tank Identifier Name Tag - Centered in Tank Body */}
+              {renderMiniTag(70, 62, "FILTER FEED", 100)}
+            </g>
+
+            {/* BLOWERS 1 & 2 (EXPANDED DUAL-BLOWER DECK WITH ADJACENT TELEMETRY) */}
+            <g id="blower-1" transform="translate(565, 180)" className="cursor-pointer" onClick={() => handleTogglePump("BL1")}>
+              {renderMiniTag(0, -22, "BLOWER 1")}
+              <circle cx="0" cy="0" r="14" fill="url(#metalRingGrad)" stroke="#F43F5E" strokeWidth="1" />
+              <circle cx="0" cy="0" r="11" fill="#FCE7F3" stroke="#F43F5E" strokeWidth="1.8" />
+              <g>
+                <path d="M -5 0 L 5 0 M 0 -5 L 0 5 M -3.5 -3.5 L 3.5 3.5 M -3.5 3.5 L 3.5 -3.5" stroke="#BE123C" strokeWidth="1.6" strokeLinecap="round" />
+              </g>
+            </g>
+
+            <g id="blower-2" transform="translate(565, 238)" className="cursor-pointer" onClick={() => handleTogglePump("BL2")}>
+              {renderMiniTag(0, -22, "BLOWER 2")}
+              <circle cx="0" cy="0" r="14" fill="url(#metalRingGrad)" stroke="#16A34A" strokeWidth="1" />
+              <circle cx="0" cy="0" r="11" fill="#DCFCE7" stroke="#16A34A" strokeWidth="1.8" />
+              <g>
+                {isPlaying && pumps.BL2.status === "RUNNING" && (
+                  <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur={`${0.4 / simSpeed}s`} repeatCount="indefinite" />
+                )}
+                <path d="M -6 0 L 6 0 M 0 -6 L 0 6 M -4 -4 L 4 4 M -4 4 L 4 -4" stroke="#15803D" strokeWidth="1.8" strokeLinecap="round" />
+              </g>
+            </g>
+
+            {/* FILTER FEED PUMPS: M10 & M11 */}
+            {renderPump("M10", 1000, 365, "down", "FF PUMP 1", undefined, "top")}
+            {renderPump("M11", 1060, 365, "down", "FF PUMP 2", undefined, "top")}
+
+            {/* ====================================================================== */}
+            {/* BOTTOM SECTION: PSF, ACF, UV, DOSING, TREATED & SOFT WATER             */}
+            {/* ====================================================================== */}
+
+            {/* GREY DASHED BORDER AROUND ACF AREA */}
+            <rect x="110" y="295" width="285" height="150" rx="6" fill="none" stroke="#CBD5E1" strokeWidth="1.5" strokeDasharray="4 4" />
+
+            {/* PSF VALVE MULTIPORT BLOCK (Industrial 4-Port Multiport Valve) */}
+            <g id="psf-valve-block" transform="translate(600, 450)">
+              {renderMiniTag(-15, -14, "PSF MPV")}
+              {renderMultiportValve("PSF", psfValveMode, () => {
+                const nextModes: Record<MultiportValveMode, MultiportValveMode> = {
+                  SERVICE: "BACKWASH",
+                  BACKWASH: "RINSE",
+                  RINSE: "DRAIN",
+                  DRAIN: "SERVICE",
+                }
+                setPsfValveMode(prev => nextModes[prev] ?? "SERVICE")
+              })}
+            </g>
+
+            {/* PSF VESSEL (680, 425) - Dynamic 4-Option Filter Vessel */}
+            <g transform="translate(680, 425)">
+              {renderFilterVessel("PSF", filterVesselOption)}
+            </g>
+
+            {/* ACF VALVE MULTIPORT BLOCK (Industrial 4-Port Multiport Valve) */}
+            <g id="acf-valve-block" transform="translate(330, 330)">
+              {renderMiniTag(72, -4, "ACF MPV")}
+              {renderMultiportValve("ACF", acfValveMode, () => {
+                const nextModes: Record<MultiportValveMode, MultiportValveMode> = {
+                  SERVICE: "BACKWASH",
+                  BACKWASH: "RINSE",
+                  RINSE: "DRAIN",
+                  DRAIN: "SERVICE",
+                }
+                setAcfValveMode(prev => nextModes[prev] ?? "SERVICE")
+              })}
+            </g>
+
+            {/* ACF VESSEL (195, 305) - Dynamic 4-Option Filter Vessel */}
+            <g transform="translate(195, 305)">
+              {renderFilterVessel("ACF", filterVesselOption)}
+            </g>
+
+            {/* DOSING PUMP (Precision Solenoid Diaphragm Metering Pump) */}
+            <g id="dosing-pump" transform="translate(225, 595)">
+              {renderMiniTag(20, -12, "DOSING PUMP")}
+              {/* Base Mounting Foot Bracket */}
+              <rect x="22" y="34" width="18" height="4" rx="1" fill="#334155" stroke="#0F172A" strokeWidth="0.8" />
+              <circle cx="25" cy="36" r="0.9" fill="#94A3B8" />
+              <circle cx="37" cy="36" r="0.9" fill="#94A3B8" />
+
+              {/* Heavy-Duty Chemical-Resistant Solenoid Drive Enclosure */}
+              <rect x="22" y="14" width="18" height="20" rx="3" fill="#1E293B" stroke="#64748B" strokeWidth="1" />
+
+              {/* Rear Motor Heat Dissipation Fins */}
+              <line x1="33" y1="17" x2="33" y2="31" stroke="#334155" strokeWidth="1.2" />
+              <line x1="36" y1="17" x2="36" y2="31" stroke="#334155" strokeWidth="1.2" />
+
+              {/* Electronic Stroke Control Dial / Knob */}
+              <circle cx="27" cy="24" r="3.2" fill="#0F172A" stroke="#94A3B8" strokeWidth="0.8" />
+              <circle cx="27" cy="24" r="1.4" fill="#16A34A" />
+
+              {/* Top Discharge Valve Union Nut & Chemical Injection Line */}
+              <rect x="12" y="5" width="6" height="8" rx="1" fill="#475569" stroke="#94A3B8" strokeWidth="0.8" />
+              <rect x="11" y="9" width="8" height="4" rx="0.5" fill="#334155" stroke="#64748B" strokeWidth="0.8" />
+              <polygon points="15,4 12,8 18,8" fill="#16A34A" />
+
+              {/* Bottom Suction Valve Union Nut & Chemical Feed Line Downward Injection */}
+              <rect x="12" y="35" width="6" height="8" rx="1" fill="#475569" stroke="#94A3B8" strokeWidth="0.8" />
+              <rect x="11" y="35" width="8" height="4" rx="0.5" fill="#334155" stroke="#64748B" strokeWidth="0.8" />
+              <line x1="15" y1="43" x2="15" y2="50" stroke="#16A34A" strokeWidth="2" />
+              <polygon points="12,50 15,55 18,50" fill="#16A34A" />
+
+              {/* Manual Degassing / Priming Relief Valve Knob */}
+              <rect x="6" y="9" width="4" height="4" rx="1" fill="#D97706" stroke="#B45309" strokeWidth="0.6" />
+
+              {/* PVDF Transparent Chemical Liquid-End Dosing Head Block */}
+              <rect x="8" y="13" width="14" height="22" rx="2.5" fill="url(#metalRingGrad)" stroke="#0284C7" strokeWidth="1.2" />
+
+              {/* Optical Diaphragm Stroke Sight Chamber */}
+              <circle cx="15" cy="24" r="7" fill="#064E3B" stroke="#22C55E" strokeWidth="1.2" />
+
+              {/* Reciprocating Diaphragm Stroke Core */}
+              <circle cx="15" cy="24" r="4.2" fill="#16A34A" stroke="#FFFFFF" strokeWidth="0.6">
+                {isPlaying && (
+                  <>
+                    <animate attributeName="r" values="3.2; 5.2; 3.2" dur={`${0.75 / simSpeed}s`} repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.7; 1; 0.7" dur={`${0.75 / simSpeed}s`} repeatCount="indefinite" />
+                  </>
+                )}
+              </circle>
+
+              {/* Specular Sheen Glare Arc */}
+              <path d="M 10 21 A 5.5 5.5 0 0 1 20 21" stroke="#FFFFFF" strokeWidth="1" fill="none" opacity="0.6" strokeLinecap="round" />
+            </g>
+
+            {/* UV LIGHT */}
+            <g id="uv-light" transform="translate(105, 620)">
+              {renderMiniTag(32.5, 48, "UV DISINFECTION")}
+              <rect x="0" y="0" width="65" height="38" rx="6" fill="#FAF5FF" stroke="#9333EA" strokeWidth="1.5" />
+              {/* Animated UV Radiation Rays */}
+              {isPlaying && (
+                <rect x="4" y="4" width="57" height="30" rx="4" fill="#C084FC" opacity="0.15">
+                  <animate attributeName="opacity" values="0.1;0.35;0.1" dur={`${1.2 / simSpeed}s`} repeatCount="indefinite" />
+                </rect>
+              )}
+              <line x1="8" y1="9" x2="57" y2="9" stroke="#A855F7" strokeWidth="3" strokeLinecap="round" />
+              <line x1="8" y1="19" x2="57" y2="19" stroke="#16A34A" strokeWidth="3" strokeLinecap="round" />
+              <line x1="8" y1="29" x2="57" y2="29" stroke="#A855F7" strokeWidth="3" strokeLinecap="round" />
+            </g>
+
+            {/* TANK 7: TREATED WATER TANK (2.5D PURE WATER CYLINDER WITH 3D CRYSTAL MENISCUS) */}
+            <g id="tank-treated" transform="translate(320, 603)">
+              {/* 2.5D Glass Cylinder Body & Dish Bottom */}
+              <path
+                d="M 0 74 Q 70 90 140 74 L 140 14 Q 70 28 0 14 Z"
+                fill="url(#glassCylinderGrad)"
+                stroke="#0284C7"
+                strokeWidth="2"
+              />
+
+              {/* Treated Pure Water Volume Body with Crystal Dynamic Dual-Layer Waves */}
+              {(() => {
+                const trY = Math.round(74 - (52 * treatedLevel) / 100)
+                return (
+                  <g clipPath="url(#treatedWaterTankFluidClip)">
+                    {/* Baseline Fluid Fill */}
+                    <path
+                      d={`M 2 ${trY} Q 70 ${trY + 11} 138 ${trY} L 138 74 Q 70 89 2 74 Z`}
+                      fill="url(#treatedWaterGrad)"
+                    />
+
+                    {/* Treated Water Wave 1: Back secondary wave moving left to right (Amplitude 5.5px) */}
+                    <path
+                      d={`M -60 ${trY} q 15 -5.5, 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 L 210 95 L -60 95 Z`}
+                      fill="url(#treatedWaveBack)"
+                    >
+                      {isPlaying && (
+                        <animateTransform
+                          attributeName="transform"
+                          type="translate"
+                          from="-60 0"
+                          to="0 0"
+                          dur={`${3.2 / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                      )}
+                    </path>
+
+                    {/* Treated Water Wave 2: Primary undulating wave moving right to left (Amplitude 6.5px) */}
+                    <path
+                      d={`M -88 ${trY} q 22 -6.5, 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 L 264 95 L -88 95 Z`}
+                      fill="url(#treatedWaveFront)"
+                    >
+                      {isPlaying && (
+                        <animateTransform
+                          attributeName="transform"
+                          type="translate"
+                          from="0 0"
+                          to="-88 0"
+                          dur={`${2.2 / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                      )}
+                    </path>
+
+                    {/* 3D Liquid Meniscus Soft Blend */}
+                    <ellipse cx="70" cy={trY} rx="68" ry="6.0" fill="#E0F2FE" opacity="0.3" />
+                  </g>
+                )
+              })()}
+
+              {/* Cylindrical Glare Streak */}
+              <rect x="5" y="16" width="14" height="54" rx="3" fill="url(#specularSheen)" />
+
+              {/* 3D Top Glass Vessel Flange & Rim */}
+              <ellipse cx="70" cy="14" rx="70" ry="7.0" fill="url(#glassRimGrad)" stroke="#0284C7" strokeWidth="1.5" />
+
+              {/* Tank Identifier Name Tag - Centered in Tank Body */}
+              {renderMiniTag(70, 62, "TREATED WATER", 100)}
+            </g>
+
+            {/* M12: FLUSHING PUMP */}
+            {renderPump("M12", 515, 645, "right", "FLUSHING PUMP", undefined, "bottom")}
+
+            {/* WATER SOLENOID VALVE (Industrial 2-Way In-Line Horizontal Solenoid Valve) */}
+            <g
+              id="valve-water-solenoid"
+              transform="translate(615, 645)"
+              className="cursor-pointer"
+              onClick={() => setWaterSolenoidOpen(!waterSolenoidOpen)}
+            >
+              <title>{`Treated Water Solenoid Valve (V-SOL): ${waterSolenoidOpen ? "OPEN (Click to Close)" : "CLOSED (Click to Open)"}`}</title>
+              {renderMiniTag(0, 24, "SOLENOID VALVE")}
+
+              {/* Horizontal In-Line Pipe Connection Flanges */}
+              <rect x="-17" y="-7" width="3" height="14" rx="0.8" fill="url(#metalRingGrad)" stroke="#64748B" strokeWidth="0.8" />
+              <rect x="14" y="-7" width="3" height="14" rx="0.8" fill="url(#metalRingGrad)" stroke="#64748B" strokeWidth="0.8" />
+
+              {/* ASME Twin Triangular Valve Body */}
+              <polygon points="-14,-7 0,0 -14,7" fill="#334155" stroke="#0F172A" strokeWidth="1.2" />
+              <polygon points="14,-7 0,0 14,7" fill="#334155" stroke="#0F172A" strokeWidth="1.2" />
+
+              {/* Center Valve Seat & Stem Boss */}
+              <circle cx="0" cy="0" r="6.5" fill={waterSolenoidOpen ? "#DCFCE7" : "#FEE2E2"} stroke={waterSolenoidOpen ? "#16A34A" : "#DC2626"} strokeWidth="1.3" />
+              <circle cx="0" cy="0" r="2.2" fill={waterSolenoidOpen ? "#16A34A" : "#DC2626"} />
+
+              {/* Top Solenoid Electrical Actuator Coil Head */}
+              <line x1="0" y1="0" x2="0" y2="-10" stroke="#64748B" strokeWidth="2" />
+              <rect x="-6" y="-19" width="12" height="9" rx="1.5" fill="#1E293B" stroke={waterSolenoidOpen ? "#16A34A" : "#DC2626"} strokeWidth="1" />
+              <circle cx="0" cy="-14.5" r="1.5" fill={waterSolenoidOpen ? "#22C55E" : "#EF4444"} />
+            </g>
+
+            {/* SOFTENER VESSEL (675, 595) - Dynamic 4-Option Filter Vessel */}
+            <g id="vessel-softener" transform="translate(860, 595)">
+              {renderFilterVessel("SOFTENER", filterVesselOption)}
+            </g>
+
+            {/* TANK 8: SOFT WATER TANK (840, 603) - 2.5D PRISTINE POLISHED WATER CYLINDER */}
+            <g id="tank-soft-water" transform="translate(1080, 603)">
+              {/* 2.5D Glass Cylinder Body & Dish Bottom */}
+              <path
+                d="M 0 74 Q 70 90 140 74 L 140 14 Q 70 28 0 14 Z"
+                fill="url(#glassCylinderGrad)"
+                stroke="#0284C7"
+                strokeWidth="2"
+              />
+
+              {/* Polished Soft Water Volume Body with Pristine Dynamic Dual-Layer Waves */}
+              {(() => {
+                const swY = Math.round(74 - (52 * softWaterLevel) / 100)
+                return (
+                  <g clipPath="url(#softWaterTankFluidClip)">
+                    {/* Baseline Fluid Fill */}
+                    <path
+                      d={`M 2 ${swY} Q 70 ${swY + 11} 138 ${swY} L 138 74 Q 70 89 2 74 Z`}
+                      fill="url(#softWaterGrad)"
+                    />
+
+                    {/* Soft Water Wave 1: Back secondary wave moving left to right (Amplitude 5.5px) */}
+                    <path
+                      d={`M -60 ${swY} q 15 -5.5, 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 L 210 95 L -60 95 Z`}
+                      fill="url(#softWaterWaveBack)"
+                    >
+                      {isPlaying && (
+                        <animateTransform
+                          attributeName="transform"
+                          type="translate"
+                          from="-60 0"
+                          to="0 0"
+                          dur={`${3.2 / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                      )}
+                    </path>
+
+                    {/* Soft Water Wave 2: Primary undulating wave moving right to left (Amplitude 6.5px) */}
+                    <path
+                      d={`M -88 ${swY} q 22 -6.5, 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 t 44 0 L 264 95 L -88 95 Z`}
+                      fill="url(#softWaterWaveFront)"
+                    >
+                      {isPlaying && (
+                        <animateTransform
+                          attributeName="transform"
+                          type="translate"
+                          from="0 0"
+                          to="-88 0"
+                          dur={`${2.2 / simSpeed}s`}
+                          repeatCount="indefinite"
+                        />
+                      )}
+                    </path>
+
+                    {/* 3D Liquid Meniscus Soft Blend */}
+                    <ellipse cx="70" cy={swY} rx="68" ry="6.0" fill="#F0F9FF" opacity="0.35" />
+                  </g>
+                )
+              })()}
+
+              {/* Cylindrical Glare Streak */}
+              <rect x="5" y="16" width="14" height="54" rx="3" fill="url(#specularSheen)" />
+
+              {/* 3D Top Glass Vessel Flange & Rim */}
+              <ellipse cx="70" cy="14" rx="70" ry="7.0" fill="url(#glassRimGrad)" stroke="#0284C7" strokeWidth="1.5" />
+
+              {/* Tank Identifier Name Tag - Centered in Tank Body */}
+              {renderMiniTag(70, 62, "SOFT WATER", 90)}
+            </g>
+
+            {/* ====================================================================== */}
+            {/* TELEMETRY OVERLAY LAYER (ALL BADGES POSITIONED DIRECTLY ON ELEMENT TOP)*/}
+            {/* ====================================================================== */}
+            {showTelemetryBadges && (
+              <g id="telemetry-details-overlay">
+                {/* 1. Collection Tank (Top Center, y=6..38 - Clean 10px air gap above rim at y=48) */}
+                {renderTelemetryCard(178, 12, "TK-01", [
+                  { label: "Level", value: `${collectionLevel}`, unit: "%" },
+                  { label: "Volume", value: (collectionLevel * 0.5).toFixed(1), unit: "m³" },
+                ], "NORMAL")}
+
+                {/* 2. Feed Pumps M1 & M2 (M1 above loop at y=10, M2 below loop at y=150 - Zero Pipe/Tag Overlap) */}
+                {renderTelemetryCard(402, 10, "M1", [
+                  { label: "Flow", value: pumps.M1.flowRate.toFixed(1), unit: "m³/h" },
+                  { label: "Power", value: pumps.M1.powerKw.toFixed(1), unit: "kW" },
+                ], pumps.M1.status)}
+                {renderTelemetryCard(402, 150, "M2", [
+                  { label: "Flow", value: pumps.M2.flowRate.toFixed(1), unit: "m³/h" },
+                  { label: "Power", value: pumps.M2.powerKw.toFixed(1), unit: "kW" },
+                ], pumps.M2.status)}
+
+                {/* 3. MBBR Aeration Tank (Top Center, y=6..38 - Clean 10px air gap above rim at y=48) */}
+                {renderTelemetryCard(526, 12, "MBBR", [
+                  { label: "Level", value: `${mbbrLevel}`, unit: "%" },
+                  { label: "DO", value: do1.toFixed(2), unit: "mg/L" },
+                ], "NORMAL")}
+
+                {/* 4. Aeration Blowers BL1 & BL2 (BL1 at y=130 between MBBR base & Blower 1; BL2 at y=276 below Blower 2) */}
+                {renderTelemetryCard(587, 168, "BL1", [
+                  { label: "Flow", value: `${pumps.BL1.flowRate.toFixed(0)}`, unit: "m³/h" },
+                  { label: "Power", value: pumps.BL1.powerKw.toFixed(1), unit: "kW" },
+                ], pumps.BL1.status, 78)}
+                {renderTelemetryCard(587, 226, "BL2", [
+                  { label: "Flow", value: `${pumps.BL2.flowRate.toFixed(0)}`, unit: "m³/h" },
+                  { label: "Power", value: pumps.BL2.powerKw.toFixed(1), unit: "kW" },
+                ], pumps.BL2.status, 78)}
+
+                {/* 5. Sludge Recirculation Pumps M3 & M4 (M3 above at y=14, M4 under pump 4 at y=166) */}
+                {renderTelemetryCard(788, 14, "M3", [
+                  { label: "Flow", value: pumps.M3.flowRate.toFixed(1), unit: "m³/h" },
+                  { label: "Power", value: pumps.M3.powerKw.toFixed(1), unit: "kW" },
+                ], pumps.M3.status, 84)}
+                {renderTelemetryCard(795, 166, "M4", [
+                  { label: "Flow", value: pumps.M4.flowRate.toFixed(1), unit: "m³/h" },
+                  { label: "Power", value: pumps.M4.powerKw.toFixed(1), unit: "kW" },
+                ], pumps.M4.status, 84)}
+
+                {/* 6. Sludge Holding Tank (Cleanly placed directly below conical bottom & tag at y=268) */}
+                {renderTelemetryCard(693, 268, "SLUDGE", [
+                  { label: "Level", value: `${sludgeLevel}`, unit: "%" },
+                  { label: "Volume", value: (sludgeLevel * 0.25).toFixed(1), unit: "m³" },
+                ], "NORMAL")}
+
+                {/* 7. Clarifier Tank (Top Center, y=6..38 - Clean 10px air gap above rim at y=48) */}
+                {renderTelemetryCard(986, 12, "CLR-01", [
+                  { label: "Level", value: `${clarifierLevel}`, unit: "%" },
+                  { label: "Turbidity", value: "1.8", unit: "NTU" },
+                ], "NORMAL")}
+
+                {/* 8. Filter Feed Tank (Positioned on clear right flank at x=1115, y=246 - Zero Downcomer Pipe Overlap) */}
+                {renderTelemetryCard(1105, 238, "FF-TK", [
+                  { label: "Level", value: `${filterFeedLevel}`, unit: "%" },
+                  { label: "Volume", value: (filterFeedLevel * 0.36).toFixed(1), unit: "m³" },
+                ], "NORMAL", 80)}
+
+                {/* 9. Filter Feed Pumps M10 & M11 (Directly under respective pumps at y=418) */}
+                {renderTelemetryCard(945, 418, "M10", [
+                  { label: "Flow", value: pumps.M10.flowRate.toFixed(1), unit: "m³/h" },
+                  { label: "Power", value: pumps.M10.powerKw.toFixed(1), unit: "kW" },
+                ], pumps.M10.status, 78)}
+                {renderTelemetryCard(1037, 418, "M11", [
+                  { label: "Flow", value: pumps.M11.flowRate.toFixed(1), unit: "m³/h" },
+                  { label: "Power", value: pumps.M11.powerKw.toFixed(1), unit: "kW" },
+                ], pumps.M11.status, 78)}
+
+                {/* 10. Media Filter Vessels PSF & ACF (PSF on right flank at x=775, y=442; ACF below stand at x=194, y=465) */}
+                {renderTelemetryCard(775, 442, "PSF", [
+                  { label: "ΔP", value: (inletPressure - outletPressure).toFixed(2), unit: "Bar" },
+                  { label: "Timer", value: formatTime(psfSeconds), unit: "" },
+                ], "NORMAL", 84)}
+                {renderTelemetryCard(194, 465, "ACF", [
+                  { label: "ΔP", value: (inletPressure - outletPressure * 0.9).toFixed(2), unit: "Bar" },
+                  { label: "Timer", value: formatTime(acfSeconds), unit: "" },
+                ], "NORMAL", 84)}
+
+                {/* 10b. PSF & ACF Multiport Valves (Clean clearance from risers & horizontal lines) */}
+                {renderTelemetryCard(535, 496, "PSF-MPV", [
+                  { label: "Mode", value: psfValveMode, unit: "" },
+                  { label: "Status", value: psfValveMode === "SERVICE" ? "SEATED" : "CYCLING", unit: "" },
+                ], psfValveMode === "SERVICE" ? "NORMAL" : "STANDBY", 84)}
+                {renderTelemetryCard(385, 345, "ACF-MPV", [
+                  { label: "Mode", value: acfValveMode, unit: "" },
+                  { label: "Status", value: acfValveMode === "SERVICE" ? "SEATED" : "CYCLING", unit: "" },
+                ], acfValveMode === "SERVICE" ? "NORMAL" : "STANDBY", 84)}
+
+                {/* 11. Treated Water Tank (Top Center, y=558..590 - Clean 13px gap above rim at y=603) */}
+                {renderTelemetryCard(346, 562, "TREATED", [
+                  { label: "Level", value: `${treatedLevel}`, unit: "%" },
+                  { label: "pH", value: "7.40", unit: "" },
+                ], "NORMAL")}
+
+                {/* 12. Flushing Pump M12 (Centered directly beneath M12 at x=471, y=680 - 13px clear of pump tag) */}
+                {renderTelemetryCard(471, 680, "M12", [
+                  { label: "Flow", value: pumps.M12.flowRate.toFixed(1), unit: "m³/h" },
+                  { label: "Power", value: pumps.M12.powerKw.toFixed(1), unit: "kW" },
+                ], pumps.M12.status)}
+
+                {/* 13. Soft Water Tank (Top Center, y=558..590 - Clean 13px gap above rim at y=603) */}
+                {renderTelemetryCard(1106, 562, "SOFT-TK", [
+                  { label: "Level", value: `${softWaterLevel}`, unit: "%" },
+                  { label: "Volume", value: (softWaterLevel * 0.44).toFixed(1), unit: "m³" },
+                ], "NORMAL")}
+
+                {/* 14. Softener Vessel (Centered directly above vessel at x=857, y=546 - 17px gap above dome at y=595) */}
+                {renderTelemetryCard(857, 546, "SOFTENER", [
+                  { label: "Hardness", value: softwaterHardness.toFixed(2), unit: "mg/L" },
+                  { label: "Flow", value: "12.0", unit: "m³/h" },
+                ], "NORMAL", 88)}</g>
+            )}
+          </g>
         </svg>
       </div>
 
       {/* 2.5 Water Purification Progression Indicator */}
-      <div className="px-4 py-2 bg-gradient-to-r from-stone-100 via-sky-50 to-cyan-50 border-t border-sky-100 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono">
+      <div className="shrink-0 px-3 sm:px-4 py-1.5 bg-gradient-to-r from-stone-100 via-sky-50 to-cyan-50 border-t border-sky-100 flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 text-[11px] font-mono">
         <div className="flex items-center gap-1.5 font-bold text-slate-700">
           <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
           <span>PURIFICATION PROGRESSION:</span>
@@ -2504,48 +2733,48 @@ export function ScadaSchematicSimulation() {
       </div>
 
       {/* 3. SCADA Bottom Telemetry Bar */}
-      <div className="px-4 py-2.5 bg-sky-50/50 border-t border-sky-100 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 text-xs">
-        <div className="p-2 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
-          <span className="text-[10px] text-slate-500 uppercase font-mono">Aeration DO1</span>
-          <span className="text-sm font-bold text-sky-700 font-mono">{do1.toFixed(2)} mg/L</span>
-          <span className="text-[9px] text-emerald-600 font-medium">Normal (0.5–2.0)</span>
+      <div className="shrink-0 px-3 sm:px-4 py-1 bg-sky-50/50 border-t border-sky-100 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1.5 text-xs">
+        <div className="p-1 sm:p-1.5 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
+          <span className="text-[10px] sm:text-[11px] text-slate-500 uppercase font-mono font-semibold">Aeration DO1</span>
+          <span className="text-sm sm:text-base font-bold text-sky-700 font-mono">{do1.toFixed(2)} mg/L</span>
+          <span className="text-[9px] sm:text-[10px] text-emerald-600 font-medium">Normal (0.5–2.0)</span>
         </div>
 
-        <div className="p-2 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
-          <span className="text-[10px] text-slate-500 uppercase font-mono">Clarifier TSS</span>
-          <span className="text-sm font-bold text-purple-700 font-mono">{clarifierTss.toFixed(2)} mg/L</span>
-          <span className="text-[9px] text-slate-500">Underflow OK</span>
+        <div className="p-1 sm:p-1.5 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
+          <span className="text-[10px] sm:text-[11px] text-slate-500 uppercase font-mono font-semibold">Clarifier TSS</span>
+          <span className="text-sm sm:text-base font-bold text-purple-700 font-mono">{clarifierTss.toFixed(2)} mg/L</span>
+          <span className="text-[9px] sm:text-[10px] text-slate-500">Underflow OK</span>
         </div>
 
-        <div className="p-2 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
-          <span className="text-[10px] text-slate-500 uppercase font-mono">PSF Differential</span>
-          <span className="text-sm font-bold text-emerald-700 font-mono">
+        <div className="p-1 sm:p-1.5 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
+          <span className="text-[10px] sm:text-[11px] text-slate-500 uppercase font-mono font-semibold">PSF Differential</span>
+          <span className="text-sm sm:text-base font-bold text-emerald-700 font-mono">
             {(inletPressure - outletPressure).toFixed(2)} Bar
           </span>
-          <span className="text-[9px] text-slate-500">In: {inletPressure} · Out: {outletPressure}</span>
+          <span className="text-[9px] sm:text-[10px] text-slate-500">In: {inletPressure} · Out: {outletPressure}</span>
         </div>
 
-        <div className="p-2 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
-          <span className="text-[10px] text-slate-500 uppercase font-mono">PSF Service</span>
-          <span className="text-sm font-bold text-emerald-700 font-mono">{formatTime(psfSeconds)}</span>
-          <span className="text-[9px] text-slate-500">Backwash in 20h</span>
+        <div className="p-1 sm:p-1.5 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
+          <span className="text-[10px] sm:text-[11px] text-slate-500 uppercase font-mono font-semibold">PSF Service</span>
+          <span className="text-sm sm:text-base font-bold text-emerald-700 font-mono">{formatTime(psfSeconds)}</span>
+          <span className="text-[9px] sm:text-[10px] text-slate-500">Backwash in 20h</span>
         </div>
 
-        <div className="p-2 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
-          <span className="text-[10px] text-slate-500 uppercase font-mono">ACF Service</span>
-          <span className="text-sm font-bold text-emerald-700 font-mono">{formatTime(acfSeconds)}</span>
-          <span className="text-[9px] text-slate-500">Adsorption active</span>
+        <div className="p-1 sm:p-1.5 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
+          <span className="text-[10px] sm:text-[11px] text-slate-500 uppercase font-mono font-semibold">ACF Service</span>
+          <span className="text-sm sm:text-base font-bold text-emerald-700 font-mono">{formatTime(acfSeconds)}</span>
+          <span className="text-[9px] sm:text-[10px] text-slate-500">Adsorption active</span>
         </div>
 
-        <div className="p-2 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
-          <span className="text-[10px] text-slate-500 uppercase font-mono">Softener Hardness</span>
-          <span className="text-sm font-bold text-emerald-700 font-mono">{softwaterHardness.toFixed(2)} mg/L</span>
-          <span className="text-[9px] text-emerald-600 font-medium">Zero Hardness</span>
+        <div className="p-1 sm:p-1.5 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
+          <span className="text-[10px] sm:text-[11px] text-slate-500 uppercase font-mono font-semibold">Softener Hardness</span>
+          <span className="text-sm sm:text-base font-bold text-emerald-700 font-mono">{softwaterHardness.toFixed(2)} mg/L</span>
+          <span className="text-[9px] sm:text-[10px] text-emerald-600 font-medium">Zero Hardness</span>
         </div>
       </div>
 
       {/* 4. Asset Inspector Bar */}
-      <div className="px-4 py-2 bg-slate-50 border-t border-sky-100 flex flex-wrap items-center justify-between text-xs text-slate-600 gap-2">
+      <div className="shrink-0 px-3 sm:px-4 py-0.5 sm:py-1 bg-slate-50 border-t border-sky-100 flex flex-wrap items-center justify-between text-xs text-slate-600 gap-1.5 sm:gap-2">
         <div className="flex items-center gap-4 flex-wrap text-[11px] font-mono">
           <span className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
@@ -2568,16 +2797,6 @@ export function ScadaSchematicSimulation() {
             <span className="text-slate-700">Drain / Backwash</span>
           </span>
         </div>
-
-        {selectedAsset && (
-          <div className="flex items-center gap-2 bg-sky-100 px-2 py-0.5 rounded text-[11px] font-mono text-sky-800 border border-sky-200">
-            <Info className="w-3 h-3" />
-            <span>
-              Asset: {pumps[selectedAsset]?.name || selectedAsset} · State: {pumps[selectedAsset]?.status}
-              {controlMode === "MANUAL" ? " (Click to toggle)" : " (Switch to MANUAL mode to toggle)"}
-            </span>
-          </div>
-        )}
       </div>
     </div>
   )

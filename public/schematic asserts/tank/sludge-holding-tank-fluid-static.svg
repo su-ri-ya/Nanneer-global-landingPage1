@@ -48,8 +48,10 @@
     <path d="M 0 12 L 0 46 L 42 68 Q 57.5 73 73 68 L 115 46 L 115 12 Z" fill="url(#glassCylinderGrad)" stroke="#94A3B8" stroke-width="1.5" />
 
     <!-- Thickened Biological Sludge Body (Static) -->
-    <path d="M 2 39 L 2 46 L 42 68 Q 57.5 73 73 68 L 113 46 L 113 39 Z" fill="url(#sludgeWaterGrad)" />
-    <ellipse cx="57.5" cy="39" rx="55.5" ry="5.5" fill="#5D4037" stroke="#8D6E63" stroke-width="0.8" opacity="0.95" />
+    <g clip-path="url(#sludgeTankFluidClip)">
+      <path d="M 2 39 L 2 46 L 42 68 Q 57.5 73 73 68 L 113 46 L 113 39 Z" fill="url(#sludgeWaterGrad)" />
+      <ellipse cx="57.5" cy="39" rx="55.5" ry="5.5" fill="#5D4037" stroke="#8D6E63" stroke-width="0.8" opacity="0.95" />
+    </g>
 
     <!-- Specular Highlight Glare -->
     <rect x="4" y="14" width="12" height="32" rx="2" fill="url(#specularSheen)" pointer-events="none" />

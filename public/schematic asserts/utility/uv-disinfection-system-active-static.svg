@@ -1,24 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
-  <defs>
-    <filter id="bottomShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#0b2545" flood-opacity="0.28" />
-    </filter>
-  </defs>
-
-  <!-- Grounding Shadow -->
-  <rect x="30" y="152" width="140" height="12" rx="4" fill="#0f172a" opacity="0.25" filter="url(#bottomShadow)" />
-
-  <!-- UV Chamber Body -->
-  <g filter="url(#bottomShadow)">
-    <rect x="30" y="65" width="140" height="70" rx="10" fill="#1e293b" stroke="#334155" stroke-width="3" />
-    <rect x="40" y="75" width="120" height="50" rx="5" fill="#0f172a" stroke="#0284c7" stroke-width="2" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 75 48" width="75" height="48">
+  <g transform="translate(5, 5)">
+    <rect x="0" y="0" width="65" height="38" rx="6" fill="#FAF5FF" stroke="#9333EA" stroke-width="1.5" />
     
-      <rect x="40" y="75" width="120" height="50" rx="4" fill="#06b6d4" opacity="0.35" />
-        
-    <!-- Quartz Sleeve & UV Lamp Tube -->
-    <rect x="45" y="94" width="110" height="12" rx="3" fill="#ffffff" stroke="#38bdf8" stroke-width="1.5" opacity="0.9" />
-    <!-- Flanged Inlet/Outlet End Caps -->
-    <rect x="18" y="85" width="14" height="30" rx="2" fill="#475569" stroke="#1e293b" stroke-width="2" />
-    <rect x="168" y="85" width="14" height="30" rx="2" fill="#475569" stroke="#1e293b" stroke-width="2" />
+    <rect x="4" y="4" width="57" height="30" rx="4" fill="#C084FC" opacity="0.2" />
+    <line x1="8" y1="9" x2="57" y2="9" stroke="#A855F7" stroke-width="3" stroke-linecap="round" />
+    <line x1="8" y1="19" x2="57" y2="19" stroke="#16A34A" stroke-width="3" stroke-linecap="round" />
+    <line x1="8" y1="29" x2="57" y2="29" stroke="#A855F7" stroke-width="3" stroke-linecap="round" />
   </g>
 </svg>

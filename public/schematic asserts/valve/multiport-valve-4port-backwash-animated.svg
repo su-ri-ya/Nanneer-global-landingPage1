@@ -1,125 +1,123 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="60" height="60">
   <defs>
-    <filter id="bottomShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#0b2545" flood-opacity="0.28" />
-    </filter>
-    
-    <radialGradient id="mpvCasingGrad" cx="30%" cy="30%" r="70%">
-      <stop offset="0%" stop-color="#27272a" />
-      <stop offset="60%" stop-color="#18181b" />
-      <stop offset="100%" stop-color="#09090b" />
-    </radialGradient>
-    <radialGradient id="mpvDialGrad" cx="35%" cy="30%" r="65%">
-      <stop offset="0%" stop-color="#0284c7" />
-      <stop offset="70%" stop-color="#0369a1" />
+    <linearGradient id="metalRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="40%" stop-color="#E2E8F0" />
+      <stop offset="80%" stop-color="#CBD5E1" />
+      <stop offset="100%" stop-color="#94A3B8" />
+    </linearGradient>
+    <linearGradient id="filterVesselGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0369A1" />
+      <stop offset="25%" stop-color="#38BDF8" />
+      <stop offset="50%" stop-color="#0284C7" />
+      <stop offset="85%" stop-color="#0369A1" />
       <stop offset="100%" stop-color="#075985" />
+    </linearGradient>
+    <linearGradient id="specularSheen" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.35" />
+      <stop offset="30%" stop-color="#FFFFFF" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </linearGradient>
+    <linearGradient id="sandMediaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FDE68A" />
+      <stop offset="40%" stop-color="#D97706" />
+      <stop offset="100%" stop-color="#92400E" />
+    </linearGradient>
+    <linearGradient id="carbonMediaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#64748B" />
+      <stop offset="30%" stop-color="#334155" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="resinMediaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FCD34D" />
+      <stop offset="45%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#B45309" />
+    </linearGradient>
+    <radialGradient id="mpvCasingGrad" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#27272A" />
+      <stop offset="60%" stop-color="#18181B" />
+      <stop offset="100%" stop-color="#09090B" />
     </radialGradient>
-    <linearGradient id="mpvBoltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f8fafc" />
-      <stop offset="50%" stop-color="#94a3b8" />
+    <radialGradient id="mpvDialGrad" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#1E3A8A" />
+      <stop offset="50%" stop-color="#1E40AF" />
+      <stop offset="100%" stop-color="#0C4A6E" />
+    </radialGradient>
+    <radialGradient id="mpvBoltGrad" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#F1F5F9" />
+      <stop offset="50%" stop-color="#94A3B8" />
       <stop offset="100%" stop-color="#475569" />
-    </linearGradient>
-    <linearGradient id="mpvHandleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#3f3f46" />
-      <stop offset="35%" stop-color="#27272a" />
-      <stop offset="70%" stop-color="#18181b" />
-      <stop offset="100%" stop-color="#09090b" />
-    </linearGradient>
-    
+    </radialGradient>
   </defs>
 
-  <!-- 3D Grounding Drop Shadow -->
-  <circle cx="100" cy="104" r="76" fill="#0f172a" opacity="0.25" filter="url(#bottomShadow)" />
+  <g transform="translate(0, 0)">
+    <!-- 4 Threaded Pipe Union Nozzles -->
+    <!-- Top Nozzle -->
+    <rect x="23" y="0" width="14" height="10" rx="1" fill="#18181B" stroke="#09090B" stroke-width="0.8" />
+    <rect x="20.5" y="8" width="19" height="5" rx="1.5" fill="#27272A" stroke="#09090B" stroke-width="0.8" />
 
-  <g transform="translate(100, 100) scale(2.4) translate(-30, -30)">
-    <!-- 4 Threaded Pipe Union Nozzles (Orthogonal: Top, Bottom, Left, Right) -->
-    <!-- Port 1: Top Nozzle (12 o'clock) -->
-    <g id="p1-top">
-      <rect x="23" y="0" width="14" height="10" rx="1" fill="#18181b" stroke="#09090b" stroke-width="0.8" />
-      <line x1="24" y1="2.5" x2="36" y2="2.5" stroke="#3f3f46" stroke-width="0.8" />
-      <line x1="24" y1="5" x2="36" y2="5" stroke="#3f3f46" stroke-width="0.8" />
-      <line x1="24" y1="7.5" x2="36" y2="7.5" stroke="#3f3f46" stroke-width="0.8" />
-      <rect x="20.5" y="8" width="19" height="5" rx="1.5" fill="#27272a" stroke="#09090b" stroke-width="0.8" />
+    <!-- Bottom Nozzle -->
+    <g transform="rotate(180 30 30)">
+      <rect x="23" y="0" width="14" height="10" rx="1" fill="#18181B" stroke="#09090B" stroke-width="0.8" />
+      <rect x="20.5" y="8" width="19" height="5" rx="1.5" fill="#27272A" stroke="#09090B" stroke-width="0.8" />
     </g>
 
-    <!-- Port 2: Bottom Nozzle (6 o'clock) -->
-    <g id="p2-bottom" transform="rotate(180 30 30)">
-      <rect x="23" y="0" width="14" height="10" rx="1" fill="#18181b" stroke="#09090b" stroke-width="0.8" />
-      <line x1="24" y1="2.5" x2="36" y2="2.5" stroke="#3f3f46" stroke-width="0.8" />
-      <line x1="24" y1="5" x2="36" y2="5" stroke="#3f3f46" stroke-width="0.8" />
-      <line x1="24" y1="7.5" x2="36" y2="7.5" stroke="#3f3f46" stroke-width="0.8" />
-      <rect x="20.5" y="8" width="19" height="5" rx="1.5" fill="#27272a" stroke="#09090b" stroke-width="0.8" />
+    <!-- Left Nozzle -->
+    <g transform="rotate(270 30 30)">
+      <rect x="23" y="0" width="14" height="10" rx="1" fill="#18181B" stroke="#09090B" stroke-width="0.8" />
+      <rect x="20.5" y="8" width="19" height="5" rx="1.5" fill="#27272A" stroke="#09090B" stroke-width="0.8" />
     </g>
 
-    <!-- Port 3: Left Nozzle (9 o'clock) -->
-    <g id="p3-left" transform="rotate(270 30 30)">
-      <rect x="23" y="0" width="14" height="10" rx="1" fill="#18181b" stroke="#09090b" stroke-width="0.8" />
-      <line x1="24" y1="2.5" x2="36" y2="2.5" stroke="#3f3f46" stroke-width="0.8" />
-      <line x1="24" y1="5" x2="36" y2="5" stroke="#3f3f46" stroke-width="0.8" />
-      <line x1="24" y1="7.5" x2="36" y2="7.5" stroke="#3f3f46" stroke-width="0.8" />
-      <rect x="20.5" y="8" width="19" height="5" rx="1.5" fill="#27272a" stroke="#09090b" stroke-width="0.8" />
-    </g>
-
-    <!-- Port 4: Right Nozzle (3 o'clock) -->
-    <g id="p4-right" transform="rotate(90 30 30)">
-      <rect x="23" y="0" width="14" height="10" rx="1" fill="#18181b" stroke="#09090b" stroke-width="0.8" />
-      <line x1="24" y1="2.5" x2="36" y2="2.5" stroke="#3f3f46" stroke-width="0.8" />
-      <line x1="24" y1="5" x2="36" y2="5" stroke="#3f3f46" stroke-width="0.8" />
-      <line x1="24" y1="7.5" x2="36" y2="7.5" stroke="#3f3f46" stroke-width="0.8" />
-      <rect x="20.5" y="8" width="19" height="5" rx="1.5" fill="#27272a" stroke="#09090b" stroke-width="0.8" />
+    <!-- Right Nozzle -->
+    <g transform="rotate(90 30 30)">
+      <rect x="23" y="0" width="14" height="10" rx="1" fill="#18181B" stroke="#09090B" stroke-width="0.8" />
+      <rect x="20.5" y="8" width="19" height="5" rx="1.5" fill="#27272A" stroke="#09090B" stroke-width="0.8" />
     </g>
 
     <!-- Main Outer Casing Flange Body -->
-    <circle cx="30" cy="30" r="23" fill="url(#mpvCasingGrad)" stroke="#3f3f46" stroke-width="1.2" />
-    <circle cx="30" cy="30" r="21.5" fill="none" stroke="#18181b" stroke-width="1" />
+    <circle cx="30" cy="30" r="23" fill="url(#mpvCasingGrad)" stroke="#3F3F46" stroke-width="1.2" />
+    <circle cx="30" cy="30" r="21.5" fill="none" stroke="#18181B" stroke-width="1" />
 
     <!-- 12 Flange Perimeter Hex Bolts -->
-    <circle cx="49.2" cy="30" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" stroke-width="0.4" />
+    <circle cx="49.2" cy="30.0" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" stroke-width="0.4" />
     <circle cx="46.6" cy="39.6" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" stroke-width="0.4" />
     <circle cx="39.6" cy="46.6" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" stroke-width="0.4" />
-    <circle cx="30" cy="49.2" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" stroke-width="0.4" />
+    <circle cx="30.0" cy="49.2" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" stroke-width="0.4" />
     <circle cx="20.4" cy="46.6" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" stroke-width="0.4" />
     <circle cx="13.4" cy="39.6" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" stroke-width="0.4" />
-    <circle cx="10.8" cy="30" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" stroke-width="0.4" />
+    <circle cx="10.8" cy="30.0" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" stroke-width="0.4" />
     <circle cx="13.4" cy="20.4" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" stroke-width="0.4" />
     <circle cx="20.4" cy="13.4" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" stroke-width="0.4" />
-    <circle cx="30" cy="10.8" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" stroke-width="0.4" />
+    <circle cx="30.0" cy="10.8" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" stroke-width="0.4" />
     <circle cx="39.6" cy="13.4" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" stroke-width="0.4" />
     <circle cx="46.6" cy="20.4" r="1.4" fill="url(#mpvBoltGrad)" stroke="#334155" stroke-width="0.4" />
 
-    <!-- Inner Bezel Ring & Blue Dial Plate -->
-    <circle cx="30" cy="30" r="16" fill="#09090b" stroke="#27272a" stroke-width="0.8" />
-    <circle cx="30" cy="30" r="14.8" fill="url(#mpvDialGrad)" stroke="#38bdf8" stroke-width="0.6" />
-    <circle cx="30" cy="30" r="13.6" fill="none" stroke="#60a5fa" stroke-width="0.4" stroke-opacity="0.5" />
+    <!-- Inner Bezel Ring -->
+    <circle cx="30" cy="30" r="16" fill="#09090B" stroke="#27272A" stroke-width="0.8" />
 
-    <!-- 4 Dial Cycle Position Pointers (0°, 90°, 180°, 270°) -->
-    <polygon points="30,16.5 28,18.8 32,18.8" fill="#facc15" />
-    <polygon points="43.5,30 41.2,28 41.2,32" fill="#facc15" />
-    <polygon points="30,43.5 28,41.2 32,41.2" fill="#facc15" />
-    <polygon points="16.5,30 18.8,28 18.8,32" fill="#facc15" />
+    <!-- Blue Dial Plate Face -->
+    <circle cx="30" cy="30" r="14.8" fill="url(#mpvDialGrad)" stroke="#38BDF8" stroke-width="0.6" />
 
-    <!-- Miniature Brand Icon (Lower-Left 225°) -->
-    <rect x="17" y="33" width="4.8" height="3.5" rx="0.5" fill="#ffffff" stroke="#16a34a" stroke-width="0.3" />
-    <circle cx="19.4" cy="34.8" r="1" fill="#0284c7" />
+    
+    <!-- Mode Active Fluid Stream -->
+    <path d="M 30 10 L 30 23 M 30 37 L 30 50" stroke="#BAE6FD" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="3 3">
+      <animate attributeName="stroke-dashoffset" from="12" to="0" dur="0.8s" repeatCount="indefinite" />
+    </path>
+
+    <!-- 4 Dial Cycle Step Markings -->
+    <polygon points="30,16.5 28,18.8 32,18.8" fill="#FACC15" />
+    <polygon points="43.5,30 41.2,28 41.2,32" fill="#FACC15" />
+    <polygon points="30,43.5 28,41.2 32,41.2" fill="#FACC15" />
+    <polygon points="16.5,30 18.8,28 18.8,32" fill="#FACC15" />
 
     <!-- Central Rotor Boss -->
-    <circle cx="30" cy="30" r="7" fill="#18181b" stroke="#09090b" stroke-width="1" />
+    <circle cx="30" cy="30" r="7" fill="#18181B" stroke="#09090B" stroke-width="1" />
 
     <!-- Rotary Selector Handle Lever -->
     <g transform="rotate(180 30 30)">
-      <path d="M 28 30 L 27.5 22 L 25 12 C 25 8.5 35 8.5 35 12 L 32.5 22 L 32 30 Z" fill="url(#mpvHandleGrad)" stroke="#09090b" stroke-width="0.8" />
-      <line x1="30" y1="11" x2="30" y2="24" stroke="#52525b" stroke-width="0.7" stroke-linecap="round" />
-      <polygon points="30,8.5 28.8,11 31.2,11" fill="#facc15" />
-      <circle cx="30" cy="30" r="3.6" fill="#18181b" stroke="#3f3f46" stroke-width="0.7" />
-      <circle cx="30" cy="30" r="1.8" fill="url(#mpvBoltGrad)" stroke="#475569" stroke-width="0.3" />
+      <line x1="30" y1="30" x2="30" y2="12" stroke="#09090B" stroke-width="4.5" stroke-linecap="round" />
+      <line x1="30" y1="30" x2="30" y2="13" stroke="#DC2626" stroke-width="2.6" stroke-linecap="round" />
+      <circle cx="30" cy="12" r="3.2" fill="#EF4444" stroke="#7F1D1D" stroke-width="0.8" />
     </g>
   </g>
-  
-      <path d="M 100 100 L 165 100" stroke="#fca5a5" stroke-width="6" stroke-linecap="round" stroke-dasharray="8 8">
-        <animate attributeName="stroke-dashoffset" from="32" to="0" dur="0.8s" repeatCount="indefinite" />
-      </path>
-      <circle cx="100" cy="100" r="14" fill="#ef4444" opacity="0.25">
-        <animate attributeName="r" values="8;16;8" dur="1.0s" repeatCount="indefinite" />
-      </circle>
-                    
 </svg>
