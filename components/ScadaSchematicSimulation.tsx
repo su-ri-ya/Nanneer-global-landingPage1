@@ -899,26 +899,26 @@ export function ScadaSchematicSimulation() {
           }}
         />
 
-        {/* Top-Right Partner Logos Badge Inside Schematic Canvas (Granular Mobile Progression: 4px at <375px, 24px at 375px Mobile M, 18px at 425px Mobile L, scaling to 80px on desktop) */}
-        <div className="absolute top-1 right-1 min-[375px]:top-1.5 min-[375px]:right-1.5 min-[425px]:top-2 min-[425px]:right-2 sm:top-3 sm:right-3 md:top-4 md:right-5 z-20 flex items-center gap-0.5 min-[375px]:gap-2 min-[425px]:gap-1.5 sm:gap-3 md:gap-4 bg-white/95 backdrop-blur-xs p-0.5 min-[375px]:px-2 min-[375px]:py-1 min-[425px]:px-1.5 min-[425px]:py-0.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 rounded-xs min-[375px]:rounded-lg min-[425px]:rounded-md sm:rounded-2xl border border-sky-200/90 shadow-xs sm:shadow-md shadow-sky-950/10 pointer-events-auto">
-          <div className="relative h-1 w-1 min-[375px]:h-6 min-[375px]:w-6 min-[425px]:h-[18px] min-[425px]:w-[18px] sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 flex items-center justify-center">
+        {/* Top-Right Partner Logos Badge Inside Schematic Canvas (Granular Mobile Progression: 4px at <375px, 24px at 375px Mobile M, 18px at 425px Mobile L; 20px on Mobile Landscape max-height 500px; scaling to 80px on desktop) */}
+        <div className="absolute top-1 right-1 min-[375px]:top-1.5 min-[375px]:right-1.5 min-[425px]:top-2 min-[425px]:right-2 sm:top-3 sm:right-3 md:top-4 md:right-5 [@media(max-height:500px)]:top-1.5 [@media(max-height:500px)]:right-2 z-20 flex items-center gap-0.5 min-[375px]:gap-2 min-[425px]:gap-1.5 sm:gap-3 md:gap-4 [@media(max-height:500px)]:gap-1.5 bg-white/95 backdrop-blur-xs p-0.5 min-[375px]:px-2 min-[375px]:py-1 min-[425px]:px-1.5 min-[425px]:py-0.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 [@media(max-height:500px)]:px-1.5 [@media(max-height:500px)]:py-0.5 rounded-xs min-[375px]:rounded-lg min-[425px]:rounded-md sm:rounded-2xl [@media(max-height:500px)]:rounded-md border border-sky-200/90 shadow-xs sm:shadow-md shadow-sky-950/10 pointer-events-auto">
+          <div className="relative h-1 w-1 min-[375px]:h-6 min-[375px]:w-6 min-[425px]:h-[18px] min-[425px]:w-[18px] sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 [@media(max-height:500px)]:h-5 [@media(max-height:500px)]:w-5 flex items-center justify-center">
             <Image
               src="/images/prestige-group-logo.png"
               alt="Prestige Group Logo"
               width={80}
               height={80}
-              className="h-1 w-1 min-[375px]:h-6 min-[375px]:w-6 min-[425px]:h-[18px] min-[425px]:w-[18px] sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 object-contain"
+              className="h-1 w-1 min-[375px]:h-6 min-[375px]:w-6 min-[425px]:h-[18px] min-[425px]:w-[18px] sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 [@media(max-height:500px)]:h-5 [@media(max-height:500px)]:w-5 object-contain"
               priority
             />
           </div>
-          <div className="h-1 min-[375px]:h-4 min-[425px]:h-3.5 sm:h-8 md:h-12 w-px bg-slate-200" aria-hidden="true" />
-          <div className="relative h-1 w-1 min-[375px]:h-6 min-[375px]:w-6 min-[425px]:h-[18px] min-[425px]:w-[18px] sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 flex items-center justify-center">
+          <div className="h-1 min-[375px]:h-4 min-[425px]:h-3.5 sm:h-8 md:h-12 [@media(max-height:500px)]:h-3.5 w-px bg-slate-200" aria-hidden="true" />
+          <div className="relative h-1 w-1 min-[375px]:h-6 min-[375px]:w-6 min-[425px]:h-[18px] min-[425px]:w-[18px] sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 [@media(max-height:500px)]:h-5 [@media(max-height:500px)]:w-5 flex items-center justify-center">
             <Image
               src="/images/ppms-logo.jpg"
               alt="PPMS Logo"
               width={80}
               height={80}
-              className="h-1 w-1 min-[375px]:h-6 min-[375px]:w-6 min-[425px]:h-[18px] min-[425px]:w-[18px] sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 object-contain rounded-full"
+              className="h-1 w-1 min-[375px]:h-6 min-[375px]:w-6 min-[425px]:h-[18px] min-[425px]:w-[18px] sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 [@media(max-height:500px)]:h-5 [@media(max-height:500px)]:w-5 object-contain rounded-full"
               priority
             />
           </div>
