@@ -816,23 +816,23 @@ export function ScadaSchematicSimulation() {
   return (
     <div className="w-full h-full flex-1 min-h-0 flex flex-col bg-white rounded-xl sm:rounded-2xl overflow-hidden border border-sky-200/90 shadow-xl shadow-sky-950/5 font-sans select-none text-slate-900">
       {/* 1. SCADA Header / Control Deck */}
-      <div className="shrink-0 px-3 sm:px-4 py-1 sm:py-1.5 bg-sky-50/70 border-b border-sky-100 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-3 w-3">
+      <div className="shrink-0 px-2.5 sm:px-4 py-1 sm:py-1.5 [@media(max-height:500px)]:py-0.5 bg-sky-50/70 border-b border-sky-100 flex flex-wrap items-center justify-between gap-1.5 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="relative flex h-2.5 w-2.5 sm:h-3 sm:w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 sm:h-3 sm:w-3 bg-emerald-500" />
             </span>
             <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-xs sm:text-sm font-black tracking-wider uppercase text-sky-900">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="font-mono text-xs sm:text-sm [@media(max-height:500px)]:text-[11px] font-black tracking-wider uppercase text-sky-900">
                   SCADA MIMIC · STP PROCESS SCHEMATIC
                 </span>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold">
+                <span className="px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-mono bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold">
                   ONLINE
                 </span>
               </div>
-              <span className="text-[11px] text-slate-500 font-mono">
+              <span className="text-[11px] text-slate-500 font-mono [@media(max-height:500px)]:hidden">
                 System Tag: STP-NANNEER-PLANT-01 · MBBR Aeration &amp; Tertiary Media Polishing
               </span>
             </div>
@@ -840,15 +840,15 @@ export function ScadaSchematicSimulation() {
         </div>
 
         {/* Live Controls */}
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap [@media(max-height:500px)]:gap-1">
           <button
             onClick={() => setControlMode((prev) => (prev === "AUTO" ? "MANUAL" : "AUTO"))}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono font-bold border transition-colors ${controlMode === "AUTO"
+            className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md text-[11px] sm:text-xs font-mono font-bold border transition-colors ${controlMode === "AUTO"
               ? "bg-sky-100 text-sky-800 border-sky-300"
               : "bg-amber-100 text-amber-800 border-amber-300"
               }`}
           >
-            <Sliders className="w-3.5 h-3.5" />
+            <Sliders className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             <span>MODE: {controlMode}</span>
           </button>
 
@@ -857,7 +857,7 @@ export function ScadaSchematicSimulation() {
               <button
                 key={speed}
                 onClick={() => setSimSpeed(speed)}
-                className={`px-2 py-0.5 text-[10px] font-mono rounded ${simSpeed === speed ? "bg-sky-600 text-white font-bold" : "text-slate-600 hover:text-slate-900"
+                className={`px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-mono rounded ${simSpeed === speed ? "bg-sky-600 text-white font-bold" : "text-slate-600 hover:text-slate-900"
                   }`}
               >
                 {speed}x
@@ -867,12 +867,12 @@ export function ScadaSchematicSimulation() {
 
           <button
             onClick={() => setIsPlaying(!isPlaying)}
-            className={`p-1.5 rounded-md border text-xs font-medium transition-colors ${isPlaying
+            className={`p-1 sm:p-1.5 rounded-md border text-xs font-medium transition-colors ${isPlaying
               ? "bg-white border-slate-300 text-amber-700 hover:bg-slate-50"
               : "bg-emerald-600 border-emerald-500 text-white hover:bg-emerald-700"
               }`}
           >
-            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            {isPlaying ? <Pause className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
           </button>
 
           <button
@@ -881,9 +881,9 @@ export function ScadaSchematicSimulation() {
               setAcfSeconds(3 * 3600 + 20 * 60 + 25)
               setDo1(0.88)
             }}
-            className="p-1.5 rounded-md bg-white border border-slate-300 text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors shadow-xs"
+            className="p-1 sm:p-1.5 rounded-md bg-white border border-slate-300 text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors shadow-xs"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
       </div>
@@ -2707,7 +2707,7 @@ export function ScadaSchematicSimulation() {
       </div>
 
       {/* 2.5 Water Purification Progression Indicator */}
-      <div className="shrink-0 px-3 sm:px-4 py-1.5 bg-gradient-to-r from-stone-100 via-sky-50 to-cyan-50 border-t border-sky-100 flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 text-[11px] font-mono">
+      <div className="shrink-0 px-3 sm:px-4 py-1.5 [@media(max-height:500px)]:hidden bg-gradient-to-r from-stone-100 via-sky-50 to-cyan-50 border-t border-sky-100 flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 text-[11px] font-mono">
         <div className="flex items-center gap-1.5 font-bold text-slate-700">
           <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
           <span>PURIFICATION PROGRESSION:</span>
@@ -2741,67 +2741,67 @@ export function ScadaSchematicSimulation() {
       </div>
 
       {/* 3. SCADA Bottom Telemetry Bar */}
-      <div className="shrink-0 px-3 sm:px-4 py-1 bg-sky-50/50 border-t border-sky-100 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1.5 text-xs">
-        <div className="p-1 sm:p-1.5 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
-          <span className="text-[10px] sm:text-[11px] text-slate-500 uppercase font-mono font-semibold">Aeration DO1</span>
-          <span className="text-sm sm:text-base font-bold text-sky-700 font-mono">{do1.toFixed(2)} mg/L</span>
-          <span className="text-[9px] sm:text-[10px] text-emerald-600 font-medium">Normal (0.5–2.0)</span>
+      <div className="shrink-0 px-2 sm:px-4 py-1 [@media(max-height:500px)]:py-0.5 bg-sky-50/50 border-t border-sky-100 grid grid-cols-2 sm:grid-cols-3 [@media(max-height:500px)]:grid-cols-6 lg:grid-cols-6 gap-1 sm:gap-1.5 text-xs">
+        <div className="p-1 sm:p-1.5 [@media(max-height:500px)]:p-0.5 rounded-md sm:rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col justify-center">
+          <span className="text-[10px] sm:text-[11px] [@media(max-height:500px)]:text-[8px] text-slate-500 uppercase font-mono font-semibold truncate">Aeration DO1</span>
+          <span className="text-sm sm:text-base [@media(max-height:500px)]:text-[10px] font-bold text-sky-700 font-mono truncate">{do1.toFixed(2)} mg/L</span>
+          <span className="text-[9px] sm:text-[10px] [@media(max-height:500px)]:hidden text-emerald-600 font-medium truncate">Normal (0.5–2.0)</span>
         </div>
 
-        <div className="p-1 sm:p-1.5 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
-          <span className="text-[10px] sm:text-[11px] text-slate-500 uppercase font-mono font-semibold">Clarifier TSS</span>
-          <span className="text-sm sm:text-base font-bold text-purple-700 font-mono">{clarifierTss.toFixed(2)} mg/L</span>
-          <span className="text-[9px] sm:text-[10px] text-slate-500">Underflow OK</span>
+        <div className="p-1 sm:p-1.5 [@media(max-height:500px)]:p-0.5 rounded-md sm:rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col justify-center">
+          <span className="text-[10px] sm:text-[11px] [@media(max-height:500px)]:text-[8px] text-slate-500 uppercase font-mono font-semibold truncate">Clarifier TSS</span>
+          <span className="text-sm sm:text-base [@media(max-height:500px)]:text-[10px] font-bold text-purple-700 font-mono truncate">{clarifierTss.toFixed(2)} mg/L</span>
+          <span className="text-[9px] sm:text-[10px] [@media(max-height:500px)]:hidden text-slate-500 truncate">Underflow OK</span>
         </div>
 
-        <div className="p-1 sm:p-1.5 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
-          <span className="text-[10px] sm:text-[11px] text-slate-500 uppercase font-mono font-semibold">PSF Differential</span>
-          <span className="text-sm sm:text-base font-bold text-emerald-700 font-mono">
+        <div className="p-1 sm:p-1.5 [@media(max-height:500px)]:p-0.5 rounded-md sm:rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col justify-center">
+          <span className="text-[10px] sm:text-[11px] [@media(max-height:500px)]:text-[8px] text-slate-500 uppercase font-mono font-semibold truncate">PSF Differential</span>
+          <span className="text-sm sm:text-base [@media(max-height:500px)]:text-[10px] font-bold text-emerald-700 font-mono truncate">
             {(inletPressure - outletPressure).toFixed(2)} Bar
           </span>
-          <span className="text-[9px] sm:text-[10px] text-slate-500">In: {inletPressure} · Out: {outletPressure}</span>
+          <span className="text-[9px] sm:text-[10px] [@media(max-height:500px)]:hidden text-slate-500 truncate">In: {inletPressure} · Out: {outletPressure}</span>
         </div>
 
-        <div className="p-1 sm:p-1.5 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
-          <span className="text-[10px] sm:text-[11px] text-slate-500 uppercase font-mono font-semibold">PSF Service</span>
-          <span className="text-sm sm:text-base font-bold text-emerald-700 font-mono">{formatTime(psfSeconds)}</span>
-          <span className="text-[9px] sm:text-[10px] text-slate-500">Backwash in 20h</span>
+        <div className="p-1 sm:p-1.5 [@media(max-height:500px)]:p-0.5 rounded-md sm:rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col justify-center">
+          <span className="text-[10px] sm:text-[11px] [@media(max-height:500px)]:text-[8px] text-slate-500 uppercase font-mono font-semibold truncate">PSF Service</span>
+          <span className="text-sm sm:text-base [@media(max-height:500px)]:text-[10px] font-bold text-emerald-700 font-mono truncate">{formatTime(psfSeconds)}</span>
+          <span className="text-[9px] sm:text-[10px] [@media(max-height:500px)]:hidden text-slate-500 truncate">Backwash in 20h</span>
         </div>
 
-        <div className="p-1 sm:p-1.5 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
-          <span className="text-[10px] sm:text-[11px] text-slate-500 uppercase font-mono font-semibold">ACF Service</span>
-          <span className="text-sm sm:text-base font-bold text-emerald-700 font-mono">{formatTime(acfSeconds)}</span>
-          <span className="text-[9px] sm:text-[10px] text-slate-500">Adsorption active</span>
+        <div className="p-1 sm:p-1.5 [@media(max-height:500px)]:p-0.5 rounded-md sm:rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col justify-center">
+          <span className="text-[10px] sm:text-[11px] [@media(max-height:500px)]:text-[8px] text-slate-500 uppercase font-mono font-semibold truncate">ACF Service</span>
+          <span className="text-sm sm:text-base [@media(max-height:500px)]:text-[10px] font-bold text-emerald-700 font-mono truncate">{formatTime(acfSeconds)}</span>
+          <span className="text-[9px] sm:text-[10px] [@media(max-height:500px)]:hidden text-slate-500 truncate">Adsorption active</span>
         </div>
 
-        <div className="p-1 sm:p-1.5 rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col">
-          <span className="text-[10px] sm:text-[11px] text-slate-500 uppercase font-mono font-semibold">Softener Hardness</span>
-          <span className="text-sm sm:text-base font-bold text-emerald-700 font-mono">{softwaterHardness.toFixed(2)} mg/L</span>
-          <span className="text-[9px] sm:text-[10px] text-emerald-600 font-medium">Zero Hardness</span>
+        <div className="p-1 sm:p-1.5 [@media(max-height:500px)]:p-0.5 rounded-md sm:rounded-lg bg-white border border-sky-100 shadow-xs flex flex-col justify-center">
+          <span className="text-[10px] sm:text-[11px] [@media(max-height:500px)]:text-[8px] text-slate-500 uppercase font-mono font-semibold truncate">Softener Hardness</span>
+          <span className="text-sm sm:text-base [@media(max-height:500px)]:text-[10px] font-bold text-emerald-700 font-mono truncate">{softwaterHardness.toFixed(2)} mg/L</span>
+          <span className="text-[9px] sm:text-[10px] [@media(max-height:500px)]:hidden text-emerald-600 font-medium truncate">Zero Hardness</span>
         </div>
       </div>
 
       {/* 4. Asset Inspector Bar */}
-      <div className="shrink-0 px-3 sm:px-4 py-0.5 sm:py-1 bg-slate-50 border-t border-sky-100 flex flex-wrap items-center justify-between text-xs text-slate-600 gap-1.5 sm:gap-2">
-        <div className="flex items-center gap-4 flex-wrap text-[11px] font-mono">
+      <div className="shrink-0 px-2 sm:px-4 py-0.5 sm:py-1 [@media(max-height:500px)]:py-0.5 bg-slate-50 border-t border-sky-100 flex flex-wrap items-center justify-between text-xs text-slate-600 gap-1 sm:gap-2">
+        <div className="flex items-center gap-3 sm:gap-4 flex-wrap text-[10px] sm:text-[11px] [@media(max-height:500px)]:text-[8.5px] font-mono">
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="w-2.5 h-2.5 [@media(max-height:500px)]:w-2 [@media(max-height:500px)]:h-2 rounded-full bg-emerald-500 inline-block" />
             <span className="text-slate-700 font-semibold">RUNNING</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 [@media(max-height:500px)]:w-2 [@media(max-height:500px)]:h-2 rounded-full bg-rose-500 inline-block" />
             <span className="text-slate-700 font-semibold">STANDBY / STOPPED</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-1 bg-sky-500 inline-block" />
+            <span className="w-3 h-1 [@media(max-height:500px)]:w-2.5 bg-sky-500 inline-block" />
             <span className="text-slate-700">Process Water</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-1 bg-amber-500 inline-block" />
+            <span className="w-3 h-1 [@media(max-height:500px)]:w-2.5 bg-amber-500 inline-block" />
             <span className="text-slate-700">Compressed Air</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-1 bg-rose-500 inline-block" />
+            <span className="w-3 h-1 [@media(max-height:500px)]:w-2.5 bg-rose-500 inline-block" />
             <span className="text-slate-700">Drain / Backwash</span>
           </span>
         </div>
