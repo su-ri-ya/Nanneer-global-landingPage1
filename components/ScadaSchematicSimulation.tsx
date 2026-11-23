@@ -898,26 +898,26 @@ export function ScadaSchematicSimulation() {
           }}
         />
 
-        {/* Top-Right Partner Logos Badge Inside Schematic Canvas */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-5 z-20 flex items-center gap-3 sm:gap-4 bg-white/95 backdrop-blur-xs px-3 py-2 sm:px-4 sm:py-2.5 rounded-2xl border border-sky-200/90 shadow-md shadow-sky-950/10 pointer-events-auto">
-          <div className="relative h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20 flex items-center justify-center">
+        {/* Top-Right Partner Logos Badge Inside Schematic Canvas (Mobile-Responsive: 12px on mobile, scaling up to 80px on desktop) */}
+        <div className="absolute top-1 right-1 sm:top-3 sm:right-3 md:top-4 md:right-5 z-20 flex items-center gap-1 sm:gap-3 md:gap-4 bg-white/95 backdrop-blur-xs px-1 py-0.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 rounded-sm sm:rounded-2xl border border-sky-200/90 shadow-xs sm:shadow-md shadow-sky-950/10 pointer-events-auto">
+          <div className="relative h-3 w-3 sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 flex items-center justify-center">
             <Image
               src="/images/prestige-group-logo.png"
               alt="Prestige Group Logo"
               width={80}
               height={80}
-              className="h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20 object-contain"
+              className="h-3 w-3 sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 object-contain"
               priority
             />
           </div>
-          <div className="h-8 sm:h-12 md:h-14 w-px bg-slate-200" aria-hidden="true" />
-          <div className="relative h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20 flex items-center justify-center">
+          <div className="h-2 sm:h-8 md:h-12 w-px bg-slate-200" aria-hidden="true" />
+          <div className="relative h-3 w-3 sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 flex items-center justify-center">
             <Image
               src="/images/ppms-logo.jpg"
               alt="PPMS Logo"
               width={80}
               height={80}
-              className="h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20 object-contain rounded-full"
+              className="h-3 w-3 sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 object-contain rounded-full"
               priority
             />
           </div>
