@@ -60,13 +60,13 @@ export function ScadaSchematicSimulation() {
   // Equipment Pumps State (MBBR & Tertiary Polishing Train)
   const [pumps, setPumps] = useState<Record<string, PumpState>>({
     M1: { id: "M1", name: "MBBR PUMP 1", code: "M1", status: "RUNNING", powerKw: 4.0, flowRate: 18.5 },
-    M2: { id: "M2", name: "MBBR PUMP 2", code: "M2", status: "STOPPED", powerKw: 4.0, flowRate: 0 },
-    M3: { id: "M3", name: "MBBR PUMP 3", code: "M3", status: "STOPPED", powerKw: 1.5, flowRate: 0 },
+    M2: { id: "M2", name: "MBBR PUMP 2", code: "M2", status: "STANDBY", powerKw: 4.0, flowRate: 0 },
+    M3: { id: "M3", name: "MBBR PUMP 3", code: "M3", status: "STANDBY", powerKw: 1.5, flowRate: 0 },
     M4: { id: "M4", name: "MBBR PUMP 4", code: "M4", status: "RUNNING", powerKw: 1.5, flowRate: 6.8 },
-    M10: { id: "M10", name: "FF PUMP 1", code: "M10", status: "STOPPED", powerKw: 3.0, flowRate: 0 },
-    M11: { id: "M11", name: "FF PUMP 2", code: "M11", status: "STOPPED", powerKw: 3.0, flowRate: 0 },
-    M12: { id: "M12", name: "FLUSHING PUMP", code: "M12", status: "STOPPED", powerKw: 5.5, flowRate: 0 },
-    BL1: { id: "BL1", name: "BLOWER 1", code: "B1", status: "STOPPED", powerKw: 7.5, flowRate: 0 },
+    M10: { id: "M10", name: "FF PUMP 1", code: "M10", status: "RUNNING", powerKw: 3.0, flowRate: 15.0 },
+    M11: { id: "M11", name: "FF PUMP 2", code: "M11", status: "STANDBY", powerKw: 3.0, flowRate: 0 },
+    M12: { id: "M12", name: "FLUSHING PUMP", code: "M12", status: "RUNNING", powerKw: 5.5, flowRate: 15.0 },
+    BL1: { id: "BL1", name: "BLOWER 1", code: "B1", status: "STANDBY", powerKw: 7.5, flowRate: 0 },
     BL2: { id: "BL2", name: "BLOWER 2", code: "B2", status: "RUNNING", powerKw: 7.5, flowRate: 120 },
     ARM: { id: "ARM", name: "CLARIFIER ARM", code: "ARM", status: "RUNNING", powerKw: 0.75, flowRate: 0 },
   })
@@ -119,6 +119,8 @@ export function ScadaSchematicSimulation() {
 
       const nextStatus: PumpStatus =
         current.status === "RUNNING"
+          ? "STANDBY"
+          : current.status === "STANDBY"
           ? "STOPPED"
           : "RUNNING"
 
@@ -156,7 +158,7 @@ export function ScadaSchematicSimulation() {
     const isRunning = p.status === "RUNNING"
     const color = getPumpColor(p.status)
 
-    // Strictly Green (Running) & Red (Stopped)
+    // Strictly Green (Running) & Red (Standby / Stopped)
     const glassBg = isRunning ? "#064E3B" : "#450A0A"
     const glassBorder = isRunning ? "#22C55E" : "#EF4444"
     const vaneStroke = isRunning ? "#86EFAC" : "#FCA5A5"
@@ -755,8 +757,7 @@ export function ScadaSchematicSimulation() {
     height?: number
   ) => {
     const isOk = status === "RUNNING" || status === "NORMAL"
-    const isStandby = status === "STANDBY"
-    const borderColor = isOk ? "#4ADE80" : isStandby ? "#FBBF24" : "#F87171"
+    const borderColor = isOk ? "#4ADE80" : "#F87171"
     const finalWidth = width ?? 88
     const cardHeight = height ?? (params.length > 1 ? 25 : 16)
 
@@ -898,26 +899,26 @@ export function ScadaSchematicSimulation() {
           }}
         />
 
-        {/* Top-Right Partner Logos Badge Inside Schematic Canvas (Mobile-Responsive: 12px on mobile, scaling up to 80px on desktop) */}
-        <div className="absolute top-1 right-1 sm:top-3 sm:right-3 md:top-4 md:right-5 z-20 flex items-center gap-1 sm:gap-3 md:gap-4 bg-white/95 backdrop-blur-xs px-1 py-0.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 rounded-sm sm:rounded-2xl border border-sky-200/90 shadow-xs sm:shadow-md shadow-sky-950/10 pointer-events-auto">
-          <div className="relative h-3 w-3 sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 flex items-center justify-center">
+        {/* Top-Right Partner Logos Badge Inside Schematic Canvas (Mobile-Responsive: 4px on mobile, scaling up to 80px on desktop) */}
+        <div className="absolute top-1 right-1 sm:top-3 sm:right-3 md:top-4 md:right-5 z-20 flex items-center gap-0.5 sm:gap-3 md:gap-4 bg-white/95 backdrop-blur-xs p-0.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 rounded-xs sm:rounded-2xl border border-sky-200/90 shadow-xs sm:shadow-md shadow-sky-950/10 pointer-events-auto">
+          <div className="relative h-1 w-1 sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 flex items-center justify-center">
             <Image
               src="/images/prestige-group-logo.png"
               alt="Prestige Group Logo"
               width={80}
               height={80}
-              className="h-3 w-3 sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 object-contain"
+              className="h-1 w-1 sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 object-contain"
               priority
             />
           </div>
-          <div className="h-2 sm:h-8 md:h-12 w-px bg-slate-200" aria-hidden="true" />
-          <div className="relative h-3 w-3 sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 flex items-center justify-center">
+          <div className="h-1 sm:h-8 md:h-12 w-px bg-slate-200" aria-hidden="true" />
+          <div className="relative h-1 w-1 sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 flex items-center justify-center">
             <Image
               src="/images/ppms-logo.jpg"
               alt="PPMS Logo"
               width={80}
               height={80}
-              className="h-3 w-3 sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 object-contain rounded-full"
+              className="h-1 w-1 sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 object-contain rounded-full"
               priority
             />
           </div>
@@ -1361,38 +1362,18 @@ export function ScadaSchematicSimulation() {
               <polygon points="101,165 105,155 109,165" fill="#DC2626" />
               <polygon points="126,72 134,76 126,80" fill="#DC2626" />
 
-              {/* Animated backwash/rinse flow */}
-              {isPlaying && (
-                <>
-                  {/* Active Backwash/Rinse Flow from PSF Multiport Valve */}
-                  {(psfValveMode === "BACKWASH" || psfValveMode === "RINSE") && (
-                    <path
-                      d="M 610 480 L 545 480 L 545 270 L 105 270 L 105 76 L 135 76"
-                      stroke="#FCA5A5"
-                      strokeWidth="2.5"
-                      strokeDasharray="6 8"
-                      fill="none"
-                      strokeLinejoin="round"
-                    >
-                      <animate attributeName="stroke-dashoffset" from="56" to="0" dur={`${1.4 / simSpeed}s`} repeatCount="indefinite" />
-                    </path>
-                  )}
-
-                  {/* Subtle Standby Connectivity Flow when PSF valve is in service mode */}
-                  {psfValveMode !== "BACKWASH" && psfValveMode !== "RINSE" && (
-                    <path
-                      d="M 610 480 L 545 480 L 545 270 L 105 270 L 105 76 L 135 76"
-                      stroke="#FCA5A5"
-                      strokeWidth="1.8"
-                      strokeDasharray="4 10"
-                      opacity="0.4"
-                      fill="none"
-                      strokeLinejoin="round"
-                    >
-                      <animate attributeName="stroke-dashoffset" from="56" to="0" dur={`${2.2 / simSpeed}s`} repeatCount="indefinite" />
-                    </path>
-                  )}
-                </>
+              {/* Animated backwash/rinse flow (Active ONLY during backwash/rinse, NO flow in standby) */}
+              {isPlaying && (psfValveMode === "BACKWASH" || psfValveMode === "RINSE") && (
+                <path
+                  d="M 610 480 L 545 480 L 545 270 L 105 270 L 105 76 L 135 76"
+                  stroke="#FCA5A5"
+                  strokeWidth="2.5"
+                  strokeDasharray="6 8"
+                  fill="none"
+                  strokeLinejoin="round"
+                >
+                  <animate attributeName="stroke-dashoffset" from="56" to="0" dur={`${1.4 / simSpeed}s`} repeatCount="indefinite" />
+                </path>
               )}
             </g>
 
@@ -1407,8 +1388,15 @@ export function ScadaSchematicSimulation() {
               <path d="M 308 92 L 360 92 L 360 75 L 470 75 L 470 92 L 510 92" stroke="#0284C7" strokeWidth="4" fill="none" strokeLinejoin="round" />
               <path d="M 360 92 L 360 115 L 470 115 L 470 92" stroke="#0284C7" strokeWidth="4" fill="none" strokeLinejoin="round" />
               <polygon points="500,88 510,92 500,96" fill="#0284C7" />
+              {/* Duty Pump M1 fluid animation */}
               {isPlaying && pumps.M1.status === "RUNNING" && (
                 <path d="M 312 92 L 360 92 L 360 75 L 470 75 L 470 92 L 510 92" stroke="#D7CCC8" strokeWidth="2.5" strokeDasharray="5 7" fill="none" strokeLinejoin="round">
+                  <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${0.9 / simSpeed}s`} repeatCount="indefinite" />
+                </path>
+              )}
+              {/* Duty Pump M2 fluid animation (active only when M2 is running) */}
+              {isPlaying && pumps.M2.status === "RUNNING" && (
+                <path d="M 312 92 L 360 92 L 360 115 L 470 115 L 470 92 L 510 92" stroke="#D7CCC8" strokeWidth="2.5" strokeDasharray="5 7" fill="none" strokeLinejoin="round">
                   <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${0.9 / simSpeed}s`} repeatCount="indefinite" />
                 </path>
               )}
@@ -1540,9 +1528,24 @@ export function ScadaSchematicSimulation() {
               <path d="M 1030 405 L 630 405 L 630 460" stroke="#0D9488" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
               <polygon points="830,401 820,405 830,409" fill="#0D9488" />
               <polygon points="626,452 630,460 634,452" fill="#0D9488" />
-              {isPlaying && (pumps.M10.status === "RUNNING" || pumps.M11.status === "RUNNING") && (
+              {/* Active Duty Pump M10 Flow Animation (Suction from Filter Feed Tank at 1000, 321 -> M10 -> Manifold -> PSF Valve) */}
+              {isPlaying && pumps.M10.status === "RUNNING" && (
                 <path
-                  d="M 1060 380 L 1060 405 L 630 405 L 630 460"
+                  d="M 1000 321 L 1000 405 L 630 405 L 630 460"
+                  stroke="#99F6E4"
+                  strokeWidth="2.5"
+                  strokeDasharray="5 7"
+                  fill="none"
+                  strokeLinejoin="round"
+                >
+                  <animate attributeName="stroke-dashoffset" from="28" to="0" dur={`${0.9 / simSpeed}s`} repeatCount="indefinite" />
+                </path>
+              )}
+
+              {/* Active Duty Pump M11 Flow Animation (Suction from Filter Feed Tank at 1060, 321 -> M11 -> Manifold -> PSF Valve) */}
+              {isPlaying && pumps.M11.status === "RUNNING" && (
+                <path
+                  d="M 1060 321 L 1060 405 L 630 405 L 630 460"
                   stroke="#99F6E4"
                   strokeWidth="2.5"
                   strokeDasharray="5 7"
@@ -1662,22 +1665,27 @@ export function ScadaSchematicSimulation() {
               {/* Feeder Pipe 1: TO FLUSH */}
               <path d="M 640 645 L 640 590" stroke="#0284C7" strokeWidth="3.5" fill="none" />
               <polygon points="636,595 640,585 644,595" fill="#0284C7" />
+              {renderMiniTag(640, 572, "FLUSHING", 64)}
 
               {/* Feeder Pipe 2: TO GARDENING */}
               <path d="M 720 645 L 720 590" stroke="#16A34A" strokeWidth="3.5" fill="none" />
               <polygon points="716,595 720,585 724,595" fill="#16A34A" />
+              {renderMiniTag(720, 572, "GARDENING", 70)}
 
               <polygon points="845,641 855,645 845,649" fill="#0284C7" />
 
               {/* Animated flow when M12 is running */}
               {isPlaying && pumps.M12.status === "RUNNING" && (
                 <>
-                  <path d="M 515 645 L 860 645" stroke="#BAE6FD" strokeWidth="2" strokeDasharray="3 5" fill="none">
+                  {/* Treated Water Tank outlet through M12 into Softener inlet */}
+                  <path d="M 460 645 L 860 645" stroke="#BAE6FD" strokeWidth="2" strokeDasharray="3 5" fill="none">
                     <animate attributeName="stroke-dashoffset" from="16" to="0" dur={`${0.6 / simSpeed}s`} repeatCount="indefinite" />
                   </path>
+                  {/* Branch to Flush */}
                   <path d="M 640 645 L 640 590" stroke="#BAE6FD" strokeWidth="2" strokeDasharray="3 5" fill="none">
                     <animate attributeName="stroke-dashoffset" from="16" to="0" dur={`${0.6 / simSpeed}s`} repeatCount="indefinite" />
                   </path>
+                  {/* Branch to Gardening */}
                   <path d="M 720 645 L 720 590" stroke="#BBF7D0" strokeWidth="2" strokeDasharray="3 5" fill="none">
                     <animate attributeName="stroke-dashoffset" from="16" to="0" dur={`${0.6 / simSpeed}s`} repeatCount="indefinite" />
                   </path>
@@ -1689,7 +1697,7 @@ export function ScadaSchematicSimulation() {
             <g id="softener-to-soft-water-line">
               <path d="M 940 645 L 1080 645" stroke="#06B6D4" strokeWidth="4.5" fill="none" />
               <polygon points="1070,641 1080,645 1070,649" fill="#06B6D4" />
-              {isPlaying && (
+              {isPlaying && pumps.M12.status === "RUNNING" && (
                 <path d="M 940 645 L 1080 645" stroke="#A5F3FC" strokeWidth="2.5" strokeDasharray="4 6" fill="none">
                   <animate attributeName="stroke-dashoffset" from="20" to="0" dur={`${0.7 / simSpeed}s`} repeatCount="indefinite" />
                 </path>
@@ -2782,7 +2790,7 @@ export function ScadaSchematicSimulation() {
           </span>
           <span className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="text-slate-700 font-semibold">STOPPED</span>
+            <span className="text-slate-700 font-semibold">STANDBY / STOPPED</span>
           </span>
           <span className="flex items-center gap-1.5">
             <span className="w-3 h-1 bg-sky-500 inline-block" />
