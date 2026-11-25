@@ -31,9 +31,9 @@ async function main() {
     maxBuffer: 60 * 1024 * 1024
   });
 
-  console.log('4. Assembling self-contained client presentation document...');
+  console.log('4. Assembling fine-tuned client presentation document...');
 
-  // 4a. Inline full Tailwind CSS
+  // 4a. Inline full Tailwind CSS & Custom Presentation Bar
   html = html.replace(/<link[^>]+rel=["']stylesheet["'][^>]*>/gi, `<style>
 ${cssText}
 
@@ -49,8 +49,7 @@ ${cssText}
   gap: 10px;
   color: #e2e8f0;
   font-family: ui-sans-serif, system-ui, sans-serif;
-  position: sticky;
-  top: 0;
+  flex-shrink: 0;
   z-index: 99999;
   box-shadow: 0 4px 16px rgba(0,0,0,0.4);
 }
@@ -79,7 +78,7 @@ ${cssText}
   background: #1e293b;
   color: #f1f5f9;
   border: 1px solid #475569;
-  padding: 5px 12px;
+  padding: 6px 14px;
   border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
@@ -87,7 +86,8 @@ ${cssText}
   transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  user-select: none;
 }
 .client-btn:hover {
   background: #0284c7;
@@ -101,13 +101,7 @@ ${cssText}
 }
 .client-btn-primary:hover {
   background: linear-gradient(135deg, #0369a1 0%, #1d4ed8 100%);
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
-}
-
-@page { size: 1400px 900px; margin: 0; }
-@media print { 
-  #client-header-bar { display: none !important; }
-  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
 }
 </style>`);
 
@@ -129,7 +123,14 @@ ${cssText}
   // 4f. Update title
   html = html.replace(/<title>[\s\S]*?<\/title>/, '<title>Prestige Tranquility 950 KLD STP — Process Schematic Client Document</title>');
 
-  // 4g. Insert Presentation Top Bar right inside <body>
+  // 4g. Adjust body and container classes for 100% zero-scroll lock
+  // Replace body class with viewport-locking flex container
+  html = html.replace(/<body class="[^"]*"/, '<body class="h-screen max-h-screen overflow-hidden flex flex-col bg-slate-50 text-slate-900 antialiased selection:bg-teal-500 selection:text-white"');
+  
+  // Replace inner container from h-screen max-h-screen to flex-1 min-h-0
+  html = html.replace(/class="h-screen max-h-screen bg-slate-50 flex flex-col p-1 sm:p-2[^"]*overflow-hidden/, 'class="w-full flex-1 min-h-0 bg-slate-50 flex flex-col p-1 sm:p-2 [@media(max-height:500px)]:p-0.5 overflow-hidden');
+
+  // 4h. Insert Presentation Top Bar right inside <body> (WITHOUT Save as PDF / Print button)
   const topBarHtml = `
   <div id="client-header-bar">
     <div style="display: flex; align-items: center; gap: 10px;">
@@ -137,45 +138,50 @@ ${cssText}
       <span style="font-weight: 700; font-size: 13px; color: #f8fafc; letter-spacing: -0.01em;">
         PRESTIGE TRANQUILITY &bull; 950 KLD STP PROCESS SCHEMATIC &amp; SCADA SIMULATION
       </span>
+      <span style="font-size: 11px; color: #94a3b8; font-family: monospace;" class="hidden md:inline">
+        [MBBR Biological + Tertiary Media Filtration]
+      </span>
     </div>
     <div style="display: flex; align-items: center; gap: 8px;">
-      <button class="client-btn" onclick="togglePlayPause()" id="playPauseBtn">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
-        Pause Flow
+      <button class="client-btn" onclick="togglePlayPause()" id="playPauseBtn" title="Pause or resume flow animation">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="playPauseIcon"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+        <span id="playPauseText">Pause Flow</span>
       </button>
-      <button class="client-btn" onclick="window.print()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-        Save as PDF / Print
-      </button>
-      <button class="client-btn client-btn-primary" onclick="toggleFullscreen()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
-        Fullscreen
+      <button class="client-btn client-btn-primary" onclick="toggleFullscreen()" id="fullscreenBtn" title="Toggle Fullscreen (or press F)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="fullscreenIcon"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+        <span id="fullscreenText">Fullscreen</span>
       </button>
     </div>
   </div>
   `;
   html = html.replace(/<body([^>]*)>/, `<body$1>\n${topBarHtml}`);
 
-  // 4h. Interactive standalone scripts
+  // 4i. Interactive standalone scripts (Fullscreen, Speed 1x/2x/5x, Play/Pause, Live Clock)
   const interactiveScripts = `
 <script>
+  // 1. Play / Pause Control
   let isPaused = false;
   function togglePlayPause() {
     const svg = document.querySelector('svg');
     const btn = document.getElementById('playPauseBtn');
+    const text = document.getElementById('playPauseText');
+    const icon = document.getElementById('playPauseIcon');
     if (!svg) return;
 
     if (!isPaused) {
       if (svg.pauseAnimations) svg.pauseAnimations();
-      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Resume Flow';
+      if (text) text.textContent = 'Resume Flow';
+      if (icon) icon.outerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" id="playPauseIcon"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
       isPaused = true;
     } else {
       if (svg.unpauseAnimations) svg.unpauseAnimations();
-      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> Pause Flow';
+      if (text) text.textContent = 'Pause Flow';
+      if (icon) icon.outerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="playPauseIcon"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
       isPaused = false;
     }
   }
 
+  // 2. Fullscreen Control with Full State Synchronization
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(err => {
@@ -188,7 +194,77 @@ ${cssText}
     }
   }
 
-  // Interactive Live Clock in Telemetry
+  document.addEventListener('fullscreenchange', () => {
+    const btn = document.getElementById('fullscreenBtn');
+    const text = document.getElementById('fullscreenText');
+    const icon = document.getElementById('fullscreenIcon');
+    if (document.fullscreenElement) {
+      if (text) text.textContent = 'Exit Fullscreen';
+      if (icon) icon.outerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="fullscreenIcon"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path></svg>';
+    } else {
+      if (text) text.textContent = 'Fullscreen';
+      if (icon) icon.outerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="fullscreenIcon"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>';
+    }
+  });
+
+  // Keyboard Shortcut: press 'F' to toggle fullscreen, Space to play/pause
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'f' || e.key === 'F') {
+      toggleFullscreen();
+    } else if (e.key === ' ') {
+      e.preventDefault();
+      togglePlayPause();
+    }
+  });
+
+  // 3. Interactive Speed Controls (1x, 2x, 5x)
+  let currentSpeed = 1;
+  const originalDurs = new Map();
+
+  function setSimSpeed(multiplier) {
+    currentSpeed = multiplier;
+    const animElements = document.querySelectorAll('svg animate, svg animateTransform');
+    animElements.forEach((el, index) => {
+      if (!originalDurs.has(index)) {
+        const rawDur = el.getAttribute('dur') || '1s';
+        const sec = parseFloat(rawDur) || 1;
+        originalDurs.set(index, sec);
+      }
+      const baseSec = originalDurs.get(index);
+      el.setAttribute('dur', (baseSec / multiplier) + 's');
+    });
+
+    // Update active button UI
+    const speedButtons = document.querySelectorAll('.flex.items-center.bg-white.rounded-md button');
+    speedButtons.forEach(btn => {
+      const txt = btn.textContent.trim();
+      if (txt === multiplier + 'x') {
+        btn.className = 'px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-mono rounded bg-sky-600 text-white font-bold';
+      } else {
+        btn.className = 'px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-mono rounded text-slate-600 hover:text-slate-900';
+      }
+    });
+  }
+
+  // Bind speed buttons
+  document.addEventListener('DOMContentLoaded', () => {
+    const speedButtons = document.querySelectorAll('.flex.items-center.bg-white.rounded-md button');
+    speedButtons.forEach(btn => {
+      const txt = btn.textContent.trim();
+      const mult = parseInt(txt);
+      if (!isNaN(mult)) {
+        btn.addEventListener('click', () => setSimSpeed(mult));
+      }
+    });
+
+    // Bind card pause button
+    const cardPauseBtn = document.querySelector('button.text-amber-700');
+    if (cardPauseBtn) {
+      cardPauseBtn.addEventListener('click', togglePlayPause);
+    }
+  });
+
+  // 4. Interactive Live Clock in Telemetry
   setInterval(() => {
     const now = new Date();
     const timeStr = now.toLocaleTimeString('en-US', { hour12: false });
@@ -212,7 +288,7 @@ ${cssText}
   fs.writeFileSync(out2, html, 'utf8');
   fs.writeFileSync(out3, html, 'utf8');
 
-  console.log('SUCCESS! Generated standalone client HTML documents:');
+  console.log('SUCCESS! Generated fine-tuned client HTML documents:');
   console.log(` - ${out1} (${(html.length / 1024).toFixed(1)} KB)`);
   console.log(` - ${out2}`);
   console.log(` - ${out3}`);
