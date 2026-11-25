@@ -899,26 +899,26 @@ export function ScadaSchematicSimulation() {
           }}
         />
 
-        {/* Top-Right Partner Logos Badge Inside Schematic Canvas (Granular Mobile Progression: 4px at <375px, 24px at 375px Mobile M, 18px at 425px Mobile L; 20px on Mobile Landscape max-height 500px; scaling to 80px on desktop) */}
-        <div className="absolute top-1 right-1 min-[375px]:top-1.5 min-[375px]:right-1.5 min-[425px]:top-2 min-[425px]:right-2 sm:top-3 sm:right-3 md:top-4 md:right-5 [@media(max-height:500px)]:top-1.5 [@media(max-height:500px)]:right-2 z-20 flex items-center gap-0.5 min-[375px]:gap-2 min-[425px]:gap-1.5 sm:gap-3 md:gap-4 [@media(max-height:500px)]:gap-1.5 bg-white/95 backdrop-blur-xs p-0.5 min-[375px]:px-2 min-[375px]:py-1 min-[425px]:px-1.5 min-[425px]:py-0.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 [@media(max-height:500px)]:px-1.5 [@media(max-height:500px)]:py-0.5 rounded-xs min-[375px]:rounded-lg min-[425px]:rounded-md sm:rounded-2xl [@media(max-height:500px)]:rounded-md border border-sky-200/90 shadow-xs sm:shadow-md shadow-sky-950/10 pointer-events-auto">
-          <div className="relative h-1 w-1 min-[375px]:h-6 min-[375px]:w-6 min-[425px]:h-[18px] min-[425px]:w-[18px] sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 [@media(max-height:500px)]:h-5 [@media(max-height:500px)]:w-5 flex items-center justify-center">
+        {/* Top-Right Partner Logos Badge Inside Schematic Canvas (Tiny 8px on Mobile S <375px, 10px on Mobile M/L >=375px, 20px on sm/md tablet, 28px on lg 1024px, 36px on xl 1440px) */}
+        <div className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 md:top-1.5 md:right-1.5 lg:top-2 lg:right-2 xl:top-3 xl:right-3 2xl:top-4 2xl:right-4 [@media(max-height:500px)]:top-1 [@media(max-height:500px)]:right-1.5 z-20 flex items-center gap-0.5 sm:gap-1.5 md:gap-1 lg:gap-1.5 xl:gap-2 2xl:gap-3 [@media(max-height:500px)]:gap-0.5 bg-white/95 backdrop-blur-xs p-0.5 min-[375px]:px-1 min-[375px]:py-0.5 sm:px-1.5 sm:py-0.5 md:px-1.5 md:py-0.5 lg:px-2 lg:py-1 xl:px-2.5 xl:py-1.5 2xl:px-3 2xl:py-2 [@media(max-height:500px)]:p-0.5 rounded-xs sm:rounded-md lg:rounded-lg xl:rounded-xl 2xl:rounded-2xl border border-sky-200/90 shadow-xs sm:shadow-md shadow-sky-950/10 pointer-events-auto">
+          <div className="relative h-2 w-2 min-[375px]:h-2.5 min-[375px]:w-2.5 sm:h-5 sm:w-5 md:h-5 md:w-5 lg:h-7 lg:w-7 xl:h-9 xl:w-9 2xl:h-11 2xl:w-11 [@media(max-height:500px)]:h-2.5 [@media(max-height:500px)]:w-2.5 flex items-center justify-center">
             <Image
               src="/images/prestige-group-logo.png"
               alt="Prestige Group Logo"
               width={80}
               height={80}
-              className="h-1 w-1 min-[375px]:h-6 min-[375px]:w-6 min-[425px]:h-[18px] min-[425px]:w-[18px] sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 [@media(max-height:500px)]:h-5 [@media(max-height:500px)]:w-5 object-contain"
+              className="h-2 w-2 min-[375px]:h-2.5 min-[375px]:w-2.5 sm:h-5 sm:w-5 md:h-5 md:w-5 lg:h-7 lg:w-7 xl:h-9 xl:w-9 2xl:h-11 2xl:w-11 [@media(max-height:500px)]:h-2.5 [@media(max-height:500px)]:w-2.5 object-contain"
               priority
             />
           </div>
-          <div className="h-1 min-[375px]:h-4 min-[425px]:h-3.5 sm:h-8 md:h-12 [@media(max-height:500px)]:h-3.5 w-px bg-slate-200" aria-hidden="true" />
-          <div className="relative h-1 w-1 min-[375px]:h-6 min-[375px]:w-6 min-[425px]:h-[18px] min-[425px]:w-[18px] sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 [@media(max-height:500px)]:h-5 [@media(max-height:500px)]:w-5 flex items-center justify-center">
+          <div className="h-1.5 min-[375px]:h-2 sm:h-3.5 md:h-3.5 lg:h-4.5 xl:h-6 2xl:h-8 [@media(max-height:500px)]:h-2 w-px bg-slate-200" aria-hidden="true" />
+          <div className="relative h-2 w-2 min-[375px]:h-2.5 min-[375px]:w-2.5 sm:h-5 sm:w-5 md:h-5 md:w-5 lg:h-7 lg:w-7 xl:h-9 xl:w-9 2xl:h-11 2xl:w-11 [@media(max-height:500px)]:h-2.5 [@media(max-height:500px)]:w-2.5 flex items-center justify-center">
             <Image
               src="/images/ppms-logo.jpg"
               alt="PPMS Logo"
               width={80}
               height={80}
-              className="h-1 w-1 min-[375px]:h-6 min-[375px]:w-6 min-[425px]:h-[18px] min-[425px]:w-[18px] sm:h-11 sm:w-11 md:h-16 md:w-16 lg:h-20 lg:w-20 [@media(max-height:500px)]:h-5 [@media(max-height:500px)]:w-5 object-contain rounded-full"
+              className="h-2 w-2 min-[375px]:h-2.5 min-[375px]:w-2.5 sm:h-5 sm:w-5 md:h-5 md:w-5 lg:h-7 lg:w-7 xl:h-9 xl:w-9 2xl:h-11 2xl:w-11 [@media(max-height:500px)]:h-2.5 [@media(max-height:500px)]:w-2.5 object-contain rounded-full"
               priority
             />
           </div>
@@ -927,7 +927,7 @@ export function ScadaSchematicSimulation() {
         <svg
           viewBox="-65 0 1405 710"
           className="w-full h-full max-h-full max-w-full block"
-          preserveAspectRatio="xMinYMid meet"
+          preserveAspectRatio="none"
         >
           <defs>
             {/* 1. Raw Sewage / Influent & Collection Tank Water (Dark Sludge Brown Influent) */}
@@ -2706,35 +2706,35 @@ export function ScadaSchematicSimulation() {
         </svg>
       </div>
 
-      {/* 2.5 Water Purification Progression Indicator */}
-      <div className="shrink-0 px-3 sm:px-4 py-1.5 [@media(max-height:500px)]:hidden bg-gradient-to-r from-stone-100 via-sky-50 to-cyan-50 border-t border-sky-100 flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 text-[11px] font-mono">
-        <div className="flex items-center gap-1.5 font-bold text-slate-700">
+      {/* 2.5 Water Purification Progression Indicator (Fixed 40px single-line row on mobile) */}
+      <div className="shrink-0 px-2.5 sm:px-4 h-10 max-h-10 [@media(max-height:500px)]:hidden bg-gradient-to-r from-stone-100 via-sky-50 to-cyan-50 border-t border-sky-100 flex items-center justify-between gap-2 text-[10px] sm:text-[11px] font-mono overflow-x-auto">
+        <div className="shrink-0 flex items-center gap-1.5 font-bold text-slate-700 whitespace-nowrap">
           <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
           <span>PURIFICATION PROGRESSION:</span>
         </div>
-        <div className="flex items-center gap-2 flex-wrap text-[10px]">
-          <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-stone-200 text-stone-800 border border-stone-300 font-semibold">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#8D6E63] border border-stone-400" />
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 text-[9px] sm:text-[10px] whitespace-nowrap">
+          <span className="flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded bg-stone-200 text-stone-800 border border-stone-300 font-semibold">
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#8D6E63] border border-stone-400" />
             1. Raw Sewage
           </span>
           <span className="text-slate-400 font-bold">→</span>
-          <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 text-amber-900 border border-amber-200 font-semibold">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#6B7852] border border-amber-400" />
+          <span className="flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded bg-amber-50 text-amber-900 border border-amber-200 font-semibold">
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#6B7852] border border-amber-400" />
             2. Biological MLSS
           </span>
           <span className="text-slate-400 font-bold">→</span>
-          <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-sky-100 text-sky-900 border border-sky-200 font-semibold">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#7DD3FC] border border-sky-400" />
+          <span className="flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded bg-sky-100 text-sky-900 border border-sky-200 font-semibold">
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#7DD3FC] border border-sky-400" />
             3. Clarified Effluent
           </span>
           <span className="text-slate-400 font-bold">→</span>
-          <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-cyan-100 text-cyan-900 border border-cyan-200 font-semibold">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#38BDF8] border border-cyan-400" />
+          <span className="flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded bg-cyan-100 text-cyan-900 border border-cyan-200 font-semibold">
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#38BDF8] border border-cyan-400" />
             4. Media Filtered
           </span>
           <span className="text-slate-400 font-bold">→</span>
-          <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-900 border border-emerald-200 font-bold">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#0284C7] border border-emerald-400" />
+          <span className="flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded bg-emerald-50 text-emerald-900 border border-emerald-200 font-bold">
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#0284C7] border border-emerald-400" />
             5. Pure Soft Water
           </span>
         </div>
